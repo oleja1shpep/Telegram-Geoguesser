@@ -17,10 +17,11 @@ def hello_message(message):
 
 def login_or_register(message):
     answer = message.text
-    send = bot.send_message(message.chat.id,"Введите логин")
     if answer == 'Войти':
+        send = bot.send_message(message.chat.id,"Введите логин")
         bot.register_next_step_handler(send, login)
     elif answer == "Зарегистрироваться":
+        send = bot.send_message(message.chat.id,"Введите логин")
         bot.register_next_step_handler(send, register)
 
 def login(message):
