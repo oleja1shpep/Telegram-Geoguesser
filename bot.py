@@ -2,6 +2,10 @@ import telebot
 from telebot import types
 import database
 
+TOKEN = '6844158621:AAFk18qL8jvvqrpnguZgUH3PU7U8oOtryGE'
+
+bot = telebot.TeleBot(TOKEN)
+
 def create_start_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     item_1 = types.KeyboardButton("Играть")
@@ -15,9 +19,9 @@ def create_menu_markup():
     markup.add(item_1, item_2)
     return markup
 
-TOKEN = '6844158621:AAFk18qL8jvvqrpnguZgUH3PU7U8oOtryGE'
-
-bot = telebot.TeleBot(TOKEN)
+def get_top10():
+    top10 = database.get_top10()
+    return 0
 
 @bot.message_handler(commands=['start', 'reset'])
 def hello_message(message):
@@ -29,11 +33,12 @@ def hello_message(message):
 def start_game(message):
     answer = message.text
     tele_id = message.from_user.id
+    tele_username = message.from_user.username
 
     if answer == 'Играть':
         markup = create_menu_markup()
 
-        if (database.search_tele_id(tele_id=tele_id)):
+        if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
             send = bot.send_message(message.chat.id,"Рад увидеть тебя снова в игре!",reply_markup=markup)
         else:
             send = bot.send_message(message.chat.id,"Вы были успешно зарегистрированы",reply_markup=markup)
@@ -51,6 +56,8 @@ def menu(message):
     answer = message.text
     if answer == "Топ игроков":
         print(f"топ, {message.from_user.id}")
+        top10 = get_top10()
+
         bot.register_next_step_handler(message, menu)
 
     elif answer == "Одиночный режим":
@@ -59,11 +66,11 @@ def menu(message):
 
     elif answer in ['/start', '/reset']:
         markup = create_start_markup()
-        send = bot.send_message(message.chat.id,f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     else:
         markup = create_menu_markup()
-        send = bot.send_message(message.chat.id,"Выбери что-то из списка",reply_markup=markup)
+        send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
 
 
