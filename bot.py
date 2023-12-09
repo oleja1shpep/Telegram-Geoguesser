@@ -1,8 +1,7 @@
 import telebot
 from telebot import types
 import database
-
-TOKEN = '6844158621:AAFk18qL8jvvqrpnguZgUH3PU7U8oOtryGE'
+from config import TOKEN
 
 bot = telebot.TeleBot(TOKEN)
 
