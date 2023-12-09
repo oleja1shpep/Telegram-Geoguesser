@@ -1,39 +1,71 @@
 import telebot
 from telebot import types
-from random import seed, randrange
+import database
+
+def create_start_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    item_1 = types.KeyboardButton("Играть")
+    markup.add(item_1)
+    return markup
+
+def create_menu_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    item_1 = types.KeyboardButton("Одиночный режим")
+    item_2 = types.KeyboardButton("Топ игроков")
+    markup.add(item_1, item_2)
+    return markup
 
 TOKEN = '6844158621:AAFk18qL8jvvqrpnguZgUH3PU7U8oOtryGE'
 
-bot = telebot.TeleBot(TOKEN) 
+bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'reset'])
 def hello_message(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Зарегистрироваться")
-    item_2 = types.KeyboardButton("Войти")
-    markup.add(item_1, item_2)
-    send = bot.send_message(message.chat.id,"Привет я геогесср бот",reply_markup=markup)
-    bot.register_next_step_handler(send, login_or_register)
+    markup = create_start_markup()
 
-def login_or_register(message):
+    send = bot.send_message(message.chat.id,f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+    bot.register_next_step_handler(send, start_game)
+
+def start_game(message):
     answer = message.text
-    if answer == 'Войти':
-        send = bot.send_message(message.chat.id,"Введите логин")
-        bot.register_next_step_handler(send, login)
-    elif answer == "Зарегистрироваться":
-        send = bot.send_message(message.chat.id,"Введите логин")
-        bot.register_next_step_handler(send, register)
+    tele_id = message.from_user.id
 
-def login(message):
-    user_login = message.text
-    print(user_login)
-    send = bot.send_message(message.chat.id,f'{user_login} - очень крутой логин!')
+    if answer == 'Играть':
+        markup = create_menu_markup()
 
+        if (database.search_tele_id(tele_id=tele_id)):
+            send = bot.send_message(message.chat.id,"Рад увидеть тебя снова в игре!",reply_markup=markup)
+        else:
+            send = bot.send_message(message.chat.id,"Вы были успешно зарегистрированы",reply_markup=markup)
+        
+        bot.register_next_step_handler(send, menu)
+    else:
+        markup = create_start_markup()
+        if answer in ['/start', '/reset']:
+            send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот', reply_markup=markup)
+        else:
+            send = bot.send_message(message.chat.id,"Выбери что-то из списка",reply_markup=markup)
+        bot.register_next_step_handler(send, start_game)
 
-def register(message):
-    user_login = message.text
-    print(user_login)
-    send = bot.send_message(message.chat.id,f'{user_login} - очень крутой логин!')
+def menu(message):
+    answer = message.text
+    if answer == "Топ игроков":
+        print(f"топ, {message.from_user.id}")
+        bot.register_next_step_handler(message, menu)
+
+    elif answer == "Одиночный режим":
+        print(f"одиночный, {message.from_user.id}")
+        bot.register_next_step_handler(message, menu)
+
+    elif answer in ['/start', '/reset']:
+        markup = create_start_markup()
+        send = bot.send_message(message.chat.id,f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        bot.register_next_step_handler(send, start_game)
+    else:
+        markup = create_menu_markup()
+        send = bot.send_message(message.chat.id,"Выбери что-то из списка",reply_markup=markup)
+        bot.register_next_step_handler(send, menu)
+
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
@@ -41,6 +73,13 @@ def message_reply(message):
         bot.send_message(message.chat.id,"Зачем тыкнул??")
     elif (message.text).lower() == "amogus" or (message.text).lower() == "amongus":
         bot.send_message(message.chat.id,"when the imposter is sus")
+    elif message.text=="Меню" or message.text=="меню":
+        if (database.search_tele_id(tele_id = message.from_user.id)):
+            markup = create_menu_markup()
+            bot.send_message(message.chat.id, "Главное меню",reply_markup=markup)
+        else:
+            bot.send_message(message.chat.id, "Перед заходом в меню, пожалуйста, зарегестрируйтесь")
+            
 
 @bot.message_handler(content_types='dice')
 def dice_reply(message):
