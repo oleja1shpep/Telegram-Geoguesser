@@ -1,5 +1,5 @@
 import sqlite3
-from init_db import DB_NAME
+from config import DB_NAME
 
 
 def search_tele_id(tele_id, tele_username):
