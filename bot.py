@@ -20,10 +20,16 @@ def create_menu_markup():
 
 def create_standard_single_game_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Начать игру")
+    item_1 = types.MenuButtonWebApp(type="web_app" ,text="Начать игру", web_app=types.WebAppInfo(url="https://www.google.ru/maps/@55.8663186,37.5975226,3a,75y,126.23h,87.65t/data=!3m7!1e1!3m5!1skrz7OFr8n2uHG7u3vP8FTw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3Dkrz7OFr8n2uHG7u3vP8FTw%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D130.51917%26pitch%3D0%26thumbfov%3D100!7i13312!8i6656?entry=ttu"))
     item_2 = types.KeyboardButton("Правила 🤓")
     item_3 = types.KeyboardButton("Назад")
     markup.add(item_1, item_2, item_3)
+    return markup
+
+def create_standard_single_game_launch_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    item_1 = types.MenuButtonWebApp("launch", types.WebAppInfo(url=""))
+    markup.add(item_1)
     return markup
 
 def get_top10():
@@ -98,6 +104,11 @@ def standard_single_game_menu(message):
         print(answer, message.from_user.id, message.from_user.username)
         markup = create_standard_single_game_menu_markup()
         send = bot.send_message(message.chat.id,"Дается неограниченное количество времени на ответ\nМожно перемещаться по улицам в любых направлениях", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
+    elif answer == "Начать игру":
+        print(answer, message.from_user.id, message.from_user.username)
+        markup = create_standard_single_game_menu_markup()
+        send = bot.send_message(message.chat.id, "Work in progress...", reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
     else:
         print(answer, message.from_user.id, message.from_user.username)
