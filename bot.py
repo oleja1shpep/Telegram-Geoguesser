@@ -18,9 +18,28 @@ def create_menu_markup():
     markup.add(item_1, item_2)
     return markup
 
+def create_standard_single_game_menu_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    item_1 = types.MenuButtonWebApp(type="web_app" ,text="Начать игру", web_app=types.WebAppInfo(url="https://www.google.ru/maps/@55.8663186,37.5975226,3a,75y,126.23h,87.65t/data=!3m7!1e1!3m5!1skrz7OFr8n2uHG7u3vP8FTw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3Dkrz7OFr8n2uHG7u3vP8FTw%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D130.51917%26pitch%3D0%26thumbfov%3D100!7i13312!8i6656?entry=ttu"))
+    item_2 = types.KeyboardButton("Правила 🤓")
+    item_3 = types.KeyboardButton("Назад")
+    markup.add(item_1, item_2, item_3)
+    return markup
+
+def create_standard_single_game_launch_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    item_1 = types.MenuButtonWebApp("launch", types.WebAppInfo(url=""))
+    markup.add(item_1)
+    return markup
+
 def get_top10():
-    top10 = database.get_top10()
-    return 0
+    top_10_users = database.get_top10()
+    txt = ''
+    for i in range(len(top_10_users)):
+        mean = 0 if top_10_users[i][2] == 0 else top_10_users[i][1] / top_10_users[i][2]
+        txt += f'{i+1}. {top_10_users[i][0]} - очков : {top_10_users[i][1]} | матчей : {top_10_users[i][2]} | среднее : {mean}\n'
+    print(top_10_users)
+    return txt
 
 @bot.message_handler(commands=['start', 'reset'])
 def hello_message(message):
@@ -34,7 +53,7 @@ def start_game(message):
     tele_id = message.from_user.id
     tele_username = message.from_user.username
 
-    if answer == 'Играть':
+    if answer == 'Играть' or answer in ['Меню', 'меню']:
         markup = create_menu_markup()
 
         if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
@@ -43,6 +62,7 @@ def start_game(message):
             send = bot.send_message(message.chat.id,"Вы были успешно зарегистрированы",reply_markup=markup)
         
         bot.register_next_step_handler(send, menu)
+        
     else:
         markup = create_start_markup()
         if answer in ['/start', '/reset']:
@@ -54,14 +74,16 @@ def start_game(message):
 def menu(message):
     answer = message.text
     if answer == "Топ игроков":
-        print(f"топ, {message.from_user.id}")
-        top10 = get_top10()
-
-        bot.register_next_step_handler(message, menu)
+        print(f"топ, {message.from_user.id}, {message.from_user.username}")
+        top_10_text = get_top10()
+        send = bot.send_message(message.chat.id, top_10_text)
+        bot.register_next_step_handler(send, menu)
 
     elif answer == "Одиночный режим":
-        print(f"одиночный, {message.from_user.id}")
-        bot.register_next_step_handler(message, menu)
+        markup = create_standard_single_game_menu_markup()
+        print(f"одиночный, {message.from_user.id}, {message.from_user.username}")
+        send = bot.send_message(message.chat.id, "Одиночный стандартный режим", reply_markup=markup)
+        bot.register_next_step_handler(message, standard_single_game_menu)
 
     elif answer in ['/start', '/reset']:
         markup = create_start_markup()
@@ -72,6 +94,27 @@ def menu(message):
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
 
+def standard_single_game_menu(message):
+    answer = message.text
+    if answer == "Назад":
+        markup = create_menu_markup()
+        send = bot.send_message(message.chat.id,"Главное меню", reply_markup=markup)
+        bot.register_next_step_handler(send, menu)
+    elif answer == "Правила 🤓":
+        print(answer, message.from_user.id, message.from_user.username)
+        markup = create_standard_single_game_menu_markup()
+        send = bot.send_message(message.chat.id,"Дается неограниченное количество времени на ответ\nМожно перемещаться по улицам в любых направлениях", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
+    elif answer == "Начать игру":
+        print(answer, message.from_user.id, message.from_user.username)
+        markup = create_standard_single_game_menu_markup()
+        send = bot.send_message(message.chat.id, "Work in progress...", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
+    else:
+        print(answer, message.from_user.id, message.from_user.username)
+        markup = create_standard_single_game_menu_markup()
+        send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
@@ -80,11 +123,14 @@ def message_reply(message):
     elif (message.text).lower() == "amogus" or (message.text).lower() == "amongus":
         bot.send_message(message.chat.id,"when the imposter is sus")
     elif message.text=="Меню" or message.text=="меню":
-        if (database.search_tele_id(tele_id = message.from_user.id)):
+        if (database.search_tele_id(tele_id = message.from_user.id, tele_username=message.from_user.username)):
             markup = create_menu_markup()
-            bot.send_message(message.chat.id, "Главное меню",reply_markup=markup)
+            send = bot.send_message(message.chat.id, "Главное меню",reply_markup=markup)
+            bot.register_next_step_handler(send, menu)
         else:
             bot.send_message(message.chat.id, "Перед заходом в меню, пожалуйста, зарегестрируйтесь")
+    else:
+        bot.send_message(message.chat.id, "Чтобы перезапустить отправьте /reset")
             
 
 @bot.message_handler(content_types='dice')
