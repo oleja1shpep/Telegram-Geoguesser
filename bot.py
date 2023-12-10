@@ -19,8 +19,13 @@ def create_menu_markup():
     return markup
 
 def get_top10():
-    top10 = database.get_top10()
-    return 0
+    top_10_users = database.get_top10()
+    txt = ''
+    for i in range(len(top_10_users)):
+        mean = 0 if top_10_users[i][2] == 0 else top_10_users[i][1] / top_10_users[i][2]
+        txt += f'{i+1}. {top_10_users[i][0]} - очков : {top_10_users[i][1]} | матчей : {top_10_users[i][2]} | среднее : {mean}\n'
+    print(top_10_users)
+    return txt
 
 @bot.message_handler(commands=['start', 'reset'])
 def hello_message(message):
@@ -34,7 +39,7 @@ def start_game(message):
     tele_id = message.from_user.id
     tele_username = message.from_user.username
 
-    if answer == 'Играть':
+    if answer == 'Играть' or answer in ['Меню', 'меню']:
         markup = create_menu_markup()
 
         if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
@@ -43,6 +48,7 @@ def start_game(message):
             send = bot.send_message(message.chat.id,"Вы были успешно зарегистрированы",reply_markup=markup)
         
         bot.register_next_step_handler(send, menu)
+        
     else:
         markup = create_start_markup()
         if answer in ['/start', '/reset']:
@@ -54,13 +60,13 @@ def start_game(message):
 def menu(message):
     answer = message.text
     if answer == "Топ игроков":
-        print(f"топ, {message.from_user.id}")
-        top10 = get_top10()
-
-        bot.register_next_step_handler(message, menu)
+        print(f"топ, {message.from_user.id}, {message.from_user.username}")
+        top_10_text = get_top10()
+        send = bot.send_message(message.chat.id, top_10_text)
+        bot.register_next_step_handler(send, menu)
 
     elif answer == "Одиночный режим":
-        print(f"одиночный, {message.from_user.id}")
+        print(f"одиночный, {message.from_user.id}, {message.from_user.username}")
         bot.register_next_step_handler(message, menu)
 
     elif answer in ['/start', '/reset']:
@@ -71,7 +77,6 @@ def menu(message):
         markup = create_menu_markup()
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
-
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
@@ -85,6 +90,8 @@ def message_reply(message):
             bot.send_message(message.chat.id, "Главное меню",reply_markup=markup)
         else:
             bot.send_message(message.chat.id, "Перед заходом в меню, пожалуйста, зарегестрируйтесь")
+    else:
+        bot.send_message(message.chat.id, "Чтобы перезапустить отправьте /reset")
             
 
 @bot.message_handler(content_types='dice')

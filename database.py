@@ -20,7 +20,9 @@ def search_tele_id(tele_id, tele_username):
 def get_top10():
     connection = sqlite3.connect("users.db")
     cur = connection.cursor()
+    rows = cur.execute("SELECT username, total_score, game_counter FROM users_state ORDER BY total_score")
+    res = rows.fetchmany(10)
     connection.close()
-    return 0
+    return res
 
 
