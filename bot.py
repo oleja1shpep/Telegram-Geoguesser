@@ -20,7 +20,7 @@ def create_menu_markup():
 
 def create_standard_single_game_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.MenuButtonWebApp(type="web_app" ,text="Начать игру", web_app=types.WebAppInfo(url="https://www.google.ru/maps/@55.8663186,37.5975226,3a,75y,126.23h,87.65t/data=!3m7!1e1!3m5!1skrz7OFr8n2uHG7u3vP8FTw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3Dkrz7OFr8n2uHG7u3vP8FTw%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D130.51917%26pitch%3D0%26thumbfov%3D100!7i13312!8i6656?entry=ttu"))
+    item_1 = types.MenuButtonWebApp(type="web_app" ,text="Начать игру", web_app=types.WebAppInfo(url="https://govzman.github.io/test/"))
     item_2 = types.KeyboardButton("Правила 🤓")
     item_3 = types.KeyboardButton("Назад")
     markup.add(item_1, item_2, item_3)
