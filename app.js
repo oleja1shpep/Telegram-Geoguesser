@@ -1,40 +1,47 @@
+async function findPanorama() {
+    let length = 0;
+    let i = 0;
+    while (length == 0) {
+        try {
+            const panoramas = await ymaps.panorama.locate([55.6 + Math.random() * 0.23, 37.38 + Math.random() * 0.4]); 
+            length = panoramas.length;
+            // Убеждаемся, что найдена хотя бы одна панорама.
+            if (panoramas.length > 0) { 
+                founded = true;
+                // Создаем плеер с одной из полученных панорам.
+                var player = new ymaps.panorama.Player(
+                    'player1',
+                    // Панорамы в ответе отсортированы по расстоянию
+                    // от переданной в panorama.locate точки. Выбираем первую,
+                    // она будет ближайшей.
+                    panoramas[0],
+                    // Зададим направление взгляда, отличное от значения
+                    // по умолчанию.
+                    { direction: [256, 16], controls: [] },
+                );
+                console.log(player.getPanorama().getPosition().join(', '));
+            } else {
+                console.log("panorama wasn't founded!")
+            }
+        } catch {
+            // Если что-то пошло не так, сообщим об этом пользователю.
+            alert(error.message);
+        }
+        i++;
+        console.log(`${i} - len: ${length}, bool: ${(i >= 5) || (length > 0)}`)
+        if ((i >= 25) || (length > 0)) {
+            break;
+        }
+    }
+}
+
 ymaps.ready(function () {
     // Ищем панораму в переданной точке.
 
-    // 55.972790, 36.906859 - левый верхний
-    // 55.392818, 38.342368 - правый нижний 
+    // 55.604232, 37.386655 - левый нижний
+    // 55.879429, 37.769319 - правый верхний 
 
-    var founded = false; 
-    
-    while (founded == false) {
-        ymaps.panorama.locate([55.4 + Math.random() * 0.6, 36.9 + Math.random() * 0.45]).done( // [55.733685, 37.588264]
-            function (panoramas) {
-                // Убеждаемся, что найдена хотя бы одна панорама.
-                if (panoramas.length > 0) {
-                    founded = true;
-                    // Создаем плеер с одной из полученных панорам.
-                    var player = new ymaps.panorama.Player(
-                        'player1',
-                        // Панорамы в ответе отсортированы по расстоянию
-                        // от переданной в panorama.locate точки. Выбираем первую,
-                        // она будет ближайшей.
-                        panoramas[0],
-                        // Зададим направление взгляда, отличное от значения
-                        // по умолчанию.
-                        { direction: [256, 16], controls: [] },
-                    );
-                    console.log(player.getPanorama().getPosition().join(', '))
-                } else {
-                    console.log("panorama wasn't founded!")
-                }
-            },
-            function (error) {
-                // Если что-то пошло не так, сообщим об этом пользователю.
-                alert(error.message);
-            }
-        );
-        break;
-    }
+    findPanorama();
 
     var myMap = new ymaps.Map("map", {
         center: [55.76, 37.64],
@@ -67,7 +74,6 @@ ymaps.ready(function () {
 
     myMap.geoObjects
         .add(myGeoObject)
-
 
     myMap.events.add('click', function (e) {
         var coords = e.get('coords');
