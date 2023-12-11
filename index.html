@@ -46,6 +46,30 @@
             background: var(--tg-theme-button-color);
             /* background: aquamarine; */
         }
+
+        .ymaps-2-1-79-panorama-gotoymaps {
+            display: none !important;
+        }
+
+        .ymaps-2-1-79-panorama-control__copyright-link {
+            display: none !important;
+        }
+        .ymaps-2-1-79-gotoymaps__container {
+            display: none !important;
+        }
+
+        .ymaps-2-1-79-gototaxi__container {
+            display: none !important;
+        }
+
+        .ymaps-2-1-79-gototech {
+            display: none !important;
+        }
+
+        .ymaps-2-1-79-copyright__content {
+            display: none !important;
+        }
+
     </style>
     <script src="config.js"></script>
     <script src='https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=c508f12d-ce34-4d52-b259-2446d90ab6c2'></script>
@@ -61,6 +85,7 @@
         let tg = window.Telegram.WebApp;
         let submit = document.getElementById("submit");
         tg.expand();
+        // document.getElementsByClassName("ymaps-2-1-79-panorama-gotoymaps")[0].remove()
 
         submit.addEventListener("click", () => {
             tg.sendData(GetPanoramaCords())
