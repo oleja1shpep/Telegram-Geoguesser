@@ -53,7 +53,6 @@
 </head>
 
 <body>
-    <p id="text">Text</p>
     <div id="pano" class="player"></div>
     <div id="map" class="player"></div>
     <button id="submit">Отправить</button>
@@ -64,7 +63,6 @@
         tg.expand();
 
         submit.addEventListener("click", () => {
-            var el = document.getElementById("text");
             tg.sendData(GetPanoramaCords())
             tg.close()
         });
