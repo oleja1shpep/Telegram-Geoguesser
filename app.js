@@ -1,3 +1,8 @@
+let panorama;
+let myMap;
+let marker;
+let panorama_pos = "";
+
 async function findPanorama() {
     let length = 0;
     let i = 0;
@@ -9,7 +14,7 @@ async function findPanorama() {
             if (panoramas.length > 0) { 
                 founded = true;
                 // Создаем плеер с одной из полученных панорам.
-                var player = new ymaps.panorama.Player(
+                panorama = new ymaps.panorama.Player(
                     'pano',
                     // Панорамы в ответе отсортированы по расстоянию
                     // от переданной в panorama.locate точки. Выбираем первую,
@@ -19,7 +24,8 @@ async function findPanorama() {
                     // по умолчанию.
                     { direction: [256, 16], controls: [] },
                 );
-                console.log(player.getPanorama().getPosition().join(', '));
+                panorama_pos = panorama.getPanorama().getPosition().join(', ');
+                console.log(panorama_pos);
             } else {
                 console.log("panorama wasn't founded!")
             }
@@ -43,7 +49,7 @@ ymaps.ready(function () {
 
     findPanorama();
 
-    var myMap = new ymaps.Map("map", {
+    myMap = new ymaps.Map("map", {
         center: [55.752534, 37.621429],
         zoom: 10,
         controls: []
@@ -52,7 +58,7 @@ ymaps.ready(function () {
     }),
 
         // Создаем геообъект с типом геометрии "Точка".
-        myGeoObject = new ymaps.GeoObject({
+        marker = new ymaps.GeoObject({
             // Описание геометрии.
             geometry: {
                 type: "Point",
@@ -73,11 +79,15 @@ ymaps.ready(function () {
         })
 
     myMap.geoObjects
-        .add(myGeoObject)
+        .add(marker)
 
     myMap.events.add('click', function (e) {
         var coords = e.get('coords');
-        myGeoObject.geometry.setCoordinates(coords);
+        marker.geometry.setCoordinates(coords);
     });
 });
 
+function GetPanoramaCords() {    
+    console.log(panorama_pos);
+    document.getElementById("text").firstChild.data = `Panorama cords: ${panorama_pos}\nMarker cords: ${marker.geometry.getCoordinates().join(', ')}` ;
+}

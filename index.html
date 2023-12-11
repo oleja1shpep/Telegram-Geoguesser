@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <title>Вставка на страницу панорам Яндекса</title>
     <meta charset="utf-8">
 
     <style>
-        * { 
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        html, body,
+
+        html,
+        body,
 
         #pano {
             height: 80%;
             text-align: center;
             /* Другие стили для player1 */
         }
+
         #map {
             height: 50%;
             text-align: center;
@@ -43,16 +47,28 @@
             background: var(--tg-theme-button-color);
             /* background: aquamarine; */
         }
-
     </style>
     <script src="config.js"></script>
     <script src='https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=c508f12d-ce34-4d52-b259-2446d90ab6c2'></script>
     <script src="app.js"></script>
 </head>
+
 <body>
+    <p id="text">Text</p>
     <div id="pano" class="player"></div>
     <div id="map" class="player"></div>
     <button id="submit">Отправить</button>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        let tg = window.Telegram.WebApp;
+        let submit = document.getElementById("submit");
+
+        submit.addEventListener("click", () => {
+            var el = document.getElementById("text");
+            GetPanoramaCords()
+        });
+
+    </script>
 </body>
+
 </html>
