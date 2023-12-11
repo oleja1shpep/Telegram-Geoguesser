@@ -57,8 +57,8 @@ def get_top10():
     top_10_users = database.get_top10()
     txt = ''
     for i in range(len(top_10_users)):
-        mean = 0 if top_10_users[i][2] == 0 else top_10_users[i][1] / top_10_users[i][2]
-        txt += f'{i+1}. {top_10_users[i][0]} - очков : {top_10_users[i][1]} | матчей : {top_10_users[i][2]} | среднее : {round(mean,2)}\n'
+
+        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
     print(top_10_users)
     return txt
 
