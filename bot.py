@@ -5,7 +5,7 @@ from config import TOKEN
 
 bot = telebot.TeleBot(TOKEN)
 
-URL = "https://govzman.github.io/test/"
+URL = "https://oleja1shpep.github.io/Telegram-Geoguesser/"
 def create_start_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     item_1 = types.KeyboardButton("Играть")
