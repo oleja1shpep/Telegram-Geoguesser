@@ -56,7 +56,7 @@ ymaps.ready(function () {
             // Описание геометрии.
             geometry: {
                 type: "Point",
-                coordinates: [55.8, 37.8]
+                coordinates: [55.752534, 37.621429]
             },
             // Свойства.
             properties: {
