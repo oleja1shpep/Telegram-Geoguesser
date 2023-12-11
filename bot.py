@@ -5,8 +5,7 @@ from config import TOKEN
 
 bot = telebot.TeleBot(TOKEN)
 
-URL = "https://www.google.ru/maps/@55.8663186,37.5975226,3a,75y,126.23h,87.65t/data=!3m7!1e1!3m5!1skrz7OFr8n2uHG7u3vP8FTw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3Dkrz7OFr8n2uHG7u3vP8FTw%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D130.51917%26pitch%3D0%26thumbfov%3D100!7i13312!8i6656?entry=ttu"
-
+URL = "https://govzman.github.io/test/"
 def create_start_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     item_1 = types.KeyboardButton("Играть")
@@ -35,10 +34,6 @@ def create_launch_standard_single_game_markup():
     
     markup.add(item_1, item_2)
     return markup
-
-def create_web_app():
-    return types.WebAppInfo(url=URL)
-
 
 def get_top10():
     top_10_users = database.get_top10()
@@ -125,16 +120,18 @@ def standard_single_game_menu(message):
         bot.register_next_step_handler(send, standard_single_game_menu)
 
 def launch_standard_single_game(message):
+
     answer = message.text
     if answer == "Назад":
         markup = create_standard_single_game_menu_markup()
         print(f"одиночный, {message.from_user.id}, {message.from_user.username}")
         send = bot.send_message(message.chat.id, "Одиночный стандартный режим", reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
-        return
+        
     elif answer == "Играть":
         keyboard = types.InlineKeyboardMarkup()
-        mini_app_button = types.InlineKeyboardButton(text='Войти в игру', web_app=types.WebAppInfo(url=URL))
+        web_app = types.WebAppInfo(url=URL)
+        mini_app_button = types.InlineKeyboardButton(text='Войти в игру', web_app=web_app)
         keyboard.add(mini_app_button)
         send = bot.send_message(message.chat.id,"Открой мини приложение", reply_markup=keyboard)
         bot.register_next_step_handler(send, launch_standard_single_game)
@@ -142,17 +139,15 @@ def launch_standard_single_game(message):
         markup = create_launch_standard_single_game_markup()
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, launch_standard_single_game)
-        return
-    data = ''
-    app_data = types.WebAppData(data = data, button_text="Войти в игру")
-    print(app_data)
-    
-
-
 
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
+    # updates = bot.get_updates()
+    # if (len(updates) > 0):
+    #     update = updates[0]
+    #     app_data = update.message.text
+    #     print(app_data)
     if message.text=="Тык" or  message.text=="тык":
         bot.send_message(message.chat.id,"Зачем тыкнул??")
     elif (message.text).lower() == "amogus" or (message.text).lower() == "amongus":
@@ -171,6 +166,5 @@ def message_reply(message):
 @bot.message_handler(content_types='dice')
 def dice_reply(message):
     bot.send_message(message.chat.id, f'Выпадет число {message.dice.value}')
-
 
 bot.polling(none_stop=True, interval=0)
