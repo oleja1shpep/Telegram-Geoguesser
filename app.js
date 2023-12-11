@@ -10,7 +10,7 @@ async function findPanorama() {
                 founded = true;
                 // Создаем плеер с одной из полученных панорам.
                 var player = new ymaps.panorama.Player(
-                    'player1',
+                    'pano',
                     // Панорамы в ответе отсортированы по расстоянию
                     // от переданной в panorama.locate точки. Выбираем первую,
                     // она будет ближайшей.
@@ -44,7 +44,7 @@ ymaps.ready(function () {
     findPanorama();
 
     var myMap = new ymaps.Map("map", {
-        center: [55.76, 37.64],
+        center: [55.752534, 37.621429],
         zoom: 10,
         controls: []
     }, {
@@ -61,7 +61,7 @@ ymaps.ready(function () {
             // Свойства.
             properties: {
                 // Контент метки.
-                iconContent: 'Тут',
+                iconContent: 'Тут!',
                 hintContent: 'Тащи!'
             }
         }, {
