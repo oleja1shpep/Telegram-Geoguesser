@@ -90,6 +90,5 @@ ymaps.ready(function () {
 function GetPanoramaCords() {    
     console.log(panorama_pos);
     var res = `${panorama_pos} ${marker.geometry.getCoordinates().join(' ')}`;
-    document.getElementById("text").firstChild.data = res;
     return res;
 }
