@@ -24,7 +24,7 @@ async function findPanorama() {
                     // по умолчанию.
                     { direction: [256, 16], controls: [] },
                 );
-                panorama_pos = panorama.getPanorama().getPosition().join(', ');
+                panorama_pos = panorama.getPanorama().getPosition().join(' ');
                 console.log(panorama_pos);
             } else {
                 console.log("panorama wasn't founded!")
@@ -89,7 +89,7 @@ ymaps.ready(function () {
 
 function GetPanoramaCords() {    
     console.log(panorama_pos);
-    var res = `${panorama_pos} | ${marker.geometry.getCoordinates().join(', ')}`;
+    var res = `${panorama_pos} ${marker.geometry.getCoordinates().join(' ')}`;
     document.getElementById("text").firstChild.data = res;
     return res;
 }
