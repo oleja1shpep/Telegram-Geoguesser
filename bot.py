@@ -29,9 +29,8 @@ def create_standard_single_game_menu_markup():
 
 def create_launch_standard_single_game_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Играть")
+    item_1 = types.KeyboardButton("Играть", web_app = types.WebAppInfo(url=URL))
     item_2 = types.KeyboardButton("Назад")
-    
     markup.add(item_1, item_2)
     return markup
 
@@ -120,7 +119,6 @@ def standard_single_game_menu(message):
         bot.register_next_step_handler(send, standard_single_game_menu)
 
 def launch_standard_single_game(message):
-
     answer = message.text
     if answer == "Назад":
         markup = create_standard_single_game_menu_markup()
@@ -129,25 +127,20 @@ def launch_standard_single_game(message):
         bot.register_next_step_handler(send, standard_single_game_menu)
         
     elif answer == "Играть":
-        keyboard = types.InlineKeyboardMarkup()
-        web_app = types.WebAppInfo(url=URL)
-        mini_app_button = types.InlineKeyboardButton(text='Войти в игру', web_app=web_app)
-        keyboard.add(mini_app_button)
-        send = bot.send_message(message.chat.id,"Открой мини приложение", reply_markup=keyboard)
-        bot.register_next_step_handler(send, launch_standard_single_game)
+        markup = create_launch_standard_single_game_markup()
+        send = bot.send_message(message.chat.id,"Открой мини приложение", reply_markup=markup)
     else:
         markup = create_launch_standard_single_game_markup()
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, launch_standard_single_game)
 
 
+@bot.message_handler(content_types=['web_app_data'])
+def web_app_recieve(message):
+    bot.send_message(message.web_app_data.data, )
+
 @bot.message_handler(content_types='text')
 def message_reply(message):
-    # updates = bot.get_updates()
-    # if (len(updates) > 0):
-    #     update = updates[0]
-    #     app_data = update.message.text
-    #     print(app_data)
     if message.text=="Тык" or  message.text=="тык":
         bot.send_message(message.chat.id,"Зачем тыкнул??")
     elif (message.text).lower() == "amogus" or (message.text).lower() == "amongus":
