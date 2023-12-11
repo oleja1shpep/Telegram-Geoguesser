@@ -4,6 +4,12 @@ import database
 from config import TOKEN
 from math import cos, sin, asin, sqrt, radians, log
 
+SINGLE_PLAYER_RULES = """
+Проверь своё знание Москвы!
+
+Дается неограниченное количество времени на ответ
+Можно перемещаться по улицам в любых направлениях"""
+
 bot = telebot.TeleBot(TOKEN)
 
 URL = "https://oleja1shpep.github.io/Telegram-Geoguesser/"
@@ -36,7 +42,8 @@ def create_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item_1 = types.KeyboardButton("Одиночный режим")
     item_2 = types.KeyboardButton("Топ игроков")
-    markup.add(item_1, item_2)
+    item_3 = types.KeyboardButton("Как играть 🤔")
+    markup.add(item_1, item_2, item_3)
     return markup
 
 def create_standard_single_game_menu_markup():
@@ -105,7 +112,10 @@ def menu(message):
         print(f"одиночный, {message.from_user.id}, {message.from_user.username}")
         send = bot.send_message(message.chat.id, "Одиночный стандартный режим", reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
-
+    elif answer == "Как играть 🤔":
+        markup = create_menu_markup()
+        send = bot.send_message(message.chat.id,"Work in progress...", reply_markup=markup)
+        bot.register_next_step_handler(send, menu)
     elif answer in ['/start', '/reset']:
         markup = create_start_markup()
         send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
@@ -124,7 +134,7 @@ def standard_single_game_menu(message):
     elif answer == "Правила 🤓":
         print(answer, message.from_user.id, message.from_user.username)
         markup = create_standard_single_game_menu_markup()
-        send = bot.send_message(message.chat.id,"Дается неограниченное количество времени на ответ\nМожно перемещаться по улицам в любых направлениях", reply_markup=markup)
+        send = bot.send_message(message.chat.id, SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
     elif answer == "Начать игру":
         print(answer, message.from_user.id, message.from_user.username)
