@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <title>Вставка на страницу панорам Яндекса</title>
     <meta charset="utf-8">
@@ -44,8 +43,8 @@
             cursor: pointer;
             transition: all 500ms ease;
             color: var(--tg-theme-button-text-color);
-            /* background: var(--tg-theme-button-color); */
-            background: aquamarine;
+            background: var(--tg-theme-button-color);
+            /* background: aquamarine; */
         }
     </style>
     <script src="config.js"></script>
@@ -62,13 +61,13 @@
     <script>
         let tg = window.Telegram.WebApp;
         let submit = document.getElementById("submit");
+        tg.expand();
 
         submit.addEventListener("click", () => {
             var el = document.getElementById("text");
-            GetPanoramaCords()
+            tg.sendData(GetPanoramaCords())
+            tg.close()
         });
-
     </script>
 </body>
-
 </html>

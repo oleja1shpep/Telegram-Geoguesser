@@ -89,5 +89,7 @@ ymaps.ready(function () {
 
 function GetPanoramaCords() {    
     console.log(panorama_pos);
-    document.getElementById("text").firstChild.data = `Panorama cords: ${panorama_pos}\nMarker cords: ${marker.geometry.getCoordinates().join(', ')}` ;
+    var res = `${panorama_pos} | ${marker.geometry.getCoordinates().join(', ')}`;
+    document.getElementById("text").firstChild.data = res;
+    return res;
 }
