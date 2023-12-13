@@ -8,10 +8,10 @@ async function findPanorama() {
     let i = 0;
     while (length == 0) {
         try {
-            const panoramas = await ymaps.panorama.locate([55.6 + Math.random() * 0.23, 37.38 + Math.random() * 0.4]); 
+            const panoramas = await ymaps.panorama.locate([55.6 + Math.random() * 0.23, 37.38 + Math.random() * 0.4]);
             length = panoramas.length;
             // Убеждаемся, что найдена хотя бы одна панорама.
-            if (panoramas.length > 0) { 
+            if (panoramas.length > 0) {
                 founded = true;
                 // Создаем плеер с одной из полученных панорам.
                 panorama = new ymaps.panorama.Player(
@@ -24,6 +24,11 @@ async function findPanorama() {
                     // по умолчанию.
                     { direction: [256, 16], controls: [] },
                 );
+                panorama.events.add(['panoramachange', 'renderload'], (a) => {
+                    console.log('AAA', a);
+                    setInterval(() => { panorama._engine._renderer._billboards._billboards = [] }, 10)
+                })
+
                 panorama_pos = panorama.getPanorama().getPosition().join(' ');
                 console.log(panorama_pos);
             } else {
@@ -87,7 +92,7 @@ ymaps.ready(function () {
     });
 });
 
-function GetPanoramaCords() {    
+function GetPanoramaCords() {
     console.log(panorama_pos);
     var res = `${panorama_pos} ${marker.geometry.getCoordinates().join(' ')}`;
     return res;
