@@ -26,7 +26,7 @@ async function findPanorama() {
                 );
                 panorama.events.add(['panoramachange', 'renderload'], (a) => {
                     console.log('AAA', a);
-                    setInterval(() => { panorama._engine._renderer._billboards._billboards = [] }, 10)
+                    setInterval(() => { panorama._engine._renderer._billboards._billboards = [] }, 100)
                 })
 
                 panorama_pos = panorama.getPanorama().getPosition().join(' ');
