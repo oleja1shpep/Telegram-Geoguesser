@@ -10,6 +10,14 @@ SINGLE_PLAYER_RULES = """
 Дается неограниченное количество времени на ответ
 Можно перемещаться по улицам в любых направлениях"""
 
+HOW_TO_PLAY = """
+- Вы оказываетесь в случайной точке на карте мира
+- Можете перемещаться на панораме в любых направлениях
+
+Ваша задача: по панораме определить ваше местоположение на реальной карте мира, поставив метку на предполагаемое место вашего нахождения
+
+"""
+
 bot = telebot.TeleBot(TOKEN)
 
 URL = "https://oleja1shpep.github.io/Telegram-Geoguesser/"
@@ -40,24 +48,27 @@ def create_start_markup():
 
 def create_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Одиночный режим")
+    item_1 = types.KeyboardButton("Режимы")
     item_2 = types.KeyboardButton("Топ игроков")
     item_3 = types.KeyboardButton("Как играть 🤔")
     markup.add(item_1, item_2, item_3)
     return markup
 
-def create_standard_single_game_menu_markup():
+def create_gamemodes_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton(text="Начать игру")
-    item_2 = types.KeyboardButton("Правила 🤓")
+
+    item_1 = types.KeyboardButton("Одиночный режим по Москве")
+    item_2 = types.KeyboardButton("Одиночный режим по Миру")
     item_3 = types.KeyboardButton("Назад")
     markup.add(item_1, item_2, item_3)
     return markup
 
-def create_launch_standard_single_game_markup():
+def create_standard_single_game_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Запуск!", web_app = types.WebAppInfo(url=URL))
-    markup.add(item_1)
+    item_1 = types.KeyboardButton(text="Начать игру", web_app = types.WebAppInfo(url=URL))
+    item_2 = types.KeyboardButton("Правила 🤓")
+    item_3 = types.KeyboardButton("Назад")
+    markup.add(item_1, item_2, item_3)
     return markup
 
 def get_top10():
@@ -106,15 +117,14 @@ def menu(message):
         top_10_text = get_top10()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, menu)
-
-    elif answer == "Одиночный режим":
-        markup = create_standard_single_game_menu_markup()
-        print(f"одиночный, {message.from_user.id}, {message.from_user.username}")
-        send = bot.send_message(message.chat.id, "Одиночный стандартный режим", reply_markup=markup)
-        bot.register_next_step_handler(send, standard_single_game_menu)
+    elif answer == "Режимы":
+        markup = create_gamemodes_markup()
+        print(f"режимы, {message.from_user.id}, {message.from_user.username}")
+        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
+        bot.register_next_step_handler(send, gamemodes_menu)
     elif answer == "Как играть 🤔":
         markup = create_menu_markup()
-        send = bot.send_message(message.chat.id,"Work in progress...", reply_markup=markup)
+        send = bot.send_message(message.chat.id, HOW_TO_PLAY, reply_markup=markup)
         bot.register_next_step_handler(send, menu)
     elif answer in ['/start', '/reset']:
         markup = create_start_markup()
@@ -125,38 +135,60 @@ def menu(message):
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
 
-def standard_single_game_menu(message):
+def gamemodes_menu(message):
     answer = message.text
     if answer == "Назад":
         markup = create_menu_markup()
         send = bot.send_message(message.chat.id,"Главное меню", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
+    elif answer in ['/start', '/reset']:
+        markup = create_start_markup()
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        bot.register_next_step_handler(send, start_game)
+    elif answer == "Одиночный режим по Москве":
+        markup = create_standard_single_game_menu_markup()
+        print(f"одиночный режим, по москве, {message.from_user.id}, {message.from_user.username}")
+        send = bot.send_message(message.chat.id, "Одиночный по Москве", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
+    elif answer == "Одиночный режим по Миру":
+        markup = create_gamemodes_markup()
+        send = bot.send_message(message.chat.id,"Work in progress...", reply_markup=markup)
+        bot.register_next_step_handler(send, gamemodes_menu)
+    else:
+        markup = create_gamemodes_markup()
+        send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
+        bot.register_next_step_handler(send, gamemodes_menu)
+
+def standard_single_game_menu(message):
+    answer = message.text
+    if answer == "Назад":
+        markup = create_gamemodes_markup()
+        send = bot.send_message(message.chat.id,"Доступные режимы", reply_markup=markup)
+        bot.register_next_step_handler(send, gamemodes_menu)
+    elif answer in ['/start', '/reset']:
+        markup = create_start_markup()
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
         print(answer, message.from_user.id, message.from_user.username)
         markup = create_standard_single_game_menu_markup()
         send = bot.send_message(message.chat.id, SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
-    elif answer == "Начать игру":
-        print(answer, message.from_user.id, message.from_user.username)
-        markup = create_launch_standard_single_game_markup()
-        send = bot.send_message(message.chat.id, "Чтобы начать нажмите на кнопку", reply_markup=markup)
+    elif message.web_app_data.data:
+        print("ответ получен", message.from_user.id, message.from_user.username)
+        markup = create_standard_single_game_menu_markup()
+        cords = message.web_app_data.data
+        score, metres = calculate_score_and_distance(cords=cords)
+
+        print(score, metres, message.from_user.username)
+        database.add_results(message.from_user.id, score)
+        send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
+        bot.register_next_step_handler(send, standard_single_game_menu)
     else:
         print(answer, message.from_user.id, message.from_user.username)
         markup = create_standard_single_game_menu_markup()
         send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, standard_single_game_menu)
-
-@bot.message_handler(content_types=['web_app_data'])
-def web_app_recieve(message):
-    cords = message.web_app_data.data
-    score, metres = calculate_score_and_distance(cords=cords)
-
-    print(score, metres, message.from_user.username)
-    database.add_results(message.from_user.id, score)
-
-    markup = create_standard_single_game_menu_markup()
-    send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
-    bot.register_next_step_handler(send, standard_single_game_menu)
 
 @bot.message_handler(content_types='text')
 def message_reply(message):

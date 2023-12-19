@@ -36,3 +36,11 @@ def add_results(tele_id, score):
     connection.commit()
 
     connection.close()
+
+
+# connection = sqlite3.connect(DB_NAME)
+# cur = connection.cursor()
+
+# cur.execute("ALTER TABLE users_state ADD COLUMN mean_score")
+# connection.commit()
+# connection.close()
