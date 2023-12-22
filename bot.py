@@ -124,12 +124,12 @@ def gamemodes_menu(message):
         markup = markups.create_start_markup()
         send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
-    elif answer == "Одиночный режим по Москве":
+    elif answer == "Одиночный | Москва":
         markup = markups.create_moscow_single_game_menu_markup()
         print(f"одиночный режим, по москве, {message.from_user.id}, {message.from_user.username}")
         send = bot.send_message(message.chat.id, "Одиночный по Москве", reply_markup=markup)
         bot.register_next_step_handler(send, moscow_single_game_menu)
-    elif answer == "Одиночный режим по Миру":
+    elif answer == "Одиночный | Мир":
         markup = markups.create_world_single_game_menu_markup()
         send = bot.send_message(message.chat.id,"Одиночный по Миру", reply_markup=markup)
         bot.register_next_step_handler(send, world_single_game_menu)
@@ -158,21 +158,23 @@ def moscow_single_game_menu(message):
         top_10_text = get_top10_moscow_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, moscow_single_game_menu)
-    elif message.web_app_data.data:
-        print("ответ получен", message.from_user.id, message.from_user.username)
-        markup = markups.create_moscow_single_game_menu_markup()
-        cords = message.web_app_data.data
-        score, metres = calculate_score_and_distance(cords=cords)
-
-        print(score, metres, message.from_user.username)
-        database.add_results_moscow_single(message.from_user.id, score)
-        send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
     else:
-        print(answer, message.from_user.id, message.from_user.username)
-        markup = markups.create_moscow_single_game_menu_markup()
-        send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
+        if (hasattr(message, 'web_app_data')):
+            if message.web_app_data.data:
+                print("ответ получен", message.from_user.id, message.from_user.username)
+                markup = markups.create_moscow_single_game_menu_markup()
+                cords = message.web_app_data.data
+                score, metres = calculate_score_and_distance(cords=cords)
+
+                print(score, metres, message.from_user.username)
+                database.add_results_moscow_single(message.from_user.id, score)
+                send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
+                bot.register_next_step_handler(send, moscow_single_game_menu)
+        else:
+            print(answer, message.from_user.id, message.from_user.username)
+            markup = markups.create_moscow_single_game_menu_markup()
+            send = bot.send_message(message.chat.id,"Выбери что-то из списка", reply_markup=markup)
+            bot.register_next_step_handler(send, moscow_single_game_menu)
 
 def world_single_game_menu(message):
     answer = message.text
@@ -221,9 +223,11 @@ def message_reply(message):
 def dice_reply(message):
     bot.send_message(message.chat.id, f'Выпадет число {message.dice.value}')
 
-while True:
-    try:
-        bot.polling(none_stop=True, interval=0)
-    except Exception as e:
-        print(e)
-        sleep(15)
+bot.polling(none_stop=True, interval=0)
+
+# while True:
+#     try:
+#         bot.polling(none_stop=True, interval=0)
+#     except Exception as e:
+#         print(e)
+#         sleep(15)
