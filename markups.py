@@ -1,6 +1,5 @@
 from telebot import types
-
-URL = "https://oleja1shpep.github.io/Telegram-Geoguesser/"
+from config import URL
 
 def create_start_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
