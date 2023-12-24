@@ -19,6 +19,43 @@ def calculate_score_and_distance(cords):
     score = max(min(-log(metres / 70, 1.0014) + 5000, 5000), 0)
     return [int(score), int(metres)]
 
+def calculate_score_and_distance_moscow_spb(cords):
+    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    metres = 6371 * c * 1000
+    score = max(min(5000-log((metres + 90)/ 100, 1.001), 5000), 0)
+    return [int(score), int(metres)]
+
+def calculate_score_and_distance_russia(cords):
+    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    metres = 6371 * c * 1000
+    score = max(min(5000-log((metres + 29000)/ 3000, 1.00141), 5000), 0)
+    return [int(score), int(metres)]
+
+def create_result_text(score, metres):
+    txt = ""
+    if metres < 10000:
+        txt = f"Вы набрали {score} очков\nРасстояние {metres} метров"
+    elif metres < 100000:
+        txt = f"Вы набрали {score} очков\nРасстояние {round(metres / 1000, 2)} километров"
+    else:
+        txt = f"Вы набрали {score} очков\nРасстояние {round(metres / 1000, 0)} километров"
+    
+    return txt
+
 def get_top10_moscow_single():
     top_10_users = database.get_top10_moscow_single()
     txt = ''
