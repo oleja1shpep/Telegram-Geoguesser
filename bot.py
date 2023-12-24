@@ -31,6 +31,9 @@ GREETING = """\nЯ - аналог игры Geoguessr в телеграме! Зд
 
 bot = telebot.TeleBot(TOKEN)
 
+def get_url(cords):
+    pass
+
 def calculate_score_and_distance(cords):
     cords = list(map(float, cords.split()))
     lon1 = cords[1]
@@ -169,6 +172,7 @@ def moscow_single_game_menu(message):
                 markup = markups.create_moscow_single_game_menu_markup()
                 cords = message.web_app_data.data
                 score, metres = calculate_score_and_distance(cords=cords)
+                photo_url = get_url(cords=cords)
 
                 print(score, metres, message.from_user.username)
                 database.add_results_moscow_single(message.from_user.id, score)
