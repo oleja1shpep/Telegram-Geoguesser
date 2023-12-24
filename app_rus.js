@@ -5,7 +5,7 @@ let panorama_pos = "";
 
 async function fetchData(city) {
     try {
-        const response = await fetch("http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + city + "&format=json");
+        const response = await fetch("https://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" + city + "&format=json");
         const data = await response.json();
         // обработка данных
         const center = data["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
@@ -13,7 +13,7 @@ async function fetchData(city) {
         console.log(lowerY, lowerX);
         return await [lowerY, lowerX]
     } catch (error) {
-        return await [55.6, 37.38]
+        return await [55.763903, 37.542487]
     }
 }
 
