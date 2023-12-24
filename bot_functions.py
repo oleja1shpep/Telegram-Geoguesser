@@ -42,3 +42,30 @@ def get_top10_russia_single():
         txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
     print(top_10_users)
     return txt
+
+def get_last5_results_moscow_single(tele_id):
+    games = database.get_last5_results_moscow(tele_id=tele_id)
+    txt = ''
+    for i in range(len(games)):
+        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
+    if len(games) == 0:
+        txt = "Вы ещё не сыграли ни одну игру"
+    return txt
+
+def get_last5_results_spb_single(tele_id):
+    games = database.get_last5_results_spb(tele_id=tele_id)
+    txt = ''
+    for i in range(len(games)):
+        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
+    if len(games) == 0:
+        txt = "Вы ещё не сыграли ни одну игру"
+    return txt
+
+def get_last5_results_russia_single(tele_id):
+    games = database.get_last5_results_russia(tele_id=tele_id)
+    txt = ''
+    for i in range(len(games)):
+        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
+    if len(games) == 0:
+        txt = "Вы ещё не сыграли ни одну игру"
+    return txt

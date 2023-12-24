@@ -1,5 +1,6 @@
 import sqlite3
 from config import DB_NAME
+import json
 
 def search_tele_id(tele_id, tele_username):
     connection = sqlite3.connect(DB_NAME)
@@ -8,14 +9,13 @@ def search_tele_id(tele_id, tele_username):
     find_login = cur.execute("SELECT tele_id FROM users_state WHERE tele_id = ?", (tele_id, ))
     if (find_login.fetchone() == None):
         cur.execute("""INSERT INTO users_state VALUES
-                    (?, ?, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    (?, ?, 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
                     """, (tele_id, tele_username, ))
         connection.commit()
         connection.close()
         return False
     connection.close()
     return True
-
 
 def get_top10_moscow_single():
     connection = sqlite3.connect(DB_NAME)
@@ -108,7 +108,77 @@ def drop_duplicates():
     connection.commit()
     connection.close()
 
+def get_last5_results_moscow(tele_id):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_moscow FROM users_state WHERE tele_id = ?", (tele_id, ))
+    res = cur.fetchone()
+    games = json.loads(res[1])
+    print(res)
+    connection.close()
+    return games
 
+def get_last5_results_spb(tele_id):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_spb FROM users_state WHERE tele_id = ?", (tele_id, ))
+    res = cur.fetchone()
+    games = json.loads(res[1])
+    print(res)
+    connection.close()
+    return games
+
+def get_last5_results_russia(tele_id):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_russia FROM users_state WHERE tele_id = ?", (tele_id, ))
+    res = cur.fetchone()
+    games = json.loads(res[1])
+    print(res)
+    connection.close()
+    return games
+
+def add_game_moscow_single(tele_id, score, metres):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_moscow FROM users_state WHERE tele_id = ?", (tele_id, ))
+    games = json.loads(cur.fetchone()[1])
+    if (len(games) < 5):
+        games.insert(0, (score, metres))
+    else:
+        games.pop(-1)
+        games.insert(0, (score, metres))
+    cur.execute("UPDATE users_state SET last_games_moscow = ? WHERE tele_id = ?", (json.dumps(games),tele_id, ))
+    connection.commit()
+    connection.close()
+
+def add_game_spb_single(tele_id, score, metres):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_spb FROM users_state WHERE tele_id = ?", (tele_id, ))
+    games = json.loads(cur.fetchone()[1])
+    if (len(games) < 5):
+        games.insert(0, (score, metres))
+    else:
+        games.pop(-1)
+        games.insert(0, (score, metres))
+    cur.execute("UPDATE users_state SET last_games_spb = ? WHERE tele_id = ?", (json.dumps(games),tele_id, ))
+    connection.commit()
+    connection.close()
+
+def add_game_russia_single(tele_id, score, metres):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, last_games_russia FROM users_state WHERE tele_id = ?", (tele_id, ))
+    games = json.loads(cur.fetchone()[1])
+    if (len(games) < 5):
+        games.insert(0, (score, metres))
+    else:
+        games.pop(-1)
+        games.insert(0, (score, metres))
+    cur.execute("UPDATE users_state SET last_games_russia = ? WHERE tele_id = ?", (json.dumps(games),tele_id, ))
+    connection.commit()
+    connection.close()
 
 # connection = sqlite3.connect(DB_NAME)
 # cur = connection.cursor()

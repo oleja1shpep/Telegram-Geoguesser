@@ -117,6 +117,11 @@ def moscow_single_game_menu(message):
         top_10_text = bot_functions.get_top10_moscow_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, moscow_single_game_menu)
+    elif answer == "Прошлые 5 игр":
+        print(f"answer, {message.from_user.id}, {message.from_user.username}")
+        last_5_games = bot_functions.get_last5_results_moscow_single(message.from_user.id)
+        send = bot.send_message(message.chat.id, last_5_games)
+        bot.register_next_step_handler(send, moscow_single_game_menu)
     else:
         if (hasattr(message, 'web_app_data')):
             if message.web_app_data.data:
@@ -129,6 +134,7 @@ def moscow_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_moscow_single(message.from_user.id, score)
+                database.add_game_moscow_single(tele_id=message.from_user.id, score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
@@ -162,6 +168,11 @@ def spb_single_game_menu(message):
         top_10_text = bot_functions.get_top10_spb_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, spb_single_game_menu)
+    elif answer == "Прошлые 5 игр":
+        print(f"answer, {message.from_user.id}, {message.from_user.username}")
+        last_5_games = bot_functions.get_last5_results_spb_single(message.from_user.id)
+        send = bot.send_message(message.chat.id, last_5_games)
+        bot.register_next_step_handler(send, spb_single_game_menu)
     else:
         if (hasattr(message, 'web_app_data')):
             if message.web_app_data.data:
@@ -174,6 +185,7 @@ def spb_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_spb_single(message.from_user.id, score)
+                database.add_game_spb_single(tele_id=message.from_user.id, score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
@@ -207,6 +219,11 @@ def russia_single_game_menu(message):
         print(f"топ, {message.from_user.id}, {message.from_user.username}")
         top_10_text = bot_functions.get_top10_russia_single()
         send = bot.send_message(message.chat.id, top_10_text)
+        bot.register_next_step_handler(send, russia_single_game_menu)
+    elif answer == "Прошлые 5 игр":
+        print(f"answer, {message.from_user.id}, {message.from_user.username}")
+        last_5_games = bot_functions.get_last5_results_russia_single(message.from_user.id)
+        send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Начать игру":
         print(answer, message.from_user.id, message.from_user.username)
