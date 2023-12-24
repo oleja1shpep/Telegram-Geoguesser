@@ -1,92 +1,12 @@
 import telebot
 import database
-from config import TOKEN_BOT, TOKEN_STATIC
-from math import cos, sin, asin, sqrt, radians, log
+from config import TOKEN_BOT
+import bot_functions
 from time import sleep
 import markups
-
-MOSCOW_SINGLE_PLAYER_RULES = """
-Проверь своё знание Москвы!
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""
-
-RUSSIA_SINGLE_PLAYER_RULES = """
-Как хорошо ты знаешь Россию и её окрестности?
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""
-
-SPB_SINGLE_PLAYER_RULES = """
-Проверь своё знание Санкт-Петербурга!
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""
-
-HOW_TO_PLAY = """
-- Вы оказываетесь в случайной точке на карте мира
-- Можете перемещаться на панораме в любых направлениях
-
-Ваша задача: по панораме определить ваше местоположение на реальной карте мира, поставив метку на предполагаемое место вашего нахождения
-
-"""
-
-GREETING = """\nЯ - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в отгадывание мест по всей России или по отдельным городам и посоревноваться с другими игроками
-"""
+from messages import GREETING, HOW_TO_PLAY, RUSSIA_SINGLE_PLAYER_RULES, SPB_SINGLE_PLAYER_RULES, MOSCOW_SINGLE_PLAYER_RULES
 
 bot = telebot.TeleBot(TOKEN_BOT)
-
-
-def get_url(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
-    return f"https://static-maps.yandex.ru/v1?pl=c:8822DDC0,w:3,{lon1},{lat1},{lon2},{lat2}&pt={lon1},{lat1},flag~{lon2},{lat2},comma&apikey={TOKEN_STATIC}"
-
-
-def calculate_score_and_distance(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
-
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * asin(sqrt(a))
-    metres = 6371 * c * 1000
-    score = max(min(-log(metres / 70, 1.0014) + 5000, 5000), 0)
-    return [int(score), int(metres)]
-
-
-def get_top10_moscow_single():
-    top_10_users = database.get_top10_moscow_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {
-            top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
-    return txt
-
-def get_top10_spb_single():
-    top_10_users = database.get_top10_spb_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {
-            top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
-    return txt
-
-
-def get_top10_russia_single():
-    top_10_users = database.get_top10_russia_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {
-            top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
-    return txt
-
 
 @bot.message_handler(commands=['start', 'reset'], chat_types=['private'])
 def hello_message(message):
@@ -94,7 +14,6 @@ def hello_message(message):
 
     send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
     bot.register_next_step_handler(send, start_game)
-
 
 def start_game(message):
     answer = message.text
@@ -119,7 +38,6 @@ def start_game(message):
             send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
 
-
 def menu(message):
     database.drop_duplicates()
     answer = message.text
@@ -143,7 +61,6 @@ def menu(message):
         send = bot.send_message(
             message.chat.id, "Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, menu)
-
 
 def gamemodes_menu(message):
     answer = message.text
@@ -178,7 +95,6 @@ def gamemodes_menu(message):
             message.chat.id, "Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, gamemodes_menu)
 
-
 def moscow_single_game_menu(message):
     answer = message.text
     if answer == "Назад":
@@ -198,7 +114,7 @@ def moscow_single_game_menu(message):
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Топ игроков":
         print(f"топ, {message.from_user.id}, {message.from_user.username}")
-        top_10_text = get_top10_moscow_single()
+        top_10_text = bot_functions.get_top10_moscow_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     else:
@@ -208,8 +124,8 @@ def moscow_single_game_menu(message):
                       message.from_user.username)
                 markup = markups.create_moscow_single_game_menu_markup()
                 cords = message.web_app_data.data
-                score, metres = calculate_score_and_distance(cords=cords)
-                photo_url = get_url(cords=cords)
+                score, metres = bot_functions.calculate_score_and_distance(cords=cords)
+                photo_url = bot_functions.get_url(cords=cords)
 
                 print(score, metres, message.from_user.username)
                 database.add_results_moscow_single(message.from_user.id, score)
@@ -243,7 +159,7 @@ def spb_single_game_menu(message):
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Топ игроков":
         print(f"топ, {message.from_user.id}, {message.from_user.username}")
-        top_10_text = get_top10_spb_single()
+        top_10_text = bot_functions.get_top10_spb_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, spb_single_game_menu)
     else:
@@ -253,8 +169,8 @@ def spb_single_game_menu(message):
                       message.from_user.username)
                 markup = markups.create_spb_single_game_menu_markup()
                 cords = message.web_app_data.data
-                score, metres = calculate_score_and_distance(cords=cords)
-                photo_url = get_url(cords=cords)
+                score, metres = bot_functions.calculate_score_and_distance(cords=cords)
+                photo_url = bot_functions.get_url(cords=cords)
 
                 print(score, metres, message.from_user.username)
                 database.add_results_spb_single(message.from_user.id, score)
@@ -269,7 +185,6 @@ def spb_single_game_menu(message):
             send = bot.send_message(
                 message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, spb_single_game_menu)
-
 
 def russia_single_game_menu(message):
     answer = message.text
@@ -290,7 +205,7 @@ def russia_single_game_menu(message):
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Топ игроков":
         print(f"топ, {message.from_user.id}, {message.from_user.username}")
-        top_10_text = get_top10_russia_single()
+        top_10_text = bot_functions.get_top10_russia_single()
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Начать игру":
