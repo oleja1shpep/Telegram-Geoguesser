@@ -40,7 +40,7 @@ async function findPanorama() {
         }
         i++;
         console.log(`${i} - len: ${length}, bool: ${(i >= 35) || (length > 0)}`)
-        if ((i >= 35) || (length > 0)) {
+        if ((i >= 20) || (length > 0)) {
             break;
         }
     }
