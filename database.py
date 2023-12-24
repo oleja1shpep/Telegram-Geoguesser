@@ -8,7 +8,7 @@ def search_tele_id(tele_id, tele_username):
     find_login = cur.execute("SELECT tele_id FROM users_state WHERE tele_id = ?", (tele_id, ))
     if (find_login.fetchone() == None):
         cur.execute("""INSERT INTO users_state VALUES
-                    (?, ?, 0, 0, 0, 0, 0, 0)
+                    (?, ?, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                     """, (tele_id, tele_username, ))
         connection.commit()
         connection.close()
@@ -25,10 +25,18 @@ def get_top10_moscow_single():
     connection.close()
     return res
 
-def get_top10_world_single():
+def get_top10_spb_single():
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
-    rows = cur.execute("SELECT username, world_single_total_score, world_single_game_counter, world_single_mean_score FROM users_state ORDER BY world_single_mean_score DESC")
+    rows = cur.execute("SELECT username, spb_single_total_score, spb_single_game_counter, spb_single_mean_score FROM users_state ORDER BY spb_single_mean_score DESC")
+    res = rows.fetchmany(10)
+    connection.close()
+    return res
+
+def get_top10_russia_single():
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    rows = cur.execute("SELECT username, russia_single_total_score, russia_single_game_counter, russia_single_mean_score FROM users_state ORDER BY russia_single_mean_score DESC")
     res = rows.fetchmany(10)
     connection.close()
     return res
@@ -39,18 +47,49 @@ def add_results_moscow_single(tele_id, score):
     user_data = cur.execute("SELECT tele_id, username, moscow_single_total_score, moscow_single_game_counter, moscow_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
     user_data = user_data.fetchone()
     cur = connection.cursor()
-    cur.execute("UPDATE users_state SET moscow_single_game_counter = ?, moscow_single_total_score = ?, moscow_single_mean_score = ? WHERE tele_id = ?", (user_data[3] + 1, user_data[2] + score, round((user_data[2] + score) / (user_data[3] + 1),2) , tele_id, ))
+    game_counter = user_data[3]
+    current_score = user_data[2]
+    if game_counter == None:
+        game_counter = 0
+    if current_score == None:
+        current_score = 0
+
+    cur.execute("UPDATE users_state SET moscow_single_game_counter = ?, moscow_single_total_score = ?, moscow_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
     connection.commit()
 
     connection.close()
 
-def add_results_world_single(tele_id, score):
+def add_results_spb_single(tele_id, score):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, world_single_total_score, world_single_game_counter, world_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
+    user_data = cur.execute("SELECT tele_id, username, spb_single_total_score, spb_single_game_counter, spb_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
     user_data = user_data.fetchone()
     cur = connection.cursor()
-    cur.execute("UPDATE users_state SET world_single_game_counter = ?, world_single_total_score = ?, world_single_mean_score = ? WHERE tele_id = ?", (user_data[3] + 1, user_data[2] + score, round((user_data[2] + score) / (user_data[3] + 1),2) , tele_id, ))
+
+    game_counter = user_data[3]
+    current_score = user_data[2]
+    if game_counter == None:
+        game_counter = 0
+    if current_score == None:
+        current_score = 0
+    cur.execute("UPDATE users_state SET spb_single_game_counter = ?, spb_single_total_score = ?, spb_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
+    connection.commit()
+
+    connection.close()
+
+def add_results_russia_single(tele_id, score):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    user_data = cur.execute("SELECT tele_id, username, russia_single_total_score, russia_single_game_counter, russia_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
+    user_data = user_data.fetchone()
+    cur = connection.cursor()
+    game_counter = user_data[3]
+    current_score = user_data[2]
+    if game_counter == None:
+        game_counter = 0
+    if current_score == None:
+        current_score = 0
+    cur.execute("UPDATE users_state SET russia_single_game_counter = ?, russia_single_total_score = ?, russia_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
     connection.commit()
 
     connection.close()
