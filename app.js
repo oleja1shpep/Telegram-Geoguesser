@@ -78,7 +78,7 @@ ymaps.ready(function () {
         }, {
             // Опции.
             // Иконка метки будет растягиваться под размер ее содержимого.
-            preset: 'islands#blackStretchyIcon',
+            preset: 'islands#blueDotIcon',
             // Метку можно перемещать.
             draggable: true
         })
