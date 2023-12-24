@@ -28,6 +28,11 @@ async function findPanorama(lowerX, lowerY) {
                     panoramas[0],
                     { direction: [256, 16], controls: [] },
                 );
+                panorama.events.add(['panoramachange', 'renderload'], (a) => {
+                    console.log('AAA', a);
+                    setInterval(() => { panorama._engine._renderer._billboards._billboards = [] }, 100)
+                })
+
                 console.log(player.getPanorama().getPosition().join(', '));
             } else {
                 console.log("panorama wasn't founded!", lowerX, lowerY)
