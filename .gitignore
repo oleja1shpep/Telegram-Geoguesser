@@ -1,6 +1,6 @@
 __pycache__
 all_users.db
-config.py
+config.*
 init_db.py
 aiogram_bot.py
 test_distance.py
