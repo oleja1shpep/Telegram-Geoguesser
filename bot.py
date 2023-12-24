@@ -73,7 +73,7 @@ def get_top10_world_single():
     return txt
 
 
-@bot.message_handler(commands=['start', 'reset'])
+@bot.message_handler(commands=['start', 'reset'], chat_types=['private'])
 def hello_message(message):
     markup = markups.create_start_markup()
 
@@ -251,8 +251,7 @@ def world_single_game_menu(message):
             message.chat.id, "Выбери что-то из списка", reply_markup=markup)
         bot.register_next_step_handler(send, world_single_game_menu)
 
-
-@bot.message_handler(content_types='text')
+@bot.message_handler(content_types='text', chat_types=['private'])
 def message_reply(message):
     if message.text == "Тык" or message.text == "тык":
         bot.send_message(message.chat.id, "Зачем тыкнул??")
@@ -262,10 +261,14 @@ def message_reply(message):
         bot.send_message(
             message.chat.id, "Чтобы перезапустить отправьте /reset")
 
-
-@bot.message_handler(content_types='dice')
+@bot.message_handler(content_types='dice', chat_types=['private'])
 def dice_reply(message):
     bot.send_message(message.chat.id, f'Выпадет число {message.dice.value}')
+
+@bot.message_handler(chat_types=["group", "supergroup", "channel"])
+def message_reply_not_private(message):
+    bot.send_message(message.chat.id, "Бот работает только в личной переписке")
+
 
 bot.polling(none_stop=True, interval=0)
 
