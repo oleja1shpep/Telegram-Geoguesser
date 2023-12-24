@@ -200,11 +200,12 @@ def moscow_single_game_menu(message):
                 score, metres = calculate_score_and_distance(cords=cords)
                 photo_url = get_url(cords=cords)
 
-                print(score, metres, message.from_user.username, photo_url)
+                print(score, metres, message.from_user.username)
                 database.add_results_moscow_single(message.from_user.id, score)
-                send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
-                                        metres} метров", reply_markup=markup)
-                bot.send_photo(message.chat.id, photo_url)
+                send = bot.send_photo(message.chat.id, photo_url, caption=f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
+                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
+                #                         metres} метров", reply_markup=markup)
+                
                 bot.register_next_step_handler(send, moscow_single_game_menu)
         else:
             print(answer, message.from_user.id, message.from_user.username)
@@ -266,12 +267,11 @@ def message_reply(message):
 def dice_reply(message):
     bot.send_message(message.chat.id, f'Выпадет число {message.dice.value}')
 
-# bot.polling(none_stop=True, interval=0)
+bot.polling(none_stop=True, interval=0)
 
-
-while True:
-    try:
-        bot.polling(none_stop=True, interval=0)
-    except Exception as e:
-        print(e)
-        sleep(3)
+# while True:
+#     try:
+#         bot.polling(none_stop=True, interval=0)
+#     except Exception as e:
+#         print(e)
+#         sleep(3)
