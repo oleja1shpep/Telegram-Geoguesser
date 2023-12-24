@@ -1,6 +1,5 @@
 from telebot import types
-from config import URL_MOSCOW
-from config import URL_SPB
+from config import URL_MOSCOW, URL_SPB, URL_RUSSIA
 
 def create_start_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
@@ -37,7 +36,7 @@ def create_moscow_single_game_menu_markup():
 
 def create_russia_single_game_menu_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton(text="Начать игру")
+    item_1 = types.KeyboardButton(text="Начать игру", web_app = types.WebAppInfo(url=URL_RUSSIA))
     item_2 = types.KeyboardButton("Правила 🤓")
     item_3 = types.KeyboardButton("Топ игроков")
     item_4 = types.KeyboardButton("Прошлые 5 игр")

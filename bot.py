@@ -204,14 +204,28 @@ def russia_single_game_menu(message):
         last_5_games = bot_functions.get_last5_results_russia_single(message.from_user.id)
         send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, russia_single_game_menu)
-    elif answer == "Начать игру":
-        markup = markups.create_russia_single_game_menu_markup()
-        send = bot.send_message(message.chat.id, "Work in progress...", reply_markup=markup)
-        bot.register_next_step_handler(send, russia_single_game_menu)
     else:
-        markup = markups.create_russia_single_game_menu_markup()
-        send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-        bot.register_next_step_handler(send, russia_single_game_menu)
+        if (hasattr(message, 'web_app_data')):
+            if message.web_app_data.data:
+                print("ответ получен", message.from_user.id,
+                      message.from_user.username)
+                markup = markups.create_russia_single_game_menu_markup()
+                cords = message.web_app_data.data
+                score, metres = bot_functions.calculate_score_and_distance(cords=cords)
+                photo_url = bot_functions.get_url(cords=cords)
+
+                print(score, metres, message.from_user.username)
+                database.add_results_russia_single(message.from_user.id, score)
+                database.add_game_russia_single(tele_id=message.from_user.id, score=score, metres=metres)
+                send = bot.send_photo(message.chat.id, photo_url, caption=f"Вы набрали {score} очков\nРасстояние {metres} метров", reply_markup=markup)
+                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
+                #                         metres} метров", reply_markup=markup)
+                
+                bot.register_next_step_handler(send, russia_single_game_menu)
+        else:
+            markup = markups.create_russia_single_game_menu_markup()
+            send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
+            bot.register_next_step_handler(send, russia_single_game_menu)
 
 @bot.message_handler(content_types='text', chat_types=['private'])
 def message_reply(message):
@@ -231,12 +245,9 @@ def dice_reply(message):
 def message_reply_not_private(message):
     bot.send_message(message.chat.id, "Бот работает только в личной переписке")
 
-
-bot.polling(none_stop=True, interval=0)
-
-# while True:
-#     try:
-#         bot.polling(none_stop=True, interval=0)
-#     except Exception as e:
-#         print(e)
-#         sleep(3)
+while True:
+    try:
+        bot.polling(none_stop=True, interval=0)
+    except Exception as e:
+        print(e)
+        sleep(3)
