@@ -26,6 +26,9 @@ HOW_TO_PLAY = """
 
 """
 
+GREETING = """\nЯ - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в отгадывание мест по всей России или по отдельным городам и посоревноваться с другими игроками
+"""
+
 bot = telebot.TeleBot(TOKEN)
 
 def calculate_score_and_distance(cords):
@@ -68,7 +71,7 @@ def get_top10_world_single():
 def hello_message(message):
     markup = markups.create_start_markup()
 
-    send = bot.send_message(message.chat.id,f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+    send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
     bot.register_next_step_handler(send, start_game)
 
 def start_game(message):
@@ -76,7 +79,7 @@ def start_game(message):
     tele_id = message.from_user.id
     tele_username = message.from_user.username
 
-    if answer == 'Играть' or answer in ['Меню', 'меню']:
+    if answer == 'Играть':
         markup = markups.create_menu_markup()
 
         if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
@@ -89,12 +92,13 @@ def start_game(message):
     else:
         markup = markups.create_start_markup()
         if answer in ['/start', '/reset']:
-            send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот', reply_markup=markup)
+            send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
         else:
             send = bot.send_message(message.chat.id,"Выбери что-то из списка",reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
 
 def menu(message):
+    database.drop_duplicates()
     answer = message.text
     if answer == "Режимы":
         markup = markups.create_gamemodes_markup()
@@ -107,7 +111,7 @@ def menu(message):
         bot.register_next_step_handler(send, menu)
     elif answer in ['/start', '/reset']:
         markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     else:
         markup = markups.create_menu_markup()
@@ -122,7 +126,7 @@ def gamemodes_menu(message):
         bot.register_next_step_handler(send, menu)
     elif answer in ['/start', '/reset']:
         markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Одиночный | Москва":
         markup = markups.create_moscow_single_game_menu_markup()
@@ -146,7 +150,7 @@ def moscow_single_game_menu(message):
         bot.register_next_step_handler(send, gamemodes_menu)
     elif answer in ['/start', '/reset']:
         markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
         print(answer, message.from_user.id, message.from_user.username)
@@ -184,7 +188,7 @@ def world_single_game_menu(message):
         bot.register_next_step_handler(send, gamemodes_menu)
     elif answer in ['/start', '/reset']:
         markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.username}, я геогесср бот',reply_markup=markup)
+        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
         print(answer, message.from_user.id, message.from_user.username)
@@ -223,11 +227,11 @@ def message_reply(message):
 def dice_reply(message):
     bot.send_message(message.chat.id, f'Выпадет число {message.dice.value}')
 
-bot.polling(none_stop=True, interval=0)
+#bot.polling(none_stop=True, interval=0)
 
-# while True:
-#     try:
-#         bot.polling(none_stop=True, interval=0)
-#     except Exception as e:
-#         print(e)
-#         sleep(15)
+while True:
+    try:
+        bot.polling(none_stop=True, interval=0)
+    except Exception as e:
+        print(e)
+        sleep(3)

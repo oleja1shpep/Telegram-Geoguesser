@@ -55,6 +55,20 @@ def add_results_world_single(tele_id, score):
 
     connection.close()
 
+def drop_duplicates():
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("""
+    DELETE FROM users_state
+    WHERE rowid > (
+    SELECT MIN(rowid) FROM users_state p2  
+    WHERE users_state.tele_id = p2.tele_id
+    AND users_state.username = p2.username
+    );
+    """)
+    connection.commit()
+    connection.close()
+
 
 
 # connection = sqlite3.connect(DB_NAME)
@@ -63,3 +77,4 @@ def add_results_world_single(tele_id, score):
 # cur.execute("ALTER TABLE users_state ADD COLUMN mean_score")
 # connection.commit()
 # connection.close()
+
