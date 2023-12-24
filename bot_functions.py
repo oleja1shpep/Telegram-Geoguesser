@@ -1,5 +1,5 @@
 from math import cos, sin, asin, sqrt, radians, log
-from config import TOKEN_BOT, TOKEN_STATIC
+from config import TOKEN_STATIC
 import database
 
 def get_url(cords):
