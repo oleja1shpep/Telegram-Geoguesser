@@ -24,7 +24,7 @@ def get_top10_moscow_single():
     txt = ''
     for i in range(len(top_10_users)):
         txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
+    #print(top_10_users)
     return txt
 
 def get_top10_spb_single():
@@ -32,7 +32,7 @@ def get_top10_spb_single():
     txt = ''
     for i in range(len(top_10_users)):
         txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
+    #print(top_10_users)
     return txt
 
 def get_top10_russia_single():
@@ -40,7 +40,7 @@ def get_top10_russia_single():
     txt = ''
     for i in range(len(top_10_users)):
         txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    print(top_10_users)
+    #print(top_10_users)
     return txt
 
 def get_last5_results_moscow_single(tele_id):
