@@ -250,7 +250,7 @@ def message_reply_not_private(message):
 
 while True:
     try:
-        bot.polling(none_stop=True, interval=0)
+        bot.polling(none_stop=True, timeout=500, long_polling_timeout=500)
     except Exception as e:
         print(e)
         sleep(3)
