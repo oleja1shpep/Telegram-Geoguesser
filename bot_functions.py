@@ -42,7 +42,7 @@ def calculate_score_and_distance_russia(cords):
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
     c = 2 * asin(sqrt(a))
     metres = 6371 * c * 1000
-    score = max(min(5000-log((metres + 29000)/ 3000, 1.00141), 5000), 0)
+    score = max(min(5000-log((metres + 2900)/ 3000, 1.00141), 5000), 0)
     return [int(score), int(metres)]
 
 def create_result_text(score, metres):
