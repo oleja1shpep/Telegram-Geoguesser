@@ -1,3 +1,5 @@
+// import cities from './cities.json' assert {type: "json"}
+
 let panorama;
 let myMap;
 let marker;
@@ -64,6 +66,8 @@ function readRandomLineFromText(text) {
     const randomIndex = Math.floor(Math.random() * lines.length);
     return lines[randomIndex];
 }
+
+// console.log(cities)
 
 ymaps.ready(async function () {
     const url1 = 'https://raw.githubusercontent.com/oleja1shpep/Telegram-Geoguesser/MiniAppBranch/cities.txt'
