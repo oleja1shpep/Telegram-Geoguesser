@@ -112,7 +112,7 @@ def moscow_single_game_menu(message):
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_moscow_single(message.from_user.id)
+        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Moscow")
         send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     else:
@@ -160,7 +160,7 @@ def spb_single_game_menu(message):
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_spb_single(message.from_user.id)
+        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "SPB")
         send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, spb_single_game_menu)
     else:
@@ -208,7 +208,7 @@ def russia_single_game_menu(message):
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_russia_single(message.from_user.id)
+        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Russia")
         send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, russia_single_game_menu)
     else:
@@ -255,7 +255,7 @@ def belarus_single_game_menu(message):
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_belarus_single(message.from_user.id)
+        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Belarus")
         send = bot.send_message(message.chat.id, last_5_games)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     else:
@@ -281,8 +281,6 @@ def belarus_single_game_menu(message):
             markup = markups.create_single_game_menu_markup(mode="Belarus")
             send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, belarus_single_game_menu)
-
-
 
 @bot.message_handler(content_types='text', chat_types=['private'])
 def message_reply(message):
