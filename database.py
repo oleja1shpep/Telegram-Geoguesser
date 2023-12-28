@@ -25,10 +25,10 @@ def get_top10_single(mode):
     connection.close()
     return res
 
-def add_results_moscow_single(tele_id, score):
+def add_results_single(tele_id, score, mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, moscow_single_total_score, moscow_single_game_counter, moscow_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
+    user_data = cur.execute("SELECT tele_id, username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
     user_data = user_data.fetchone()
     cur = connection.cursor()
     game_counter = user_data[3]
@@ -38,59 +38,7 @@ def add_results_moscow_single(tele_id, score):
     if current_score == None:
         current_score = 0
 
-    cur.execute("UPDATE users_state SET moscow_single_game_counter = ?, moscow_single_total_score = ?, moscow_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
-    connection.commit()
-
-    connection.close()
-
-def add_results_spb_single(tele_id, score):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, spb_single_total_score, spb_single_game_counter, spb_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
-    user_data = user_data.fetchone()
-    cur = connection.cursor()
-
-    game_counter = user_data[3]
-    current_score = user_data[2]
-    if game_counter == None:
-        game_counter = 0
-    if current_score == None:
-        current_score = 0
-    cur.execute("UPDATE users_state SET spb_single_game_counter = ?, spb_single_total_score = ?, spb_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
-    connection.commit()
-
-    connection.close()
-
-def add_results_russia_single(tele_id, score):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, russia_single_total_score, russia_single_game_counter, russia_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
-    user_data = user_data.fetchone()
-    cur = connection.cursor()
-    game_counter = user_data[3]
-    current_score = user_data[2]
-    if game_counter == None:
-        game_counter = 0
-    if current_score == None:
-        current_score = 0
-    cur.execute("UPDATE users_state SET russia_single_game_counter = ?, russia_single_total_score = ?, russia_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
-    connection.commit()
-
-    connection.close()
-
-def add_results_belarus_single(tele_id, score):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, belarus_single_total_score, belarus_single_game_counter, belarus_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
-    user_data = user_data.fetchone()
-    cur = connection.cursor()
-    game_counter = user_data[3]
-    current_score = user_data[2]
-    if game_counter == None:
-        game_counter = 0
-    if current_score == None:
-        current_score = 0
-    cur.execute("UPDATE users_state SET belarus_single_game_counter = ?, belarus_single_total_score = ?, belarus_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
+    cur.execute("UPDATE users_state SET "+ mode.lower() +"_single_game_counter = ?, "+ mode.lower() +"_single_total_score = ?, "+ mode.lower() +"_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
     connection.commit()
 
     connection.close()
