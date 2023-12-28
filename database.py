@@ -9,7 +9,7 @@ def search_tele_id(tele_id, tele_username):
     find_login = cur.execute("SELECT tele_id FROM users_state WHERE tele_id = ?", (tele_id, ))
     if (find_login.fetchone() == None):
         cur.execute("""INSERT INTO users_state VALUES
-                    (?, ?, 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
+                    (?, ?, 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
                     """, (tele_id, tele_username, ))
         connection.commit()
         connection.close()
