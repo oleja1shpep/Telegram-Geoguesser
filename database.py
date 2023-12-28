@@ -133,45 +133,16 @@ def drop_duplicates():
     connection.commit()
     connection.close()
 
-def get_last5_results_moscow(tele_id):
+def get_last5_results(tele_id, mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_moscow FROM users_state WHERE tele_id = ?", (tele_id, ))
+    cur.execute("SELECT tele_id, last_games_" + mode.lower() + " FROM users_state WHERE tele_id = ?", (tele_id, ))
     res = cur.fetchone()
     games = json.loads(res[1])
     #print(res)
     connection.close()
     return games
 
-def get_last5_results_spb(tele_id):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_spb FROM users_state WHERE tele_id = ?", (tele_id, ))
-    res = cur.fetchone()
-    games = json.loads(res[1])
-    #print(res)
-    connection.close()
-    return games
-
-def get_last5_results_russia(tele_id):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_russia FROM users_state WHERE tele_id = ?", (tele_id, ))
-    res = cur.fetchone()
-    games = json.loads(res[1])
-    #print(res)
-    connection.close()
-    return games
-
-def get_last5_results_belarus(tele_id):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_belarus FROM users_state WHERE tele_id = ?", (tele_id, ))
-    res = cur.fetchone()
-    games = json.loads(res[1])
-    #print(res)
-    connection.close()
-    return games
 
 def add_game_moscow_single(tele_id, score, metres):
     connection = sqlite3.connect(DB_NAME)

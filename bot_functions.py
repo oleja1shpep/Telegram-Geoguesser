@@ -89,14 +89,8 @@ def get_top10_belarus_single():
     return txt
 
 def get_last5_results_single(tele_id, mode):
-    if mode == "Moscow":
-        games = database.get_last5_results_moscow(tele_id=tele_id)
-    elif mode == "SPB":
-        games = database.get_last5_results_spb(tele_id=tele_id)
-    elif mode == "Russia":
-        games = database.get_last5_results_russia(tele_id=tele_id)
-    elif mode == "Belarus":
-        games = database.get_last5_results_belarus(tele_id=tele_id)
+    games = database.get_last5_results(tele_id, mode)
+
     txt = ''
     for i in range(len(games)):
         txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
