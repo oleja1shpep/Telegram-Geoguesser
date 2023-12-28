@@ -5,6 +5,7 @@ import bot_functions
 from time import sleep
 import markups
 from messages import GREETING, HOW_TO_PLAY, RUSSIA_SINGLE_PLAYER_RULES, SPB_SINGLE_PLAYER_RULES, MOSCOW_SINGLE_PLAYER_RULES
+import datetime
 
 bot = telebot.TeleBot(TOKEN_BOT)
 
@@ -41,7 +42,7 @@ def start_game(message):
 def menu(message):
     database.drop_duplicates()
     answer = message.text
-    print(f"{answer}, {message.from_user.id}, {message.from_user.username}")
+    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
     if answer == "Режимы":
         markup = markups.create_gamemodes_markup()
         send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
@@ -61,7 +62,7 @@ def menu(message):
 
 def gamemodes_menu(message):
     answer = message.text
-    print(f"{answer}, {message.from_user.id}, {message.from_user.username}")
+    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
     if answer == "Назад":
         markup = markups.create_menu_markup()
         send = bot.send_message(message.chat.id, "Главное меню", reply_markup=markup)
@@ -89,7 +90,7 @@ def gamemodes_menu(message):
 
 def moscow_single_game_menu(message):
     answer = message.text
-    print(f"{answer}, {message.from_user.id}, {message.from_user.username}")
+    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
     if answer == "Назад":
         markup = markups.create_gamemodes_markup()
         send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
@@ -137,7 +138,7 @@ def moscow_single_game_menu(message):
 
 def spb_single_game_menu(message):
     answer = message.text
-    print(f"{answer}, {message.from_user.id}, {message.from_user.username}")
+    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
     if answer == "Назад":
         markup = markups.create_gamemodes_markup()
         send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
@@ -185,7 +186,7 @@ def spb_single_game_menu(message):
 
 def russia_single_game_menu(message):
     answer = message.text
-    print(f"{answer}, {message.from_user.id}, {message.from_user.username}")
+    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
     if answer == "Назад":
         markup = markups.create_gamemodes_markup()
         send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
@@ -252,5 +253,5 @@ while True:
     try:
         bot.polling(none_stop=True, timeout=500, long_polling_timeout=500)
     except Exception as e:
-        print(e)
+        print(datetime.datetime.now(), e)
         sleep(3)
