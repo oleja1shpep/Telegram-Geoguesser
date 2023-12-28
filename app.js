@@ -95,7 +95,7 @@ if (hash == "#Moscow") {
     center_y = 37.621429
     zoom = 5
 }
-    
+
 if (hash == "#Russia") {
     ymaps.ready(async function () {
         const url1 = 'https://raw.githubusercontent.com/oleja1shpep/Telegram-Geoguesser/MiniAppBranch/cities.txt'
@@ -103,21 +103,21 @@ if (hash == "#Russia") {
         const data = await response.text();
         var city = await readRandomLineFromText(data);
         console.log(city);
-    
+
         var [lowerX, lowerY] = await fetchData(city);
         var j = 0;
         res = await findPanorama(lowerX - 0.02, 0.04, lowerY - 0.02, 0.04)
-        while (!res && (j < 1)) {
+        while (!res && (j < 5)) {
             city = await readRandomLineFromText(data);
             console.log(city);
             [lowerX, lowerY] = await fetchData(city);
             res = await findPanorama(lowerX - 0.02, 0.04, lowerY - 0.02, 0.04)
             ++j;
         }
-        if (!res && (j >= 1)) {
+        if (!res && (j >= 5)) {
             findPanorama(55.763903, 0.01, 37.542487, 0.01)
         }
-    
+
         myMap = new ymaps.Map("map", {
             center: [62.518617, 106.100958],
             zoom: 2,
@@ -125,7 +125,7 @@ if (hash == "#Russia") {
         }, {
             searchControlProvider: 'yandex#search'
         }),
-    
+
             // Создаем геообъект с типом геометрии "Точка".
             marker = new ymaps.GeoObject({
                 // Описание геометрии.
@@ -146,16 +146,75 @@ if (hash == "#Russia") {
                 // Метку можно перемещать.
                 draggable: true
             })
-    
+
         myMap.geoObjects
             .add(marker)
-    
+
         myMap.events.add('click', function (e) {
             var coords = e.get('coords');
             marker.geometry.setCoordinates(coords);
         });
     });
-// } else if (window.location.hash == "#Moscow" || window.location.hash == "#SPB") {
+    // } else if (window.location.hash == "#Moscow" || window.location.hash == "#SPB") {
+} else if (hash == "#Belarus") {
+    ymaps.ready(async function () {
+        const url1 = 'https://raw.githubusercontent.com/oleja1shpep/Telegram-Geoguesser/MiniAppBranch/cities_belarus.txt'
+        const response = await fetch(url1);
+        const data = await response.text();
+        var city = await readRandomLineFromText(data);
+        console.log(city);
+
+        var [lowerX, lowerY] = await fetchData(city);
+        var j = 0;
+        res = await findPanorama(lowerX - 0.02, 0.04, lowerY - 0.02, 0.04)
+        while (!res && (j < 5)) {
+            city = await readRandomLineFromText(data);
+            console.log(city);
+            [lowerX, lowerY] = await fetchData(city);
+            res = await findPanorama(lowerX - 0.02, 0.04, lowerY - 0.02, 0.04)
+            ++j;
+        }
+        if (!res && (j >= 5)) {
+            findPanorama(27.562411, 0.0001, 53.902272, 0.0001)
+        }
+
+        myMap = new ymaps.Map("map", {
+            center: [53.703751, 28.902882],
+            zoom: 6,
+            controls: []
+        }, {
+            searchControlProvider: 'yandex#search'
+        }),
+
+            // Создаем геообъект с типом геометрии "Точка".
+            marker = new ymaps.GeoObject({
+                // Описание геометрии.
+                geometry: {
+                    type: "Point",
+                    coordinates: [53.703751, 28.902882]
+                },
+                // Свойства.
+                properties: {
+                    // Контент метки.
+                    iconContent: 'Тут',
+                    hintContent: 'Тащи!'
+                }
+            }, {
+                // Опции.
+                // Иконка метки будет растягиваться под размер ее содержимого.
+                preset: 'islands#blueDotIcon',
+                // Метку можно перемещать.
+                draggable: true
+            })
+
+        myMap.geoObjects
+            .add(marker)
+
+        myMap.events.add('click', function (e) {
+            var coords = e.get('coords');
+            marker.geometry.setCoordinates(coords);
+        });
+    });
 } else {
     ymaps.ready(function () {
         console.log("!", x, delta_x, y, delta_y, center_x, center_y, zoom)
