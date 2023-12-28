@@ -108,7 +108,7 @@ def moscow_single_game_menu(message):
         send = bot.send_message(message.chat.id, messages.MOSCOW_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_moscow_single()
+        top_10_text = bot_functions.get_top10_single(mode="Moscow")
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Прошлые 5 игр":
@@ -156,7 +156,7 @@ def spb_single_game_menu(message):
         send = bot.send_message( message.chat.id, messages.SPB_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_spb_single()
+        top_10_text = bot_functions.get_top10_single(mode="SPB")
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Прошлые 5 игр":
@@ -204,7 +204,7 @@ def russia_single_game_menu(message):
         send = bot.send_message(message.chat.id, messages.RUSSIA_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_russia_single()
+        top_10_text = bot_functions.get_top10_single(mode="Russia")
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Прошлые 5 игр":
@@ -251,7 +251,7 @@ def belarus_single_game_menu(message):
         send = bot.send_message(message.chat.id, messages.BELARUS_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_belarus_single()
+        top_10_text = bot_functions.get_top10_single(mode="Belarus")
         send = bot.send_message(message.chat.id, top_10_text)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     elif answer == "Прошлые 5 игр":

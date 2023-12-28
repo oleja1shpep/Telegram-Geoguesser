@@ -17,34 +17,10 @@ def search_tele_id(tele_id, tele_username):
     connection.close()
     return True
 
-def get_top10_moscow_single():
+def get_top10_single(mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
-    rows = cur.execute("SELECT username, moscow_single_total_score, moscow_single_game_counter, moscow_single_mean_score FROM users_state ORDER BY moscow_single_mean_score DESC")
-    res = rows.fetchmany(10)
-    connection.close()
-    return res
-
-def get_top10_spb_single():
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    rows = cur.execute("SELECT username, spb_single_total_score, spb_single_game_counter, spb_single_mean_score FROM users_state ORDER BY spb_single_mean_score DESC")
-    res = rows.fetchmany(10)
-    connection.close()
-    return res
-
-def get_top10_russia_single():
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    rows = cur.execute("SELECT username, russia_single_total_score, russia_single_game_counter, russia_single_mean_score FROM users_state ORDER BY russia_single_mean_score DESC")
-    res = rows.fetchmany(10)
-    connection.close()
-    return res
-
-def get_top10_belarus_single():
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    rows = cur.execute("SELECT username, belarus_single_total_score, belarus_single_game_counter, belarus_single_mean_score FROM users_state ORDER BY belarus_single_mean_score DESC")
+    rows = cur.execute("SELECT username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state ORDER BY "+ mode.lower() +"_single_mean_score DESC")
     res = rows.fetchmany(10)
     connection.close()
     return res

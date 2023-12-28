@@ -56,32 +56,8 @@ def create_result_text(score, metres):
     
     return txt
 
-def get_top10_moscow_single():
-    top_10_users = database.get_top10_moscow_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
-    return txt
-
-def get_top10_spb_single():
-    top_10_users = database.get_top10_spb_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
-    return txt
-
-def get_top10_russia_single():
-    top_10_users = database.get_top10_russia_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
-    return txt
-
-def get_top10_belarus_single():
-    top_10_users = database.get_top10_belarus_single()
+def get_top10_single(mode):
+    top_10_users = database.get_top10_single(mode)
     txt = ''
     for i in range(len(top_10_users)):
         txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
