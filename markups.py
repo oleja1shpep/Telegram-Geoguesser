@@ -22,7 +22,7 @@ def create_gamemodes_markup():
     item_3 = types.KeyboardButton("Одиночный | Россия")
     item_4 = types.KeyboardButton("Одиночный | Беларусь")
     item_5 = types.KeyboardButton("Назад")
-    markup.add(item_1, item_2, item_3, item_4)
+    markup.add(item_1, item_2, item_3, item_4, item_5)
     return markup
 
 def create_moscow_single_game_menu_markup():
