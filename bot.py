@@ -72,19 +72,19 @@ def gamemodes_menu(message):
         send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Одиночный | Москва":
-        markup = markups.create_moscow_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Moscow")
         send = bot.send_message(message.chat.id, "Одиночный по Москве", reply_markup=markup)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Одиночный | Санкт-Петербург":
-        markup = markups.create_spb_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="SPB")
         send = bot.send_message(message.chat.id, "Одиночный по Санкт-Петербургу", reply_markup=markup)
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Одиночный | Россия":
-        markup = markups.create_russia_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Russia")
         send = bot.send_message(message.chat.id, "Одиночный по России", reply_markup=markup)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Одиночный | Беларусь":
-        markup = markups.create_belarus_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Belarus")
         send = bot.send_message(message.chat.id, "Одиночный по Беларуси", reply_markup=markup)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     else:
@@ -104,7 +104,7 @@ def moscow_single_game_menu(message):
         send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
-        markup = markups.create_moscow_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Moscow")
         send = bot.send_message(message.chat.id, messages.MOSCOW_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, moscow_single_game_menu)
     elif answer == "Топ игроков":
@@ -120,7 +120,7 @@ def moscow_single_game_menu(message):
             if message.web_app_data.data:
                 print("ответ получен", message.from_user.id,
                       message.from_user.username)
-                markup = markups.create_moscow_single_game_menu_markup()
+                markup = markups.create_single_game_menu_markup(mode="Moscow")
                 cords = message.web_app_data.data
                 score, metres = bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
                 photo_url = bot_functions.get_url(cords=cords)
@@ -135,7 +135,7 @@ def moscow_single_game_menu(message):
                 
                 bot.register_next_step_handler(send, moscow_single_game_menu)
         else:
-            markup = markups.create_moscow_single_game_menu_markup()
+            markup = markups.create_single_game_menu_markup(mode="Moscow")
             send = bot.send_message(
                 message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, moscow_single_game_menu)
@@ -152,7 +152,7 @@ def spb_single_game_menu(message):
         send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
-        markup = markups.create_spb_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="SPB")
         send = bot.send_message( message.chat.id, messages.SPB_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, spb_single_game_menu)
     elif answer == "Топ игроков":
@@ -168,7 +168,7 @@ def spb_single_game_menu(message):
             if message.web_app_data.data:
                 print("ответ получен", message.from_user.id,
                       message.from_user.username)
-                markup = markups.create_spb_single_game_menu_markup()
+                markup = markups.create_single_game_menu_markup(mode="SPB")
                 cords = message.web_app_data.data
                 score, metres = bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
                 photo_url = bot_functions.get_url(cords=cords)
@@ -183,7 +183,7 @@ def spb_single_game_menu(message):
                 
                 bot.register_next_step_handler(send, spb_single_game_menu)
         else:
-            markup = markups.create_spb_single_game_menu_markup()
+            markup = markups.create_single_game_menu_markup(mode="SPB")
             send = bot.send_message(
                 message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, spb_single_game_menu)
@@ -200,7 +200,7 @@ def russia_single_game_menu(message):
         send = bot.send_message(message.chat.id, f'Привет, { message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
-        markup = markups.create_russia_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Russia")
         send = bot.send_message(message.chat.id, messages.RUSSIA_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, russia_single_game_menu)
     elif answer == "Топ игроков":
@@ -216,7 +216,7 @@ def russia_single_game_menu(message):
             if message.web_app_data.data:
                 print("ответ получен", message.from_user.id,
                       message.from_user.username)
-                markup = markups.create_russia_single_game_menu_markup()
+                markup = markups.create_single_game_menu_markup(mode="Russia")
                 cords = message.web_app_data.data
                 score, metres = bot_functions.calculate_score_and_distance_russia(cords=cords)
                 photo_url = bot_functions.get_url(cords=cords)
@@ -231,7 +231,7 @@ def russia_single_game_menu(message):
                 
                 bot.register_next_step_handler(send, russia_single_game_menu)
         else:
-            markup = markups.create_russia_single_game_menu_markup()
+            markup = markups.create_single_game_menu_markup(mode="Russia")
             send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, russia_single_game_menu)
 
@@ -247,7 +247,7 @@ def belarus_single_game_menu(message):
         send = bot.send_message(message.chat.id, f'Привет, { message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
         bot.register_next_step_handler(send, start_game)
     elif answer == "Правила 🤓":
-        markup = markups.create_belarus_single_game_menu_markup()
+        markup = markups.create_single_game_menu_markup(mode="Belarus")
         send = bot.send_message(message.chat.id, messages.BELARUS_SINGLE_PLAYER_RULES, reply_markup=markup)
         bot.register_next_step_handler(send, belarus_single_game_menu)
     elif answer == "Топ игроков":
@@ -263,7 +263,7 @@ def belarus_single_game_menu(message):
             if message.web_app_data.data:
                 print("ответ получен", message.from_user.id,
                       message.from_user.username)
-                markup = markups.create_belarus_single_game_menu_markup()
+                markup = markups.create_single_game_menu_markup(mode="Belarus")
                 cords = message.web_app_data.data
                 score, metres = bot_functions.calculate_score_and_distance_russia(cords=cords)
                 photo_url = bot_functions.get_url(cords=cords)
@@ -278,7 +278,7 @@ def belarus_single_game_menu(message):
                 
                 bot.register_next_step_handler(send, belarus_single_game_menu)
         else:
-            markup = markups.create_belarus_single_game_menu_markup()
+            markup = markups.create_single_game_menu_markup(mode="Belarus")
             send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
             bot.register_next_step_handler(send, belarus_single_game_menu)
 
