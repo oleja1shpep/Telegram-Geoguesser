@@ -127,7 +127,7 @@ def moscow_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_single(message.from_user.id, score, "Moscow")
-                database.add_game_moscow_single(tele_id=message.from_user.id, score=score, metres=metres)
+                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Moscow")
                 txt = bot_functions.create_result_text(score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
@@ -175,7 +175,7 @@ def spb_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_single(message.from_user.id, score, "SPB")
-                database.add_game_spb_single(tele_id=message.from_user.id, score=score, metres=metres)
+                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="SPB")
                 txt = bot_functions.create_result_text(score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
@@ -223,7 +223,7 @@ def russia_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_single(message.from_user.id, score, "Russia")
-                database.add_game_russia_single(tele_id=message.from_user.id, score=score, metres=metres)
+                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Russia")
                 txt = bot_functions.create_result_text(score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
@@ -270,7 +270,7 @@ def belarus_single_game_menu(message):
 
                 print(score, metres, message.from_user.username)
                 database.add_results_single(message.from_user.id, score, "Belarus")
-                database.add_game_belarus_single(tele_id=message.from_user.id, score=score, metres=metres)
+                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Belarus")
                 txt = bot_functions.create_result_text(score=score, metres=metres)
                 send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
