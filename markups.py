@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from config import URL_SITE
 
-def create_start_markup():
+async def create_start_markup():
     return ReplyKeyboardMarkup(
         keyboard=[
             [
@@ -13,7 +13,7 @@ def create_start_markup():
         resize_keyboard=True,
     )
 
-def create_menu_markup():
+async def create_menu_markup():
     return ReplyKeyboardMarkup(
         keyboard=[
             [
@@ -24,7 +24,7 @@ def create_menu_markup():
         resize_keyboard=True,
     )
 
-def create_gamemodes_markup():
+async def create_gamemodes_markup():
     builder = ReplyKeyboardBuilder()
     keyboard = [
         "Одиночный | Москва",
@@ -40,7 +40,7 @@ def create_gamemodes_markup():
     markup.resize_keyboard = True
     return markup
 
-def create_single_game_menu_markup(mode):
+async def create_single_game_menu_markup(mode):
     builder = ReplyKeyboardBuilder()
     keyboard = [
         "Начать игру",

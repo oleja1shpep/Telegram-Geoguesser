@@ -2,7 +2,7 @@ import sqlite3
 from config import DB_NAME
 import json
 
-def search_tele_id(tele_id, tele_username):
+async def search_tele_id(tele_id, tele_username):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     
@@ -17,7 +17,7 @@ def search_tele_id(tele_id, tele_username):
     connection.close()
     return True
 
-def get_top10_single(mode):
+async def get_top10_single(mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     rows = cur.execute("SELECT username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state ORDER BY "+ mode.lower() +"_single_mean_score DESC")
@@ -25,7 +25,7 @@ def get_top10_single(mode):
     connection.close()
     return res
 
-def add_results_single(tele_id, score, mode):
+async def add_results_single(tele_id, score, mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     user_data = cur.execute("SELECT tele_id, username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
@@ -43,7 +43,7 @@ def add_results_single(tele_id, score, mode):
 
     connection.close()
 
-def drop_duplicates():
+async def drop_duplicates():
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     cur.execute("""
@@ -57,7 +57,7 @@ def drop_duplicates():
     connection.commit()
     connection.close()
 
-def get_last5_results(tele_id, mode):
+async def get_last5_results(tele_id, mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     cur.execute("SELECT tele_id, last_games_" + mode.lower() + " FROM users_state WHERE tele_id = ?", (tele_id, ))
@@ -67,7 +67,7 @@ def get_last5_results(tele_id, mode):
     connection.close()
     return games
 
-def add_game_single(tele_id, score, metres, mode):
+async def add_game_single(tele_id, score, metres, mode):
     connection = sqlite3.connect(DB_NAME)
     cur = connection.cursor()
     cur.execute("SELECT tele_id, last_games_" + mode.lower() + " FROM users_state WHERE tele_id = ?", (tele_id, ))
