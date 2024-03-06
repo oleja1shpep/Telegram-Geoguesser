@@ -1,36 +1,59 @@
-from telebot import types
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
 from config import URL_SITE
 
 def create_start_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    item_1 = types.KeyboardButton("Играть")
-    markup.add(item_1)
-    return markup
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text="Играть"),
+            ]
+        ],
+        resize_keyboard=True,
+    )
 
 def create_menu_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.KeyboardButton("Режимы")
-    item_2 = types.KeyboardButton("Как играть 🤔")
-    markup.add(item_1, item_2)
-    return markup
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text="Режимы"),
+                KeyboardButton(text="Как играть 🤔"),
+            ]
+        ],
+        resize_keyboard=True,
+    )
 
 def create_gamemodes_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-
-    item_1 = types.KeyboardButton("Одиночный | Москва")
-    item_2 = types.KeyboardButton("Одиночный | Санкт-Петербург")
-    item_3 = types.KeyboardButton("Одиночный | Россия")
-    item_4 = types.KeyboardButton("Одиночный | Беларусь")
-    item_5 = types.KeyboardButton("Назад")
-    markup.add(item_1, item_2, item_3, item_4, item_5)
+    builder = ReplyKeyboardBuilder()
+    keyboard = [
+        "Одиночный | Москва",
+        "Одиночный | Санкт-Петербург",
+        "Одиночный | Россия",
+        "Одиночный | Беларусь",
+        "Назад",
+    ]
+    for i in range(5):
+        builder.button(text = keyboard[i])
+    builder.adjust(2,2,1)
+    markup = builder.as_markup()
+    markup.resize_keyboard = True
     return markup
 
 def create_single_game_menu_markup(mode):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item_1 = types.InlineKeyboardButton(text="Начать игру", web_app = types.WebAppInfo(url=URL_SITE + "#" + mode))
-    item_2 = types.KeyboardButton("Правила 🤓")
-    item_3 = types.KeyboardButton("Топ игроков")
-    item_4 = types.KeyboardButton("Прошлые 5 игр")
-    item_5 = types.KeyboardButton("Назад")
-    markup.add(item_1, item_2, item_3, item_4, item_5)
+    builder = ReplyKeyboardBuilder()
+    keyboard = [
+        "Начать игру",
+        "Правила 🤓",
+        "Топ игроков",
+        "Прошлые 5 игр",
+        "Назад",
+    ]
+    builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode))
+    for i in range(1,5):
+        builder.button(text = keyboard[i])
+
+    builder.adjust(2,2,1)
+    markup = builder.as_markup()
+    markup.resize_keyboard = True
     return markup

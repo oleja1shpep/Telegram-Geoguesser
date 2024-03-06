@@ -1,304 +1,188 @@
-import telebot
-import database
-from config import TOKEN_BOT
-import bot_functions
-from time import sleep
-import markups
+import asyncio
+import logging
+import sys
+
+from aiogram import Bot, Dispatcher, F, Router
+from aiogram.enums import ParseMode
+from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import Message
 import messages
-import datetime
+import database
+import markups
+import bot_functions
+from config import TOKEN_BOT
 
-bot = telebot.TeleBot(TOKEN_BOT)
+form_router = Router()
 
-@bot.message_handler(commands=['start', 'reset'], chat_types=['private'])
-def hello_message(message):
-    markup = markups.create_start_markup()
+class Form(StatesGroup):
+    start = State()
+    menu = State()
+    gamemodes = State()
+    single_game_menu = State()
 
-    send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-    bot.register_next_step_handler(send, start_game)
+@form_router.message(CommandStart(), F.chat.type == "private")
+async def command_start(message: Message, state: FSMContext) -> None:
+    await state.set_state(Form.start)
+    await message.answer(
+        f'Привет, {message.from_user.first_name}!' + messages.GREETING,
+        reply_markup = markups.create_start_markup()
+    )
 
-def start_game(message):
-    answer = message.text
+
+@form_router.message(Form.start, F.text == "Играть")
+async def process_name(message: Message, state: FSMContext) -> None:
+    await state.set_state(Form.menu)
+
     tele_id = message.from_user.id
     tele_username = message.from_user.username
+    markup = markups.create_menu_markup()
 
-    if answer == 'Играть':
-        markup = markups.create_menu_markup()
-
-        if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
-            send = bot.send_message(message.chat.id, "Рад увидеть тебя снова в игре!", reply_markup=markup)
-        else:
-            send = bot.send_message(message.chat.id, "Вы были успешно зарегистрированы", reply_markup=markup)
-
-        bot.register_next_step_handler(send, menu)
-
+    if (database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
+        await message.answer(
+            "Рад увидеть тебя снова в игре!",
+            reply_markup= markup
+        )
     else:
-        markup = markups.create_start_markup()
-        if answer in ['/start', '/reset']:
-            send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        else:
-            send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
+        await message.answer(
+            "Вы были успешно зарегистрированы",
+            reply_markup= markup
+        )
 
-def menu(message):
+@form_router.message(Form.menu, F.text[:-2] == "Как играть")
+async def process_name(message: Message, state: FSMContext) -> None:
     database.drop_duplicates()
-    answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Режимы":
-        markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
-    elif answer == "Как играть 🤔":
-        markup = markups.create_menu_markup()
-        send = bot.send_message(message.chat.id, messages.HOW_TO_PLAY, reply_markup=markup)
-        bot.register_next_step_handler(send, menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    else:
-        markup = markups.create_menu_markup()
-        send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-        bot.register_next_step_handler(send, menu)
+    await message.answer(
+        messages.HOW_TO_PLAY
+    )
 
-def gamemodes_menu(message):
-    answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Назад":
-        markup = markups.create_menu_markup()
-        send = bot.send_message(message.chat.id, "Главное меню", reply_markup=markup)
-        bot.register_next_step_handler(send, menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    elif answer == "Одиночный | Москва":
-        markup = markups.create_single_game_menu_markup(mode="Moscow")
-        send = bot.send_message(message.chat.id, "Одиночный по Москве", reply_markup=markup)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
-    elif answer == "Одиночный | Санкт-Петербург":
-        markup = markups.create_single_game_menu_markup(mode="SPB")
-        send = bot.send_message(message.chat.id, "Одиночный по Санкт-Петербургу", reply_markup=markup)
-        bot.register_next_step_handler(send, spb_single_game_menu)
-    elif answer == "Одиночный | Россия":
-        markup = markups.create_single_game_menu_markup(mode="Russia")
-        send = bot.send_message(message.chat.id, "Одиночный по России", reply_markup=markup)
-        bot.register_next_step_handler(send, russia_single_game_menu)
-    elif answer == "Одиночный | Беларусь":
-        markup = markups.create_single_game_menu_markup(mode="Belarus")
-        send = bot.send_message(message.chat.id, "Одиночный по Беларуси", reply_markup=markup)
-        bot.register_next_step_handler(send, belarus_single_game_menu)
-    else:
-        markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
+@form_router.message(Form.menu, F.text == "Режимы")
+async def process_name(message: Message, state: FSMContext) -> None:
+    database.drop_duplicates()
+    await state.set_state(Form.gamemodes)
+    markup = markups.create_gamemodes_markup()
+    await message.answer(
+        "Доступные режимы",
+        reply_markup= markup
+    )
 
-def moscow_single_game_menu(message):
+@form_router.message(Form.gamemodes, F.text == "Назад")
+async def process_name(message: Message, state: FSMContext) -> None:
+    await state.set_state(Form.menu)
+    markup = markups.create_menu_markup()
+    await message.answer(
+        "Главное меню",
+        reply_markup= markup
+    )
+
+
+@form_router.message(Form.gamemodes, F.text[:9] == "Одиночный")
+async def process_name(message: Message, state: FSMContext) -> None:
     answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Назад":
+    mode = "Moscow"
+    if (answer == "Одиночный | Москва"):
+        mode = "Moscow"
+        markup = markups.create_single_game_menu_markup(mode)
+        await message.answer(
+            "Одиночный по москве",
+            reply_markup= markup
+        )
+    elif (answer == "Одиночный | Санкт-Петербург"):
+        mode = "SPB"
+        markup = markups.create_single_game_menu_markup(mode)
+        await message.answer(
+            "Одиночный по Санкт-Петербургу",
+            reply_markup= markup
+        )
+    elif (answer == "Одиночный | Россия"):
+        mode = "Russia"
+        markup = markups.create_single_game_menu_markup(mode)
+        await message.answer(
+            "Одиночный по России",
+            reply_markup= markup
+        )
+    elif (answer == "Одиночный | Беларусь"):
+        mode = "Belarus"
+        markup = markups.create_single_game_menu_markup(mode)
+        await message.answer(
+            "Одиночный по Беларуси",
+            reply_markup= markup
+        )
+
+    await state.set_state(Form.single_game_menu)
+    await state.update_data(gamemodes = mode)
+    
+
+@form_router.message(Form.single_game_menu)
+async def process_name(message: Message, state: FSMContext) -> None:
+    mode = await state.get_data()
+    mode = mode["gamemodes"]
+    answer = message.text
+    if (answer == "Правила 🤓"):
+        if (mode == "Moscow"):
+            await message.answer(
+                messages.MOSCOW_SINGLE_PLAYER_RULES
+            )
+        elif (mode == "SPB"):
+            await message.answer(
+                messages.SPB_SINGLE_PLAYER_RULES
+            )
+        elif (mode == "Russia"):
+            await message.answer(
+                messages.RUSSIA_SINGLE_PLAYER_RULES
+            )
+        elif (mode == "Belarus"):
+            await message.answer(
+                messages.BELARUS_SINGLE_PLAYER_RULES
+            )
+    elif (answer == "Топ игроков"):
+        top_10_text = bot_functions.get_top10_single(mode=mode)
+        await message.answer(
+            top_10_text
+        )
+    elif (answer == "Прошлые 5 игр"):
+        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, mode)
+        await message.answer(
+            last_5_games
+        )
+    elif (answer == "Назад"):
+        await state.set_state(Form.gamemodes)
         markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    elif answer == "Правила 🤓":
-        markup = markups.create_single_game_menu_markup(mode="Moscow")
-        send = bot.send_message(message.chat.id, messages.MOSCOW_SINGLE_PLAYER_RULES, reply_markup=markup)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
-    elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_single(mode="Moscow")
-        send = bot.send_message(message.chat.id, top_10_text)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
-    elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Moscow")
-        send = bot.send_message(message.chat.id, last_5_games)
-        bot.register_next_step_handler(send, moscow_single_game_menu)
+        await message.answer(
+            "Доступные режимы",
+            reply_markup= markup
+        )
     else:
         if (hasattr(message, 'web_app_data')):
             if message.web_app_data.data:
                 print("ответ получен", message.from_user.id,
                       message.from_user.username)
-                markup = markups.create_single_game_menu_markup(mode="Moscow")
                 cords = message.web_app_data.data
-                score, metres = bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
+                if (mode == "SPB" or mode == "Moscow"):
+                    score, metres = bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
+                elif (mode == "Russia" or mode == "Belarus"):
+                    score, metres = bot_functions.calculate_score_and_distance_russia(cords=cords)
+
                 photo_url = bot_functions.get_url(cords=cords)
 
                 print(score, metres, message.from_user.username)
-                database.add_results_single(message.from_user.id, score, "Moscow")
-                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Moscow")
+                database.add_results_single(message.from_user.id, score, mode)
+                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode=mode)
                 txt = bot_functions.create_result_text(score=score, metres=metres)
-                send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
+               
+                await message.answer_photo(photo_url, caption=txt)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
-                
-                bot.register_next_step_handler(send, moscow_single_game_menu)
-        else:
-            markup = markups.create_single_game_menu_markup(mode="Moscow")
-            send = bot.send_message(
-                message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-            bot.register_next_step_handler(send, moscow_single_game_menu)
 
-def spb_single_game_menu(message):
-    answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Назад":
-        markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    elif answer == "Правила 🤓":
-        markup = markups.create_single_game_menu_markup(mode="SPB")
-        send = bot.send_message( message.chat.id, messages.SPB_SINGLE_PLAYER_RULES, reply_markup=markup)
-        bot.register_next_step_handler(send, spb_single_game_menu)
-    elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_single(mode="SPB")
-        send = bot.send_message(message.chat.id, top_10_text)
-        bot.register_next_step_handler(send, spb_single_game_menu)
-    elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "SPB")
-        send = bot.send_message(message.chat.id, last_5_games)
-        bot.register_next_step_handler(send, spb_single_game_menu)
-    else:
-        if (hasattr(message, 'web_app_data')):
-            if message.web_app_data.data:
-                print("ответ получен", message.from_user.id,
-                      message.from_user.username)
-                markup = markups.create_single_game_menu_markup(mode="SPB")
-                cords = message.web_app_data.data
-                score, metres = bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-                photo_url = bot_functions.get_url(cords=cords)
+async def main():
+    bot = Bot(token=TOKEN_BOT, parse_mode=ParseMode.HTML)
+    dp = Dispatcher()
+    dp.include_router(form_router)
 
-                print(score, metres, message.from_user.username)
-                database.add_results_single(message.from_user.id, score, "SPB")
-                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="SPB")
-                txt = bot_functions.create_result_text(score=score, metres=metres)
-                send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
-                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
-                #                         metres} метров", reply_markup=markup)
-                
-                bot.register_next_step_handler(send, spb_single_game_menu)
-        else:
-            markup = markups.create_single_game_menu_markup(mode="SPB")
-            send = bot.send_message(
-                message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-            bot.register_next_step_handler(send, spb_single_game_menu)
+    await dp.start_polling(bot)
 
-def russia_single_game_menu(message):
-    answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Назад":
-        markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, { message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    elif answer == "Правила 🤓":
-        markup = markups.create_single_game_menu_markup(mode="Russia")
-        send = bot.send_message(message.chat.id, messages.RUSSIA_SINGLE_PLAYER_RULES, reply_markup=markup)
-        bot.register_next_step_handler(send, russia_single_game_menu)
-    elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_single(mode="Russia")
-        send = bot.send_message(message.chat.id, top_10_text)
-        bot.register_next_step_handler(send, russia_single_game_menu)
-    elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Russia")
-        send = bot.send_message(message.chat.id, last_5_games)
-        bot.register_next_step_handler(send, russia_single_game_menu)
-    else:
-        if (hasattr(message, 'web_app_data')):
-            if message.web_app_data.data:
-                print("ответ получен", message.from_user.id,
-                      message.from_user.username)
-                markup = markups.create_single_game_menu_markup(mode="Russia")
-                cords = message.web_app_data.data
-                score, metres = bot_functions.calculate_score_and_distance_russia(cords=cords)
-                photo_url = bot_functions.get_url(cords=cords)
 
-                print(score, metres, message.from_user.username)
-                database.add_results_single(message.from_user.id, score, "Russia")
-                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Russia")
-                txt = bot_functions.create_result_text(score=score, metres=metres)
-                send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
-                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
-                #                         metres} метров", reply_markup=markup)
-                
-                bot.register_next_step_handler(send, russia_single_game_menu)
-        else:
-            markup = markups.create_single_game_menu_markup(mode="Russia")
-            send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-            bot.register_next_step_handler(send, russia_single_game_menu)
-
-def belarus_single_game_menu(message):
-    answer = message.text
-    print(f"{datetime.datetime.now()}, {answer}, {message.from_user.id}, {message.from_user.username}")
-    if answer == "Назад":
-        markup = markups.create_gamemodes_markup()
-        send = bot.send_message(message.chat.id, "Доступные режимы", reply_markup=markup)
-        bot.register_next_step_handler(send, gamemodes_menu)
-    elif answer in ['/start', '/reset']:
-        markup = markups.create_start_markup()
-        send = bot.send_message(message.chat.id, f'Привет, { message.from_user.first_name}' + messages.GREETING, reply_markup=markup)
-        bot.register_next_step_handler(send, start_game)
-    elif answer == "Правила 🤓":
-        markup = markups.create_single_game_menu_markup(mode="Belarus")
-        send = bot.send_message(message.chat.id, messages.BELARUS_SINGLE_PLAYER_RULES, reply_markup=markup)
-        bot.register_next_step_handler(send, belarus_single_game_menu)
-    elif answer == "Топ игроков":
-        top_10_text = bot_functions.get_top10_single(mode="Belarus")
-        send = bot.send_message(message.chat.id, top_10_text)
-        bot.register_next_step_handler(send, belarus_single_game_menu)
-    elif answer == "Прошлые 5 игр":
-        last_5_games = bot_functions.get_last5_results_single(message.from_user.id, "Belarus")
-        send = bot.send_message(message.chat.id, last_5_games)
-        bot.register_next_step_handler(send, belarus_single_game_menu)
-    else:
-        if (hasattr(message, 'web_app_data')):
-            if message.web_app_data.data:
-                print("ответ получен", message.from_user.id,
-                      message.from_user.username)
-                markup = markups.create_single_game_menu_markup(mode="Belarus")
-                cords = message.web_app_data.data
-                score, metres = bot_functions.calculate_score_and_distance_russia(cords=cords)
-                photo_url = bot_functions.get_url(cords=cords)
-
-                print(score, metres, message.from_user.username)
-                database.add_results_single(message.from_user.id, score, "Belarus")
-                database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode="Belarus")
-                txt = bot_functions.create_result_text(score=score, metres=metres)
-                send = bot.send_photo(message.chat.id, photo_url, caption=txt, reply_markup=markup)
-                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
-                #                         metres} метров", reply_markup=markup)
-                
-                bot.register_next_step_handler(send, belarus_single_game_menu)
-        else:
-            markup = markups.create_single_game_menu_markup(mode="Belarus")
-            send = bot.send_message(message.chat.id, "Выбери что-то из списка", reply_markup=markup)
-            bot.register_next_step_handler(send, belarus_single_game_menu)
-
-@bot.message_handler(content_types='text', chat_types=['private'])
-def message_reply(message):
-    if message.text == "Тык" or message.text == "тык":
-        bot.send_message(message.chat.id, "Зачем тыкнул??")
-    elif (message.text).lower() == "amogus" or (message.text).lower() == "amongus":
-        bot.send_message(message.chat.id, "when the imposter is sus")
-    else:
-        bot.send_message(
-            message.chat.id, "Чтобы перезапустить отправьте /reset")
-
-@bot.message_handler(chat_types=["group", "supergroup", "channel"])
-def message_reply_not_private(message):
-    bot.send_message(message.chat.id, "Бот работает только в личной переписке")
-
-while True:
-    try:
-        bot.polling(none_stop=True, timeout=500, long_polling_timeout=500)
-    except Exception as e:
-        print(datetime.datetime.now(), e)
-        sleep(3)
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
