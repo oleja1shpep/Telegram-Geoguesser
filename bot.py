@@ -176,7 +176,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
                 #                         metres} метров", reply_markup=markup)
 
 async def main():
-    bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
+    bot = Bot(token=TOKEN_BOT, parse_mode=ParseMode.HTML)
     dp = Dispatcher()
     dp.include_router(form_router)
 
