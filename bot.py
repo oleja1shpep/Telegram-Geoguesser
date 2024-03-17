@@ -175,6 +175,12 @@ async def process_name(message: Message, state: FSMContext) -> None:
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
 
+@form_router.message(F.text)
+async def process_name(message: Message, state: FSMContext) -> None:
+    await message.answer(
+        "Если что-то не работает: /start"
+    )
+
 async def main():
     bot = Bot(token=TOKEN_BOT, parse_mode=ParseMode.HTML)
     dp = Dispatcher()
