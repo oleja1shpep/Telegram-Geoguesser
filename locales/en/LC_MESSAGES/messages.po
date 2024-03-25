@@ -1,0 +1,281 @@
+# English translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-03-19 11:20+0300\n"
+"PO-Revision-Date: 2024-03-19 11:21+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.13.1\n"
+
+#: bot.py:34
+msgid "Привет, {}!{}"
+msgstr "Hello, {}!{}"
+
+#: bot.py:39 //
+msgid "Играть"
+msgstr "Play"
+
+#: bot.py:49
+msgid "Рад увидеть тебя снова в игре!"
+msgstr "Glad to see you back in the game!"
+
+#: bot.py:54
+msgid "Вы были успешно зарегистрированы"
+msgstr "You have been successfully registered"
+
+#: bot.py:69 bot.py:156
+msgid "Выберите язык"
+msgstr "Choose language"
+
+#: bot.py:69 bot.py:156
+msgid "Выбран Русский язык"
+msgstr "Set Russian language"
+
+#: bot.py:69 bot.py:156
+msgid "Выбран Английский язык"
+msgstr "Set English language"
+
+#: bot.py:58
+msgid "Как играть"
+msgstr "How to play"
+
+#: bot.py:65
+msgid "Режимы"
+msgstr "Modes"
+
+#: bot.py:71 bot.py:158
+msgid "Доступные режимы"
+msgstr "Available modes"
+
+#: bot.py:80
+msgid "Назад"
+msgstr "Back"
+
+#: bot.py:80
+msgid "Главное меню"
+msgstr "Main menu"
+
+#: bot.py:85
+msgid "Одиночный"
+msgstr "Single"
+
+#: bot.py:89
+msgid "Одиночный | Москва"
+msgstr "Single | Moscow"
+
+#: bot.py:93
+msgid "Одиночный по москве"
+msgstr "Single in Moscow"
+
+#: bot.py:96
+msgid "Одиночный | Санкт-Петербург"
+msgstr "Single | St. Petersburg"
+
+#: bot.py:100
+msgid "Одиночный по Санкт-Петербургу"
+msgstr "Single in St. Petersburg"
+
+#: bot.py:103
+msgid "Одиночный | Россия"
+msgstr "Single | Russia"
+
+#: bot.py:107
+msgid "Одиночный по России"
+msgstr "Single in Russia"
+
+#: bot.py:110
+msgid "Одиночный | Беларусь"
+msgstr "Single | Belarus"
+
+#: bot.py:114
+msgid "Одиночный по Беларуси"
+msgstr "Single in Belarus"
+
+#: bot.py:127
+msgid "Правила"
+msgstr "Rules"
+
+#: bot.py:144
+msgid "Топ игроков"
+msgstr "Top players"
+
+#: bot.py:149
+msgid "Прошлые 5 игр"
+msgstr "Previous 5 games"
+
+#: bot.py:154
+msgid "Назад"
+msgstr "Back"
+
+#: bot.py:164
+msgid "ответ получен"
+msgstr "response received"
+
+#: bot.py:186
+msgid "Если что-то не работает: /start"
+msgstr "If something is not working: /start"
+
+
+
+
+
+
+
+
+
+
+
+
+#: bot_functions.py:52
+msgid ""
+"Вы набрали {} очков\n"
+"Расстояние {} метров"
+msgstr ""
+"You scored {} points\n"
+"Distance {} meters"
+
+#: bot_functions.py:54 bot_functions.py:56
+msgid ""
+"Вы набрали {} очков\n"
+"Расстояние {} километров"
+msgstr ""
+"You scored {} points\n"
+"Distance {} kilometers"
+
+#: bot_functions.py:64
+msgid "{}. {} - среднее : {} | матчей : {}\n"
+msgstr "{}. {} - average : {} | matches : {}\n"
+
+#: bot_functions.py:74
+msgid "{}. {} очков | {} метров\n"
+msgstr "{}. {} points | {} meters\n"
+
+#: bot_functions.py:76
+msgid "Вы ещё не сыграли ни одну игру"
+msgstr "You haven't played a single game yet"
+
+#: markups.py:11
+msgid "Играть"
+msgstr "Play"
+
+#: markups.py:21
+msgid "Режимы"
+msgstr "Modes"
+
+#: markups.py:22
+msgid "Как играть"
+msgstr "How to play"
+
+#: markups.py:23
+msgid "Язык"
+msgstr "Language"
+
+#: markups.py:23
+msgid "Русский"
+msgstr "Russian"
+
+#: markups.py:23
+msgid "Английский"
+msgstr "English"
+
+#: markups.py:47
+msgid "Начать игру"
+msgstr "Start the game"
+
+#: messages.py:3
+msgid ""
+"\n"
+"Проверь своё знание Москвы!\n"
+"\n"
+"Дается неограниченное количество времени на ответ\n"
+"Можно перемещаться по улицам в любых направлениях"
+msgstr ""
+"Check your knowledge of Moscow!\n"
+"\n"
+"An unlimited amount of time is given to answer\n"
+"You can move through the streets in any direction"
+
+
+#: messages.py:9
+msgid ""
+"\n"
+"Как хорошо ты знаешь Россию?\n"
+"\n"
+"Дается неограниченное количество времени на ответ\n"
+"Можно перемещаться по улицам в любых направлениях"
+msgstr ""
+"\n"
+"How well do you know Russia?\n"
+"\n"
+"You are given an unlimited amount of time to answer \n"
+"You can move through the streets in any direction"
+
+#: messages.py:15
+msgid ""
+"\n"
+"Проверь своё знание Санкт-Петербурга!\n"
+"\n"
+"Дается неограниченное количество времени на ответ\n"
+"Можно перемещаться по улицам в любых направлениях"
+msgstr ""
+"\n"
+"Check your knowledge of St. Petersburg!\n"
+"\n"
+"An unlimited amount of time is given for the answer\n"
+"You can move through the streets in any direction"
+
+
+#: messages.py:21
+msgid ""
+"\n"
+"Как хорошо ты знаешь Беларусь?\n"
+"\n"
+"Дается неограниченное количество времени на ответ\n"
+"Можно перемещаться по улицам в любых направлениях"
+msgstr ""
+"\n"
+"How well do you know Belarus?\n"
+"\n"
+"You are given an unlimited amount of time to answer \n"
+"You can move through the streets in any direction"
+
+#: messages.py:27
+msgid ""
+"\n"
+"- Вы оказываетесь в случайной точке на карте мира\n"
+"- Можете перемещаться на панораме в любых направлениях\n"
+"\n"
+"Ваша задача: по панораме определить ваше местоположение на реальной карте"
+" мира, поставив метку на предполагаемое место вашего нахождения\n"
+"\n"
+msgstr ""
+"\n"
+"- You find yourself at a random point on the world map\n"
+"- You can move on the panorama in any direction\n"
+"\n"
+"Your task is to use the panorama to determine your location on the real map"
+" of the world, putting a label on your intended location\n"
+"\n"
+
+#: messages.py:35
+msgid ""
+"\n"
+"Я - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в "
+"отгадывание мест по всей России или по отдельным городам и "
+"посоревноваться с другими игроками\n"
+msgstr ""
+"\n"
+"I am an analogue of the Geoguessr game in telegram! Here you can play "
+"guessing places all over Russia or in individual cities and "
+"compete with other players \n"

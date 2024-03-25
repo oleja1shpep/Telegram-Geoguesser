@@ -1,0 +1,159 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-03-25 17:50+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.13.1\n"
+
+#: aiogram_bot.py:33
+msgid "Привет, {}!{}"
+msgstr ""
+
+#: aiogram_bot.py:48
+msgid "Рад увидеть тебя снова в игре!"
+msgstr ""
+
+#: aiogram_bot.py:53
+msgid "Вы были успешно зарегистрированы"
+msgstr ""
+
+#: aiogram_bot.py:71
+msgid "Выберите язык"
+msgstr ""
+
+#: aiogram_bot.py:79
+msgid "Выбран Русский язык"
+msgstr ""
+
+#: aiogram_bot.py:86
+msgid "Выбран Английский язык"
+msgstr ""
+
+#: aiogram_bot.py:94 aiogram_bot.py:113
+msgid "Главное меню"
+msgstr ""
+
+#: aiogram_bot.py:104 aiogram_bot.py:191
+msgid "Доступные режимы"
+msgstr ""
+
+#: aiogram_bot.py:122 markups.py:44
+msgid "Одиночный | Москва"
+msgstr ""
+
+#: aiogram_bot.py:126
+msgid "Одиночный по москве"
+msgstr ""
+
+#: aiogram_bot.py:129 markups.py:45
+msgid "Одиночный | Санкт-Петербург"
+msgstr ""
+
+#: aiogram_bot.py:133
+msgid "Одиночный по Санкт-Петербургу"
+msgstr ""
+
+#: aiogram_bot.py:136 markups.py:46
+msgid "Одиночный | Россия"
+msgstr ""
+
+#: aiogram_bot.py:140
+msgid "Одиночный по России"
+msgstr ""
+
+#: aiogram_bot.py:143 markups.py:47
+msgid "Одиночный | Беларусь"
+msgstr ""
+
+#: aiogram_bot.py:147
+msgid "Одиночный по Беларуси"
+msgstr ""
+
+#: aiogram_bot.py:160 markups.py:61
+msgid "Правила"
+msgstr ""
+
+#: aiogram_bot.py:177 markups.py:62
+msgid "Топ игроков"
+msgstr ""
+
+#: aiogram_bot.py:182 markups.py:63
+msgid "Прошлые 5 игр"
+msgstr ""
+
+#: aiogram_bot.py:187 markups.py:35 markups.py:48 markups.py:64
+msgid "Назад"
+msgstr ""
+
+#: aiogram_bot.py:197
+msgid "ответ получен"
+msgstr ""
+
+#: aiogram_bot.py:219
+msgid "Если что-то не работает: /start"
+msgstr ""
+
+#: bot_functions.py:52
+msgid ""
+"Вы набрали {} очков\n"
+"Расстояние {} метров"
+msgstr ""
+
+#: bot_functions.py:54 bot_functions.py:56
+msgid ""
+"Вы набрали {} очков\n"
+"Расстояние {} километров"
+msgstr ""
+
+#: bot_functions.py:64
+msgid "{}. {} - среднее : {} | матчей : {}\n"
+msgstr ""
+
+#: bot_functions.py:74
+msgid "{}. {} очков | {} метров\n"
+msgstr ""
+
+#: bot_functions.py:76
+msgid "Вы ещё не сыграли ни одну игру"
+msgstr ""
+
+#: markups.py:11
+msgid "Играть"
+msgstr ""
+
+#: markups.py:21
+msgid "Режимы"
+msgstr ""
+
+#: markups.py:22
+msgid "Как играть"
+msgstr ""
+
+#: markups.py:23
+msgid "Язык"
+msgstr ""
+
+#: markups.py:33
+msgid "Русский"
+msgstr ""
+
+#: markups.py:34
+msgid "Английский"
+msgstr ""
+
+#: markups.py:60
+msgid "Начать игру"
+msgstr ""
+

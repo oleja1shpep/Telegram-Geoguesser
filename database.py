@@ -9,7 +9,7 @@ async def search_tele_id(tele_id, tele_username):
     find_login = cur.execute("SELECT tele_id FROM users_state WHERE tele_id = ?", (tele_id, ))
     if (find_login.fetchone() == None):
         cur.execute("""INSERT INTO users_state VALUES
-                    (?, ?, 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
+                    (?, ?, 'en', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
                     """, (tele_id, tele_username, ))
         connection.commit()
         connection.close()
@@ -80,6 +80,23 @@ async def add_game_single(tele_id, score, metres, mode):
     cur.execute("UPDATE users_state SET last_games_" + mode.lower() + " = ? WHERE tele_id = ?", (json.dumps(games),tele_id, ))
     connection.commit()
     connection.close()
+
+async def set_language(tele_id, language):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+
+    cur.execute("UPDATE users_state SET language = ? WHERE tele_id = ?", (language ,tele_id, ))
+    connection.commit()
+    connection.close()
+
+async def get_language(tele_id):
+    connection = sqlite3.connect(DB_NAME)
+    cur = connection.cursor()
+    cur.execute("SELECT tele_id, language FROM users_state WHERE tele_id = ?", (tele_id, ))
+    res = cur.fetchone()
+    language = res[1]
+    connection.close()
+    return language
 
 # connection = sqlite3.connect(DB_NAME)
 # cur = connection.cursor()
