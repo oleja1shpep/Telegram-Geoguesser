@@ -1,7 +1,6 @@
 from math import cos, sin, asin, sqrt, radians, log
 from config import TOKEN_STATIC
 import database
-from aiogram.utils.i18n import gettext as _
 
 async def get_url(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
@@ -49,11 +48,11 @@ async def calculate_score_and_distance_russia(cords):
 async def create_result_text(score, metres):
     txt = ""
     if metres < 10000:
-        txt = _("Вы набрали {} очков\nРасстояние {} метров").format(score, metres)
+        txt = ("Вы набрали {} очков\nРасстояние {} метров").format(score, metres)
     elif metres < 100000:
-        txt = _("Вы набрали {} очков\nРасстояние {} километров").format(score, round(metres / 1000, 2))
+        txt = ("Вы набрали {} очков\nРасстояние {} километров").format(score, round(metres / 1000, 2))
     else:
-        txt = _("Вы набрали {} очков\nРасстояние {} километров").format(score, round(metres / 1000, 0))
+        txt = ("Вы набрали {} очков\nРасстояние {} километров").format(score, round(metres / 1000, 0))
 
     return txt
 
@@ -61,7 +60,7 @@ async def get_top10_single(mode):
     top_10_users = await database.get_top10_single(mode)
     txt = ''
     for i in range(len(top_10_users)):
-        txt += _('{}. {} - среднее : {} | матчей : {}\n').format(i + 1, top_10_users[i][0], top_10_users[i][3],
+        txt += ('{}. {} - среднее : {} | матчей : {}\n').format(i + 1, top_10_users[i][0], top_10_users[i][3],
                                                               top_10_users[i][2])
     # print(top_10_users)
     return txt
@@ -71,7 +70,7 @@ async def get_last5_results_single(tele_id, mode):
 
     txt = ''
     for i in range(len(games)):
-        txt += _("{}. {} очков | {} метров\n").format(i + 1, games[i][0], games[i][1])
+        txt += ("{}. {} очков | {} метров\n").format(i + 1, games[i][0], games[i][1])
     if len(games) == 0:
-        txt = _("Вы ещё не сыграли ни одну игру")
+        txt = ("Вы ещё не сыграли ни одну игру")
     return txt

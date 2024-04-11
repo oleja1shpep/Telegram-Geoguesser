@@ -1,2 +1,3 @@
 aiogram==3.4.1
 babel==2.13.1
+pyMongo==4.6.3

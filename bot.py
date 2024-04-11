@@ -13,11 +13,7 @@ import database
 import markups
 import bot_functions
 from config import TOKEN_BOT
-from aiogram.utils.i18n import I18n, ConstI18nMiddleware, I18nMiddleware
-from pathlib import Path
-from aiogram.utils.i18n import gettext as _
-from aiogram.utils.i18n import lazy_gettext as __
-from middlewares import MyI18nMiddleware
+
 form_router = Router()
 
 class Form(StatesGroup):
@@ -31,12 +27,12 @@ class Form(StatesGroup):
 async def command_start(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.start)
     await message.answer(
-        _('Привет, {}!{}').format(message.from_user.first_name, _(messages.GREETING)),
+        ('Привет, {}!{}').format(message.from_user.first_name, messages.GREETING),
         reply_markup=await markups.create_start_markup()
     )
 
 
-@form_router.message(Form.start, F.text == __("Играть"))
+@form_router.message(Form.start, F.text == "Играть")
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
 
@@ -46,106 +42,111 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
     if (await database.search_tele_id(tele_id=tele_id, tele_username=tele_username)):
         await message.answer(
-            _("Рад увидеть тебя снова в игре!"),
+            "Рад увидеть тебя снова в игре!",
             reply_markup = markup
         )
     else:
         await message.answer(
-            _("Вы были успешно зарегистрированы"),
+            "Вы были успешно зарегистрированы",
             reply_markup = markup
         )
 
-@form_router.message(Form.menu, F.text == __("Как играть"))
+@form_router.message(Form.menu, F.text == "Как играть")
 async def process_name(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await message.answer(
-        text=_(messages.HOW_TO_PLAY)
+        text = messages.HOW_TO_PLAY
     )
 
 
-@form_router.message(Form.menu, F.text == __("Язык"))
+@form_router.message(Form.menu, F.text == "Язык")
 async def process_name(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await state.set_state(Form.language_menu)
     markup = await markups.create_language_menu_markup()
     await message.answer(
-        _("Выберите язык"),
+        "Выберите язык",
         reply_markup = markup
     )
 
-@form_router.message(Form.language_menu, F.text == __("Русский"))
+@form_router.message(Form.language_menu, F.text == "Русский")
 async def process_name(message: Message, state: FSMContext) -> None:
     await database.set_language(message.from_user.id, 'ru')
+
+    markup = await markups.create_language_menu_markup()
     await message.answer(
-        _("Выбран Русский язык"),
+        "Выбран Русский язык",
+        reply_markup=markup
     )
 
-@form_router.message(Form.language_menu, F.text == __("Английский"))
+@form_router.message(Form.language_menu, F.text == "Английский")
 async def process_name(message: Message, state: FSMContext) -> None:
     await database.set_language(message.from_user.id, 'en')
+    markup = await markups.create_language_menu_markup()
     await message.answer(
-        _("Выбран Английский язык"),
+        "Выбран Английский язык",
+        reply_markup=markup
     )
 
-@form_router.message(Form.language_menu, F.text == __("Назад"))
+@form_router.message(Form.language_menu, F.text == "Назад")
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     markup = await markups.create_menu_markup()
     await message.answer(
-        _("Главное меню"),
+        "Главное меню",
         reply_markup= markup
     )
 
-@form_router.message(Form.menu, F.text == __("Режимы"))
+@form_router.message(Form.menu, F.text == "Режимы")
 async def process_name(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await state.set_state(Form.gamemodes)
     markup = await markups.create_gamemodes_markup()
     await message.answer(
-        _("Доступные режимы"),
+        "Доступные режимы",
         reply_markup = markup
     )
 
-@form_router.message(Form.gamemodes, F.text == __("Назад"))
+@form_router.message(Form.gamemodes, F.text == "Назад")
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     markup = await markups.create_menu_markup()
     await message.answer(
-        _("Главное меню"),
+        "Главное меню",
         reply_markup= markup
     )
 
 
-@form_router.message(Form.gamemodes, F.text.split()[0] == __("Одиночный"))
+@form_router.message(Form.gamemodes, F.text.split()[0] == "Одиночный")
 async def process_name(message: Message, state: FSMContext) -> None:
     answer = message.text
     mode = "Moscow"
-    if (answer == _("Одиночный | Москва")):
+    if (answer == "Одиночный | Москва"):
         mode = "Moscow"
         markup = await markups.create_single_game_menu_markup(mode)
         await message.answer(
-            _("Одиночный по москве"),
+            "Одиночный по москве",
             reply_markup = markup
         )
-    elif (answer == _("Одиночный | Санкт-Петербург")):
+    elif (answer == "Одиночный | Санкт-Петербург"):
         mode = "SPB"
         markup = await markups.create_single_game_menu_markup(mode)
         await message.answer(
-            _("Одиночный по Санкт-Петербургу"),
+            "Одиночный по Санкт-Петербургу",
             reply_markup = markup
         )
-    elif (answer == _("Одиночный | Россия")):
+    elif (answer == "Одиночный | Россия"):
         mode = "Russia"
         markup = await markups.create_single_game_menu_markup(mode)
         await message.answer(
-            _("Одиночный по России"),
+            "Одиночный по России",
             reply_markup = markup
         )
-    elif (answer == _("Одиночный | Беларусь")):
+    elif (answer == "Одиночный | Беларусь"):
         mode = "Belarus"
         markup = await markups.create_single_game_menu_markup(mode)
         await message.answer(
-            _("Одиночный по Беларуси"),
+            "Одиночный по Беларуси",
             reply_markup = markup
         )
 
@@ -158,44 +159,44 @@ async def process_name(message: Message, state: FSMContext) -> None:
     mode = await state.get_data()
     mode = mode["gamemodes"]
     answer = message.text
-    if (answer == _("Правила")):
+    if (answer == "Правила"):
         if (mode == "Moscow"):
             await message.answer(
-                _(messages.MOSCOW_SINGLE_PLAYER_RULES)
+                messages.MOSCOW_SINGLE_PLAYER_RULES
             )
         elif (mode == "SPB"):
             await message.answer(
-                _(messages.SPB_SINGLE_PLAYER_RULES)
+                messages.SPB_SINGLE_PLAYER_RULES
             )
         elif (mode == "Russia"):
             await message.answer(
-                _(messages.RUSSIA_SINGLE_PLAYER_RULES)
+                messages.RUSSIA_SINGLE_PLAYER_RULES
             )
         elif (mode == "Belarus"):
             await message.answer(
-                _(messages.BELARUS_SINGLE_PLAYER_RULES)
+                messages.BELARUS_SINGLE_PLAYER_RULES
             )
-    elif (answer == _("Топ игроков")):
+    elif (answer == "Топ игроков"):
         top_10_text = await bot_functions.get_top10_single(mode=mode)
         await message.answer(
             top_10_text
         )
-    elif (answer == _("Прошлые 5 игр")):
+    elif (answer == "Прошлые 5 игр"):
         last_5_games = await bot_functions.get_last5_results_single(message.from_user.id, mode)
         await message.answer(
             last_5_games
         )
-    elif (answer == _("Назад")):
+    elif (answer == "Назад"):
         await state.set_state(Form.gamemodes)
         markup = await markups.create_gamemodes_markup()
         await message.answer(
-            _("Доступные режимы"),
+            "Доступные режимы",
             reply_markup= markup
         )
     else:
         if (hasattr(message, 'web_app_data')):
             if message.web_app_data.data:
-                print(_("ответ получен"), message.from_user.id,
+                print("ответ получен", message.from_user.id,
                       message.from_user.username)
                 cords = message.web_app_data.data
                 if (mode == "SPB" or mode == "Moscow"):
@@ -217,17 +218,13 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(F.text)
 async def process_name(message: Message, state: FSMContext) -> None:
     await message.answer(
-        _("Если что-то не работает: /start")
+        "Если что-то не работает: /start"
     )
 
 async def main():
     bot = Bot(token=TOKEN_BOT, parse_mode=ParseMode.HTML)
     dp = Dispatcher()
     dp.include_router(form_router)
-    i18n = I18n(path=Path(__file__).parent / 'locales', default_locale='en', domain='messages')
-    i18n_middleware = MyI18nMiddleware(i18n=i18n)
-    i18n_middleware.setup(dp)
-
     await dp.start_polling(bot)
 
 
