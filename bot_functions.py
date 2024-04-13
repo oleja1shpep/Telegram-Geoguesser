@@ -1,6 +1,10 @@
 from math import cos, sin, asin, sqrt, radians, log
 from config import TOKEN_STATIC
-import database
+import mongo_db
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('GEOGESSER')
 
 async def get_url(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
@@ -57,16 +61,24 @@ async def create_result_text(score, metres):
     return txt
 
 async def get_top10_single(mode):
-    top_10_users = await database.get_top10_single(mode)
+    try:
+        top_10_users = await mongo_db.get_top10_single(mode)
+        logger.info("connected to db. got top 10 players in signle " + mode)
+    except Exception as e:
+        logger.error(e)
     txt = ''
     for i in range(len(top_10_users)):
-        txt += ('{}. {} - среднее : {} | матчей : {}\n').format(i + 1, top_10_users[i][0], top_10_users[i][3],
-                                                              top_10_users[i][2])
+        txt += ('{}. {} - среднее : {} | матчей : {}\n').format(i + 1, top_10_users[i]["username"], top_10_users[i][mode.lower() +"_single_mean_score"],
+                                                              top_10_users[i][mode.lower() +"_single_game_counter"])
     # print(top_10_users)
     return txt
 
 async def get_last5_results_single(tele_id, mode):
-    games = await database.get_last5_results(tele_id, mode)
+    try:
+        games = await mongo_db.get_last5_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in signle " + mode)
+    except Exception as e:
+        logger.error(e)
 
     txt = ''
     for i in range(len(games)):
