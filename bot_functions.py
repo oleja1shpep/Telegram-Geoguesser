@@ -68,6 +68,9 @@ async def get_top10_single(mode, lang = 'en'):
     except Exception as e:
         logger.error(e)
     txt = ''
+    # print("- - - - - - - ")
+    # print(top_10_users)
+    # print("- - - - - - - ")
     for i in range(len(top_10_users)):
         txt += (t['top 10'][lang_code[lang]]).format(i + 1, top_10_users[i]["username"], top_10_users[i][mode.lower() +"_single_mean_score"],
                                                               top_10_users[i][mode.lower() +"_single_game_counter"])

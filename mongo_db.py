@@ -3,7 +3,9 @@ import os
 from pymongo import MongoClient
 from config import DB_NAME
 from urllib.parse import quote_plus as quote
-import json
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('GEOGESSER')
 
 DB_HOST = os.getenv("DB_HOST") or "localhost"
 DB_USER = os.getenv("DB_USER") or "mongo"
@@ -14,7 +16,7 @@ URL = 'mongodb://{user}:{pw}@{hosts}/?authSource=admin'.format(
     hosts=DB_HOST,
     )
 
-def add_user(tele_id, username):
+async def add_user(tele_id, username):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
@@ -22,7 +24,6 @@ def add_user(tele_id, username):
     user = {
         "tele_id" : tele_id,
         "username" : username,
-        # "language" : "en",
         # "moscow_single_total_score" : 0,
         # "moscow_single_game_counter": 0,
         # "moscow_single_mean_score" : 0,
@@ -51,7 +52,6 @@ async def search_tele_id(tele_id, username):
         conn.close()
         return True
     
-    add_user(tele_id, username)
     conn.close()
     return False
 
@@ -60,12 +60,14 @@ async def get_top10_single(mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
-    users_without_key = []
+
+
     for user in users.find():
         if (mode.lower() +"_single_mean_score" not in user.keys()):
             users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_mean_score" : 0}})
             users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_game_counter" : 0}})
             users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_total_score" : 0}})
+    logger.info("updated db. added column with single " + mode)
 
     sort = {"$sort":
             {mode.lower() +"_single_mean_score" : -1}

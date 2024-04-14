@@ -61,6 +61,13 @@ async def process_name(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(e)
 
+    if not(is_found):
+        try:
+            await mongo_db.add_user(tele_id, username)
+            logger.info("added user \"" + username + "\" to db")
+        except Exception as e:
+            logger.error(e)
+
     try:
         await mongo_db.set_language(message.from_user.id, 'en')
         logger.info("Set language")
@@ -69,9 +76,9 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
     lang = await mongo_db.get_language(message.from_user.id)
     markup = await markups.create_menu_markup(lang)
-    
+
     try:
-        if (is_found):
+        if (is_found):            
             await message.answer(
                 t['greeting'][lang_code[lang]],
                 reply_markup = markup
@@ -316,6 +323,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
                 logger.error(e)
 
     elif (answer == t['top players'][lang_code[lang]]):
+        top_10_text = ''
         try:
             top_10_text = await bot_functions.get_top10_single(mode=mode, lang=lang)
             logger.info("got top 10 players in single " + mode)
