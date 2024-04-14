@@ -4,16 +4,18 @@ import sys
 import os
 import json
 
-from aiogram import Bot, Dispatcher, F, Router, types
+from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message
+from aiogram.types import Message, Update
+
 import messages
 import database
 import markups
 import bot_functions
+
 from config import TEST_TOKEN
 from translation import t, lang_code
 
@@ -415,7 +417,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 async def process_event(event, bot: Bot):
     try:
         body = json.loads(event['body'])
-        update = types.Update(**body)
+        update = Update(**body)
         result = await dp.feed_update(bot=bot, update=update)
         logger.info("handeled event")
     except Exception as e:

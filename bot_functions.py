@@ -1,7 +1,8 @@
-from math import cos, sin, asin, sqrt, radians, log
-from config import TOKEN_STATIC
-import database
 import logging
+from math import cos, sin, asin, sqrt, radians, log
+
+import database
+from config import TOKEN_STATIC
 from translation import lang_code, t
 
 logging.basicConfig(level=logging.DEBUG)
