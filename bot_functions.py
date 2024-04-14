@@ -1,6 +1,6 @@
 from math import cos, sin, asin, sqrt, radians, log
 from config import TOKEN_STATIC
-import mongo_db
+import database
 import logging
 from translation import lang_code, t
 
@@ -63,7 +63,7 @@ async def create_result_text(score, metres, lang = 'en'):
 
 async def get_top10_single(mode, lang = 'en'):
     try:
-        top_10_users = await mongo_db.get_top10_single(mode)
+        top_10_users = await database.get_top10_single(mode)
         logger.info("connected to db. got top 10 players in signle " + mode)
     except Exception as e:
         logger.error(e)
@@ -79,7 +79,7 @@ async def get_top10_single(mode, lang = 'en'):
 
 async def get_last5_results_single(tele_id, mode, lang = 'en'):
     try:
-        games = await mongo_db.get_last5_results(tele_id, mode)
+        games = await database.get_last5_results(tele_id, mode)
         logger.info("connected to db. got last 5 games in signle " + mode)
     except Exception as e:
         logger.error(e)

@@ -11,7 +11,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 import messages
-import mongo_db
+import database
 import markups
 import bot_functions
 from config import TEST_TOKEN
@@ -56,25 +56,25 @@ async def process_name(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     username = message.from_user.username
     try:
-        is_found = await mongo_db.search_tele_id(tele_id, username)
+        is_found = await database.find_user(tele_id, username)
         logger.info("read info from mongodb")
     except Exception as e:
         logger.error(e)
 
     if not(is_found):
         try:
-            await mongo_db.add_user(tele_id, username)
+            await database.add_user(tele_id, username)
             logger.info("added user \"" + username + "\" to db")
         except Exception as e:
             logger.error(e)
 
     try:
-        await mongo_db.set_language(message.from_user.id, 'en')
+        await database.set_language(message.from_user.id, 'en')
         logger.info("Set language")
     except Exception as e:
         logger.error(e)
 
-    lang = await mongo_db.get_language(message.from_user.id)
+    lang = await database.get_language(message.from_user.id)
     markup = await markups.create_menu_markup(lang)
 
     try:
@@ -95,9 +95,9 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.menu, F.text.in_(t["how to play"]))
 async def process_name(message: Message, state: FSMContext) -> None:
     
-    await mongo_db.drop_duplicates()
+    await database.drop_duplicates()
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("got lang from user")
     except Exception as e:
         logger.error(e)
@@ -112,9 +112,9 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
 @form_router.message(Form.menu, F.text.in_(t["language"]))
 async def process_name(message: Message, state: FSMContext) -> None:
-    await mongo_db.drop_duplicates()
+    await database.drop_duplicates()
     await state.set_state(Form.language_menu)
-    lang = await mongo_db.get_language(message.from_user.id)
+    lang = await database.get_language(message.from_user.id)
     markup = await markups.create_language_menu_markup(lang)
     try:
         await message.answer(
@@ -128,7 +128,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.language_menu, F.text.in_(t["rus_language"]))
 async def process_name(message: Message, state: FSMContext) -> None:
     try:
-        await mongo_db.set_language(message.from_user.id, 'ru')
+        await database.set_language(message.from_user.id, 'ru')
         logger.info("set language in db : ru")
     except Exception as e:
         logger.error(e)
@@ -146,7 +146,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.language_menu, F.text.in_(t["eng_language"]))
 async def process_name(message: Message, state: FSMContext) -> None:
     try:
-        await mongo_db.set_language(message.from_user.id, 'en')
+        await database.set_language(message.from_user.id, 'en')
         logger.info("set language in db : en")
     except Exception as e:
         logger.error(e)
@@ -164,7 +164,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)
@@ -181,10 +181,10 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
 @form_router.message(Form.menu, F.text.in_(t["modes"]))
 async def process_name(message: Message, state: FSMContext) -> None:
-    await mongo_db.drop_duplicates()
+    await database.drop_duplicates()
     await state.set_state(Form.gamemodes)
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)
@@ -203,7 +203,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)
@@ -223,7 +223,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 async def process_name(message: Message, state: FSMContext) -> None:
     answer = message.text
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)
@@ -282,7 +282,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     mode = await state.get_data()
     mode = mode["gamemodes"]
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)
@@ -377,12 +377,12 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
                 # print(score, metres, message.from_user.username)
                 try:
-                    await mongo_db.add_results_single(message.from_user.id, score, mode)
+                    await database.add_results_single(message.from_user.id, score, mode)
                     logger.info("added results to single: {}, score = {}, name = {}".format(mode, score, message.from_user.username))
                 except Exception as e:
                     logger.error(e)
                 try:
-                    await mongo_db.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode=mode)
+                    await database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode=mode)
                     logger.info("added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, message.from_user.username))
                 except Exception as e:
                     logger.error(e)
@@ -400,7 +400,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(F.text)
 async def process_name(message: Message, state: FSMContext) -> None:
     try:
-        lang = await mongo_db.get_language(message.from_user.id)
+        lang = await database.get_language(message.from_user.id)
         logger.info("Got language from user")
     except Exception as e:
         logger.error(e)

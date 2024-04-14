@@ -1,107 +1,159 @@
-import sqlite3
+import os
+from pymongo import MongoClient
 from config import DB_NAME
-import json
+from urllib.parse import quote_plus as quote
+import logging
 
-async def search_tele_id(tele_id, tele_username):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('GEOGESSER')
+
+DB_HOST = os.getenv("DB_HOST") or "localhost"
+DB_USER = os.getenv("DB_USER") or "mongo"
+DB_PASS = os.getenv("DB_PASS") or "mongomongo"
+URL = 'mongodb://{user}:{pw}@{hosts}/?authSource=admin'.format(
+    user=quote(DB_USER),
+    pw=quote(DB_PASS),
+    hosts=DB_HOST,
+    )
+
+async def add_user(tele_id, username):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    user = {
+        "tele_id" : tele_id,
+        "username" : username,
+        # "moscow_single_total_score" : 0,
+        # "moscow_single_game_counter": 0,
+        # "moscow_single_mean_score" : 0,
+        # "last_games_moscow" : [],
+        # "spb_single_total_score" : 0,
+        # "spb_single_game_counter" : 0,
+        # "spb_single_mean_score" : 0,
+        # "last_games_spb" : [],
+        # "russia_single_total_score" : 0,
+        # "russia_single_game_counter" : 0,
+        # "russia_single_mean_score" : 0,
+        # "last_games_russia" : []
+    }
     
-    find_login = cur.execute("SELECT tele_id FROM users_state WHERE tele_id = ?", (tele_id, ))
-    if (find_login.fetchone() == None):
-        cur.execute("""INSERT INTO users_state VALUES
-                    (?, ?, 'en', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]', 0, 0, 0, '[]')
-                    """, (tele_id, tele_username, ))
-        connection.commit()
-        connection.close()
-        return False
-    connection.close()
-    return True
+    users.insert_one(user)
+
+    conn.close()
+
+async def find_user(tele_id, username):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    find_user = users.find_one({"tele_id" : tele_id})
+
+    if find_user:
+        conn.close()
+        return True
+    
+    conn.close()
+    return False
+
 
 async def get_top10_single(mode):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    rows = cur.execute("SELECT username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state ORDER BY "+ mode.lower() +"_single_mean_score DESC")
-    res = rows.fetchmany(10)
-    connection.close()
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+
+    for user in users.find():
+        if (mode.lower() +"_single_mean_score" not in user.keys()):
+            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_mean_score" : 0}})
+            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_game_counter" : 0}})
+            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_total_score" : 0}})
+    logger.info("updated db. added column with single " + mode)
+
+    sort = {"$sort":
+            {mode.lower() +"_single_mean_score" : -1}
+            }
+    limit = {"$limit":10}
+
+    res = list(users.aggregate([sort, limit]))
+    conn.close()
     return res
 
+
 async def add_results_single(tele_id, score, mode):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    user_data = cur.execute("SELECT tele_id, username, "+ mode.lower() +"_single_total_score, "+ mode.lower() +"_single_game_counter, "+ mode.lower() +"_single_mean_score FROM users_state WHERE tele_id = ?", (tele_id, ))
-    user_data = user_data.fetchone()
-    cur = connection.cursor()
-    game_counter = user_data[3]
-    current_score = user_data[2]
-    if game_counter == None:
-        game_counter = 0
-    if current_score == None:
-        current_score = 0
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    
+    user = users.find_one({"tele_id" : tele_id})
+    if mode.lower() +"_single_total_score" not in user.keys():
+        users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_total_score": 0}})
+    if mode.lower() +"_single_game_counter" not in user.keys():
+        users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_game_counter": 0}})
 
-    cur.execute("UPDATE users_state SET "+ mode.lower() +"_single_game_counter = ?, "+ mode.lower() +"_single_total_score = ?, "+ mode.lower() +"_single_mean_score = ? WHERE tele_id = ?", (game_counter + 1, current_score + score, round((current_score + score) / (game_counter + 1),2) , tele_id, ))
-    connection.commit()
+    users.update_one({"tele_id" : tele_id}, {'$inc': {mode.lower() +"_single_total_score": score}})
+    users.update_one({"tele_id" : tele_id}, {'$inc': {mode.lower() +"_single_game_counter": 1}})
 
-    connection.close()
+    user = users.find_one({"tele_id" : tele_id})
+    mean_score = round(user[mode.lower() +"_single_total_score"] / user[mode.lower() +"_single_game_counter"], 2)
+    users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_mean_score": mean_score}})
+    
+    conn.close()
 
 async def drop_duplicates():
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("""
-    DELETE FROM users_state
-    WHERE rowid > (
-    SELECT MIN(rowid) FROM users_state p2  
-    WHERE users_state.tele_id = p2.tele_id
-    AND users_state.username = p2.username
-    );
-    """)
-    connection.commit()
-    connection.close()
+    pass
 
 async def get_last5_results(tele_id, mode):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_" + mode.lower() + " FROM users_state WHERE tele_id = ?", (tele_id, ))
-    res = cur.fetchone()
-    games = json.loads(res[1])
-    #print(res)
-    connection.close()
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    user = users.find_one({"tele_id" : tele_id})
+    if "last_games_" + mode.lower() not in user:
+        users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : []}})
+        user = users.find_one({"tele_id" : tele_id})
+
+    games = user["last_games_" + mode.lower()]
+    conn.close()
     return games
 
 async def add_game_single(tele_id, score, metres, mode):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, last_games_" + mode.lower() + " FROM users_state WHERE tele_id = ?", (tele_id, ))
-    games = json.loads(cur.fetchone()[1])
+
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    user = users.find_one({"tele_id" : tele_id})
+    if "last_games_" + mode.lower() not in user:
+        users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : []}})
+        user = users.find_one({"tele_id" : tele_id})
+
+    games = user["last_games_" + mode.lower()]
     if (len(games) < 5):
         games.insert(0, (score, metres))
     else:
         games.pop(-1)
         games.insert(0, (score, metres))
-    cur.execute("UPDATE users_state SET last_games_" + mode.lower() + " = ? WHERE tele_id = ?", (json.dumps(games),tele_id, ))
-    connection.commit()
-    connection.close()
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : games}})
+
+    conn.close()
 
 async def set_language(tele_id, language):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
 
-    cur.execute("UPDATE users_state SET language = ? WHERE tele_id = ?", (language ,tele_id, ))
-    connection.commit()
-    connection.close()
+    users.update_one(filter = {"tele_id" : tele_id}, update = {'$set': {'language': language}})
+
+    conn.close()
 
 async def get_language(tele_id):
-    connection = sqlite3.connect(DB_NAME)
-    cur = connection.cursor()
-    cur.execute("SELECT tele_id, language FROM users_state WHERE tele_id = ?", (tele_id, ))
-    res = cur.fetchone()
-    language = res[1]
-    connection.close()
-    return language
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
 
-# connection = sqlite3.connect(DB_NAME)
-# cur = connection.cursor()
+    user = users.find_one({"tele_id" : tele_id})
+    if "language" not in user:
+        users.update_one({"tele_id" : tele_id}, {"$set" : {"language", "en"}})
+        user = users.find_one({"tele_id" : tele_id})
 
-# cur.execute("ALTER TABLE users_state ADD COLUMN mean_score")
-# connection.commit()
-# connection.close()
-
+    conn.close()
+    return user["language"]
