@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <title>Geoguessr</title>
     <meta charset="utf-8">
@@ -12,17 +13,31 @@
         }
 
         html,
-        body,
+        body {
+            height: 100%;
+        }
+
+        #cont {
+            /* border: 3px solid red; */
+            height: 100%;
+        }
 
         #pano {
-            height: 80%;
+            height: 100%;
             text-align: center;
+            z-index: 0;
             /* Другие стили для player1 */
         }
 
         #map {
-            height: 50%;
+            position: fixed;
+            top: 45%;
+            height: 55%;
             text-align: center;
+            z-index: 100;
+            width: 100%;
+            /* border: 3px solid green;
+            background: white; */
             /* Другие стили для map */
         }
 
@@ -32,19 +47,52 @@
         }
 
         button {
-            border: 0;
-            border-radius: 5px;
-            margin-top: 5%;
-            margin-bottom: 5%;
+            position: absolute;
+            border: 10px;
+            border-radius: 100%;
+            bottom: 2%;
+            /* margin-bottom: 5%; */
             height: 10%;
-            width: 30%;
+            aspect-ratio: 1;
+
             font-size: large;
             /* font-weight: 500; */
             cursor: pointer;
             transition: all 500ms ease;
             color: var(--tg-theme-button-text-color);
             background: var(--tg-theme-button-color);
-            /* background: aquamarine; */
+            z-index: 101;
+        }
+
+        /* button:hover {
+            opacity: 0.5;
+        } */
+
+        button:active {
+            opacity: 0.5;
+        }
+
+        #submit {
+            background: var(--tg-theme-button-color) url("icons//send.svg") no-repeat;
+            background-size: 50%;
+            background-position: center;
+            right: 10px;
+        }
+
+        #map_toggler {
+            background: var(--tg-theme-button-color) url("icons//map-icon.svg") no-repeat;
+            background-position: center;
+            background-size: 50%;
+            left: 2%;
+            bottom: 2%;
+        }
+
+        #home_pano {
+            background: var(--tg-theme-button-color) url("icons//home.svg") no-repeat;
+            background-position: center;
+            background-size: 50%;
+            left: 2%;
+            bottom: 14%;
         }
 
         .ymaps-2-1-79-panorama-gotoymaps {
@@ -54,6 +102,7 @@
         .ymaps-2-1-79-panorama-control__copyright-link {
             display: none !important;
         }
+
         .ymaps-2-1-79-gotoymaps__container {
             display: none !important;
         }
@@ -69,27 +118,49 @@
         .ymaps-2-1-79-copyright__content {
             display: none !important;
         }
-
     </style>
     <script src='https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=c508f12d-ce34-4d52-b259-2446d90ab6c2'></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&v=weekly" 
+      defer
+    ></script>
     <script src="app.js"></script>
 </head>
 
 <body>
-    <div id="pano" class="player"></div>
-    <div id="map" class="player"></div>
-    <button id="submit">Отправить</button>
+    <div id="cont">
+        <div id="pano" class="player"></div>
+        <div id="map" class="player"></div>
+    </div>
+    <button id="submit"></button>
+    <button id="map_toggler"></button>
+    <button id="home_pano"></button>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
         let submit = document.getElementById("submit");
+        let map_open = document.getElementById("map_toggler");
+        let home_pano = document.getElementById("home_pano");
+        let map = document.getElementById("map");
+        map.hidden = true;
+        submit.hidden = true;
         tg.expand();
-        // document.getElementsByClassName("ymaps-2-1-79-panorama-gotoymaps")[0].remove()
 
         submit.addEventListener("click", () => {
             tg.sendData(GetPanoramaCords())
             tg.close()
         });
+
+        home_pano.addEventListener("click", () => {
+            toHomePano();
+        });
+
+        map_open.addEventListener("click", () => {
+            map.hidden = !map.hidden;
+            submit.hidden = !submit.hidden;
+            home_pano.hidden = !home_pano.hidden;
+        });
     </script>
 </body>
+
 </html>
