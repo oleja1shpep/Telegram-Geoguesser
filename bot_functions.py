@@ -1,12 +1,18 @@
+import logging
 from math import cos, sin, asin, sqrt, radians, log
-from config import TOKEN_STATIC
-import database
 
-def get_url(cords):
+import database
+from config import TOKEN_STATIC
+from translation import lang_code, t
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('GEOGESSER')
+
+async def get_url(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
     return f"https://static-maps.yandex.ru/v1?pl=c:8822DDC0,w:3,{lon1},{lat1},{lon2},{lat2}&pt={lon1},{lat1},flag~{lon2},{lat2},comma&apikey={TOKEN_STATIC}"
 
-def calculate_score_and_distance(cords):
+async def calculate_score_and_distance(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -19,7 +25,7 @@ def calculate_score_and_distance(cords):
     score = max(min(-log(metres / 70, 1.0014) + 5000, 5000), 0)
     return [int(score), int(metres)]
 
-def calculate_score_and_distance_moscow_spb(cords):
+async def calculate_score_and_distance_moscow_spb(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -32,7 +38,7 @@ def calculate_score_and_distance_moscow_spb(cords):
     score = max(min(5000-log((metres + 90)/ 100, 1.001), 5000), 0)
     return [int(score), int(metres)]
 
-def calculate_score_and_distance_russia(cords):
+async def calculate_score_and_distance_russia(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -45,64 +51,43 @@ def calculate_score_and_distance_russia(cords):
     score = max(min(5000-log((metres + 2900)/ 3000, 1.00141), 5000), 0)
     return [int(score), int(metres)]
 
-def create_result_text(score, metres):
+async def create_result_text(score, metres, lang = 'en'):
     txt = ""
     if metres < 10000:
-        txt = f"Вы набрали {score} очков\nРасстояние {metres} метров"
+        txt = (t['score and meters'][lang_code[lang]]).format(score, metres)
     elif metres < 100000:
-        txt = f"Вы набрали {score} очков\nРасстояние {round(metres / 1000, 2)} километров"
+        txt = (t['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 2))
     else:
-        txt = f"Вы набрали {score} очков\nРасстояние {round(metres / 1000, 0)} километров"
-    
+        txt = (t['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 0))
+
     return txt
 
-def get_top10_moscow_single():
-    top_10_users = database.get_top10_moscow_single()
+async def get_top10_single(mode, lang = 'en'):
+    try:
+        top_10_users = await database.get_top10_single(mode)
+        logger.info("connected to db. got top 10 players in signle " + mode)
+    except Exception as e:
+        logger.error(e)
     txt = ''
+    # print("- - - - - - - ")
+    # print(top_10_users)
+    # print("- - - - - - - ")
     for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
+        txt += (t['top 10'][lang_code[lang]]).format(i + 1, top_10_users[i]["username"], top_10_users[i][mode.lower() +"_single_mean_score"],
+                                                              top_10_users[i][mode.lower() +"_single_game_counter"])
+    # print(top_10_users)
     return txt
 
-def get_top10_spb_single():
-    top_10_users = database.get_top10_spb_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
-    return txt
+async def get_last5_results_single(tele_id, mode, lang = 'en'):
+    try:
+        games = await database.get_last5_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in signle " + mode)
+    except Exception as e:
+        logger.error(e)
 
-def get_top10_russia_single():
-    top_10_users = database.get_top10_russia_single()
-    txt = ''
-    for i in range(len(top_10_users)):
-        txt += f'{i+1}. {top_10_users[i][0]} - среднее : {top_10_users[i][3]} | матчей : {top_10_users[i][2]}\n'
-    #print(top_10_users)
-    return txt
-
-def get_last5_results_moscow_single(tele_id):
-    games = database.get_last5_results_moscow(tele_id=tele_id)
     txt = ''
     for i in range(len(games)):
-        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
+        txt += (t['last 5 res'][lang_code[lang]]).format(i + 1, games[i][0], games[i][1])
     if len(games) == 0:
-        txt = "Вы ещё не сыграли ни одну игру"
-    return txt
-
-def get_last5_results_spb_single(tele_id):
-    games = database.get_last5_results_spb(tele_id=tele_id)
-    txt = ''
-    for i in range(len(games)):
-        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
-    if len(games) == 0:
-        txt = "Вы ещё не сыграли ни одну игру"
-    return txt
-
-def get_last5_results_russia_single(tele_id):
-    games = database.get_last5_results_russia(tele_id=tele_id)
-    txt = ''
-    for i in range(len(games)):
-        txt += f"{i+1}. {games[i][0]} очков | {games[i][1]} метров\n"
-    if len(games) == 0:
-        txt = "Вы ещё не сыграли ни одну игру"
+        txt = (t['no games'][lang_code[lang]])
     return txt
