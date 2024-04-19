@@ -1,7 +1,6 @@
 let panorama;
 let marker;
 let start_lat, start_lng;
-let coords;
 let loc;
 
 function getRandomArbitrary(min, max) {
@@ -14,55 +13,24 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-let x, delta_x, y, delta_y, zoom;
+let x, x_center, y, y_center, zoom;
 
 console.log(window.location.hash)
-let hash = window.location.hash.split('?')[0]
+let hash = window.location.hash.split('?')[0].split('|')
 console.log(hash)
 
-async function generateCoords(hash) {
-    let rand_case;
-    if (hash == "#Moscow") {
-        x = 55.6
-        delta_x = 0.23
-        y = 37.38
-        delta_y = 0.4
-        zoom = 10
-    } else if (hash == "#SPB") {
-        x = 59.81
-        delta_x = 0.25
-        y = 30.2
-        delta_y = 0.27
-        zoom = 10
-    } else {
-        x = -90
-        delta_x = 180
-        y = -180
-        delta_y = 360
-        zoom = 1
-        rand_case = getRandomInt(1, 3);
-        console.log(rand_case); 
-        switch (rand_case) {
-            // South America
-            case 1:
-                lat = -47.362302 + Math.random() * ( -9.733599 + 47.362302);
-                lng = -71.624672 + Math.random() * (-65.100000 + 71.624672);
-            case 2: 
-                lat = -41.466691 + Math.random() * ( -9.733599 + 41.466691);
-                lng = -65.067317 + Math.random() * (-56.807827 + 65.067317);
-            case 3:
-                lat = -35.169281 + Math.random() * ( -9.733599 + 35.169281);
-                lng = -56.718168 + Math.random() * ( -48.613274 + 65.067317);
-        }
-    }
-    coords = {lat, lng};
-    console.log(hash, coords);
+async function get_cords() {
+    x = parseFloat(hash[1])
+    y = parseFloat(hash[2])
+    x_center = parseFloat(hash[3])
+    y_center = parseFloat(hash[4])
+    zoom = parseFloat(hash[5])
 }
 
 ymaps.ready(function () {
     // Ищем панораму в переданной точке.
-    generateCoords();
-    // const coords = { lat: -70 + Math.random() * 140, lng: -180 + 360 * Math.random()};
+    get_cords();
+    console.log(x, y, x_center, y_center, zoom)
     const sv = new google.maps.StreetViewService();
     panorama = new google.maps.StreetViewPanorama(
       document.getElementById("pano"),
@@ -77,10 +45,11 @@ ymaps.ready(function () {
       }
     );
 
-    sv.getPanorama({ location: coords, radius: 50000000, source: "outdoor" }).then(processSVData);
+    // const pan_loc = {x, y};
+    sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: 100000, source: "outdoor"}).then(processSVData);
 
     myMap = new ymaps.Map("map", {
-        center: [x + delta_x / 2, y + delta_y / 2],
+        center: [x_center, y_center],
         zoom: zoom,
         controls: []
     }, {
@@ -91,7 +60,7 @@ ymaps.ready(function () {
             // Описание геометрии.
             geometry: {
                 type: "Point",
-                coordinates: [x + delta_x / 2, y + delta_y / 2]
+                coordinates: [x_center, y_center]
             },
             // Свойства.
             properties: {
@@ -137,7 +106,6 @@ function GetPanoramaCords() {
     console.log(res);
     return res;
 }
-
 
 function toHomePano() {
     panorama.setPano(loc.pano);
