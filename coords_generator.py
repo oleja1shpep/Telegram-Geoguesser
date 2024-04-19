@@ -40,7 +40,7 @@ def coordinates_from_seed(seed, mode):
             x, y = -35.169281, -56.718168 
             x2, y2 = -9.733599, -48.613274
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
-    return lat, lng, zoom
+    return lat, lng, (x + x2) / 2, (y + y2) / 2, zoom
 
 if __name__ == '__main__':
     seed = generate_seed()
