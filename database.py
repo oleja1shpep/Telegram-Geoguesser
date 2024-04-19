@@ -7,14 +7,16 @@ from config import DB_NAME
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
+logger.setLevel(logging.DEBUG)
 
 DB_HOST = os.getenv("DB_HOST") or "localhost"
 DB_USER = os.getenv("DB_USER") or "mongo"
 DB_PASS = os.getenv("DB_PASS") or "mongomongo"
-URL = 'mongodb://{user}:{pw}@{hosts}/?authSource=admin'.format(
+URL = 'mongodb://{user}:{pw}@{hosts}/?authSource={authsrc}'.format(
     user=quote(DB_USER),
     pw=quote(DB_PASS),
     hosts=DB_HOST,
+    authsrc = "admin"
     )
 
 async def add_user(tele_id, username):
@@ -25,6 +27,7 @@ async def add_user(tele_id, username):
     user = {
         "tele_id" : tele_id,
         "username" : username,
+        "language" : "en",
         # "moscow_single_total_score" : 0,
         # "moscow_single_game_counter": 0,
         # "moscow_single_mean_score" : 0,
@@ -43,7 +46,7 @@ async def add_user(tele_id, username):
 
     conn.close()
 
-async def find_user(tele_id, username):
+async def find_user(tele_id):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
@@ -55,6 +58,15 @@ async def find_user(tele_id, username):
     
     conn.close()
     return False
+
+async def delete_database():
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    users.delete_many({})
+
+    conn.close()
 
 
 async def get_top10_single(mode):

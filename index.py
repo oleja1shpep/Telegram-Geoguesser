@@ -3,6 +3,7 @@ import logging
 import sys
 import os
 import json
+import traceback
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
@@ -19,8 +20,11 @@ import bot_functions
 from config import TEST_TOKEN
 from translation import t, lang_code
 
+USE_DB = True
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
+logger.setLevel(logging.DEBUG)
 
 TOKEN_BOT = os.getenv("TOKEN") or TEST_TOKEN
 DB_HOST = os.getenv("DB_HOST") or "localhost"
@@ -41,6 +45,13 @@ class Form(StatesGroup):
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message, state: FSMContext) -> None:
     logger.info("Recieved command /start")
+    
+    # try:
+    #     if (USE_DB): await database.delete_database()
+    #     logger.info("deleted db")
+    # except Exception as e:
+    #     logger.error(f"Error in command_start: {e}")
+
     await state.set_state(Form.start)
     try:
         await message.answer(
@@ -50,6 +61,7 @@ async def command_start(message: Message, state: FSMContext) -> None:
         logger.info("sent answer: Greeting")
     except Exception as e:
         logger.error(e)
+    logger.debug("finished <command_start>")
 
 @form_router.message(Form.start, F.text.in_(t["play"]))
 async def process_name(message: Message, state: FSMContext) -> None:
@@ -58,25 +70,33 @@ async def process_name(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     username = message.from_user.username
     try:
-        is_found = await database.find_user(tele_id, username)
+        if (USE_DB): is_found = await database.find_user(tele_id)
         logger.info("read info from mongodb")
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Could not access database: {e}")
 
-    if not(is_found):
-        try:
+    is_found = False
+        
+    try:
+        if USE_DB and not(is_found):
             await database.add_user(tele_id, username)
             logger.info("added user \"" + username + "\" to db")
-        except Exception as e:
-            logger.error(e)
+    except Exception as e:
+        logger.error(f"Error in smth: {e}")
 
     try:
-        await database.set_language(message.from_user.id, 'en')
+        if USE_DB: await database.set_language(message.from_user.id, 'en')
         logger.info("Set language")
     except Exception as e:
         logger.error(e)
 
-    lang = await database.get_language(message.from_user.id)
+    lang = "en"
+    
+    try:
+        if USE_DB: lang = await database.get_language(message.from_user.id)
+        logger.info("got lang")
+    except Exception as e:
+        logger.error("Process_name: {e}")
     markup = await markups.create_menu_markup(lang)
 
     try:
@@ -93,9 +113,10 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.info("sent answer: Registration")
     except Exception as e:
         logger.error(e)
+    logger.debug("finished <process_name>")
 
 @form_router.message(Form.menu, F.text.in_(t["how to play"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def main_menu(message: Message, state: FSMContext) -> None:
     
     await database.drop_duplicates()
     try:
@@ -113,7 +134,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
 
 @form_router.message(Form.menu, F.text.in_(t["language"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def change_language(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await state.set_state(Form.language_menu)
     lang = await database.get_language(message.from_user.id)
@@ -128,7 +149,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(e)
 
 @form_router.message(Form.language_menu, F.text.in_(t["rus_language"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def change_language_rus(message: Message, state: FSMContext) -> None:
     try:
         await database.set_language(message.from_user.id, 'ru')
         logger.info("set language in db : ru")
@@ -146,7 +167,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(e)
 
 @form_router.message(Form.language_menu, F.text.in_(t["eng_language"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def change_language_eng(message: Message, state: FSMContext) -> None:
     try:
         await database.set_language(message.from_user.id, 'en')
         logger.info("set language in db : en")
@@ -163,7 +184,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(e)
 
 @form_router.message(Form.language_menu, F.text.in_(t["back"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def change_language_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
         lang = await database.get_language(message.from_user.id)
@@ -182,7 +203,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(e)
 
 @form_router.message(Form.menu, F.text.in_(t["modes"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def gamemodes(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await state.set_state(Form.gamemodes)
     try:
@@ -202,7 +223,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(e)
 
 @form_router.message(Form.gamemodes, F.text.in_(t["back"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def gamemodes_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
         lang = await database.get_language(message.from_user.id)
@@ -222,7 +243,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
 
 @form_router.message(Form.gamemodes, F.text.split()[0].in_(t["single"]))
-async def process_name(message: Message, state: FSMContext) -> None:
+async def signle_game(message: Message, state: FSMContext) -> None:
     answer = message.text
     try:
         lang = await database.get_language(message.from_user.id)
@@ -280,7 +301,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     
 
 @form_router.message(Form.single_game_menu)
-async def process_name(message: Message, state: FSMContext) -> None:
+async def single_game_menu(message: Message, state: FSMContext) -> None:
     mode = await state.get_data()
     mode = mode["gamemodes"]
     try:
@@ -400,12 +421,22 @@ async def process_name(message: Message, state: FSMContext) -> None:
                 #                         metres} метров", reply_markup=markup)
 
 @form_router.message(F.text)
-async def process_name(message: Message, state: FSMContext) -> None:
+async def idk_bugs_or_smth(message: Message, state: FSMContext) -> None:
+    is_found = False
     try:
-        lang = await database.get_language(message.from_user.id)
-        logger.info("Got language from user")
+        is_found = await database.find_user(message.from_user.id)
+        logger.info("successfully connected to db")
     except Exception as e:
-        logger.error(e)
+        logger.error(f"In function: idk_bugs_or_smth:{e}")
+    if is_found:
+        try:
+            lang = await database.get_language(message.from_user.id)
+            logger.info("Got language from user")
+        except Exception as e:
+            lang = "en"
+            logger.error(e)
+    else:
+        lang = "en"
     try:
         await message.answer(
             t['error'][lang_code[lang]]
@@ -419,16 +450,15 @@ async def process_event(event, bot: Bot):
         body = json.loads(event['body'])
         update = Update(**body)
         result = await dp.feed_update(bot=bot, update=update)
-        logger.info("handeled event")
+        logger.info(f"handeled event: {body}")
     except Exception as e:
         logger.error(e)
 
 async def handler(event, context):
     #raise Exception({'event':event,'conext':context})
     # print(event['body'])
-    logger.info("recieved event")
+    logger.info("recieved event") 
     bot = Bot(token=TOKEN_BOT)
-    
     await process_event(event, bot)
     # await dp.start_polling(bot)
     return {'statusCode': 200, 'body': 'ok',}

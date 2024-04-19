@@ -7,6 +7,7 @@ from translation import lang_code, t
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
+logger.setLevel(logging.DEBUG)
 
 async def get_url(cords):
     lat1, lon1, _, lat2, lon2 = map(float, cords.split())
