@@ -2,16 +2,18 @@ import os
 import logging
 from pymongo import MongoClient
 from urllib.parse import quote_plus as quote
-
-from config import DB_NAME
+from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
 
-DB_HOST = os.getenv("DB_HOST") or "localhost"
-DB_USER = os.getenv("DB_USER") or "mongo"
-DB_PASS = os.getenv("DB_PASS") or "mongomongo"
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_NAME = os.getenv("DB_NAME")
 URL = 'mongodb://{user}:{pw}@{hosts}/?authSource={authsrc}'.format(
     user=quote(DB_USER),
     pw=quote(DB_PASS),

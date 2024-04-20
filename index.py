@@ -11,13 +11,13 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, Update
+from dotenv import load_dotenv
 
 import messages
 import database
 import markups
 import bot_functions
 
-from config import TEST_TOKEN
 from translation import t, lang_code
 
 USE_DB = True
@@ -26,10 +26,12 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
 
-TOKEN_BOT = os.getenv("TOKEN") or TEST_TOKEN
-DB_HOST = os.getenv("DB_HOST") or "localhost"
-DB_USER = os.getenv("DB_USER") or "mongo"
-DB_PASS = os.getenv("DB_PASS") or "mongomongo"
+load_dotenv()
+
+TOKEN_BOT = os.getenv("TOKEN")
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
 
 form_router = Router()
 dp = Dispatcher()
@@ -69,14 +71,14 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
     tele_id = message.from_user.id
     username = message.from_user.username
+    is_found = False
     try:
         if (USE_DB): is_found = await database.find_user(tele_id)
         logger.info("read info from mongodb")
     except Exception as e:
         logger.error(f"Could not access database: {e}")
 
-    is_found = False
-        
+
     try:
         if USE_DB and not(is_found):
             await database.add_user(tele_id, username)

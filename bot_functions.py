@@ -1,8 +1,14 @@
 import logging
+import os
 from math import cos, sin, asin, sqrt, radians, log
 
 import database
-from config import TOKEN_STATIC
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 from translation import lang_code, t
 
 logging.basicConfig(level=logging.DEBUG)
