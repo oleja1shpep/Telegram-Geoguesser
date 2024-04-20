@@ -18,11 +18,11 @@ logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
 
 async def get_url(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+    lat1, lon1, lat2, lon2 = map(float, cords.split())
     return f"https://static-maps.yandex.ru/v1?pl=c:8822DDC0,w:3,{lon1},{lat1},{lon2},{lat2}&pt={lon1},{lat1},flag~{lon2},{lat2},comma&apikey={TOKEN_STATIC}"
 
 async def calculate_score_and_distance(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+    lat1, lon1, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
@@ -35,7 +35,7 @@ async def calculate_score_and_distance(cords):
     return [int(score), int(metres)]
 
 async def calculate_score_and_distance_moscow_spb(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+    lat1, lon1, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
@@ -48,7 +48,7 @@ async def calculate_score_and_distance_moscow_spb(cords):
     return [int(score), int(metres)]
 
 async def calculate_score_and_distance_russia(cords):
-    lat1, lon1, _, lat2, lon2 = map(float, cords.split())
+    lat1, lon1, lat2, lon2 = map(float, cords.split())
 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 

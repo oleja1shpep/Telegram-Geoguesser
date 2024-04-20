@@ -64,6 +64,7 @@ async def command_start(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(e)
     logger.info("In function: command_start: finished <command_start>")
+    await message.delete()
 
 @form_router.message(Form.start, F.text.in_(t["play"]))
 async def process_name(message: Message, state: FSMContext) -> None:
@@ -116,6 +117,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: process_name: {e}")
     logger.info("In function: process_name: finished <process_name>")
+    await message.delete()
 
 @form_router.message(Form.menu, F.text.in_(t["how to play"]))
 async def main_menu(message: Message, state: FSMContext) -> None:
@@ -134,6 +136,7 @@ async def main_menu(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: main_menu: {e}")
     logger.info("In function: main_menu: finished <main_menu>")
+    await message.delete()
 
 
 @form_router.message(Form.menu, F.text.in_(t["language"]))
@@ -152,6 +155,7 @@ async def change_language(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language: sent answer: Выберите язык")
     except Exception as e:
         logger.error(f"In function: change_language: {e}")
+    await message.delete()
 
 @form_router.message(Form.language_menu, F.text.in_(t["rus_language"]))
 async def change_language_rus(message: Message, state: FSMContext) -> None:
@@ -170,6 +174,7 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language_rus: sent answer: Выбран русский")
     except Exception as e:
         logger.error(f"In function: change_language_rus: {e}")
+    await message.delete()
 
 @form_router.message(Form.language_menu, F.text.in_(t["eng_language"]))
 async def change_language_eng(message: Message, state: FSMContext) -> None:
@@ -187,6 +192,7 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language_eng: sent answer: выбран Английский")
     except Exception as e:
         logger.error(f"In function: change_language_eng: {e}")
+    await message.delete()
 
 @form_router.message(Form.language_menu, F.text.in_(t["back"]))
 async def change_language_back(message: Message, state: FSMContext) -> None:
@@ -206,6 +212,7 @@ async def change_language_back(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language_back: sent answer: главное меню")
     except Exception as e:
         logger.error(f"In function: change_language_back: {e}")
+    await message.delete()
 
 @form_router.message(Form.menu, F.text.in_(t["modes"]))
 async def gamemodes(message: Message, state: FSMContext) -> None:
@@ -226,6 +233,7 @@ async def gamemodes(message: Message, state: FSMContext) -> None:
         logger.info("In function: gamemodes: sent answer: Доступные режимы")
     except Exception as e:
         logger.error(f"In function: gamemodes: {e}")
+    await message.delete()
 
 @form_router.message(Form.gamemodes, F.text.in_(t["back"]))
 async def gamemodes_back(message: Message, state: FSMContext) -> None:
@@ -245,6 +253,7 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
         logger.info("In function: gamemodes_back: sent answer: Главное меню")
     except Exception as e:
         logger.error(f"In function: gamemodes_back: {e}")
+    await message.delete()
 
 
 @form_router.message(Form.gamemodes, F.text.split()[0].in_(t["single"]))
@@ -304,6 +313,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
 
     await state.set_state(Form.single_game_menu)
     await state.update_data(gamemodes = mode)
+    await message.delete()
     
 
 @form_router.message(Form.single_game_menu)
@@ -421,7 +431,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                     logger.error(f"In function: single_game_menu: unable to add game: {e}")
 
                 await database.end_game(tele_id, mode)
-                markup = markups.create_single_game_menu_markup(mode, lang, tele_id)
+                markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
                 txt = await bot_functions.create_result_text(score=score, metres=metres,lang = lang)
                 try:
                     await message.answer_photo(photo_url, caption=txt,reply_markup=markup)
@@ -432,6 +442,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
+    await message.delete()
 
 @form_router.message(F.text)
 async def idk_bugs_or_smth(message: Message, state: FSMContext) -> None:
@@ -457,6 +468,7 @@ async def idk_bugs_or_smth(message: Message, state: FSMContext) -> None:
         logger.info("In function: idk_bugs_or_smth: someting broke or bot was restarted")
     except Exception as e:
         logger.error(f"In function: idk_bugs_or_smth: {e}")
+    await message.delete()
 
 async def process_event(event, bot: Bot):
     try:
