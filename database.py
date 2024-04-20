@@ -71,6 +71,16 @@ async def delete_database():
 
     conn.close()
 
+async def show_database():
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    for user in users.find():
+        print(user)
+
+    conn.close()
+
 
 async def get_top10_single(mode):
     conn = MongoClient(URL)
