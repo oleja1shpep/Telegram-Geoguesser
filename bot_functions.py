@@ -72,9 +72,9 @@ async def create_result_text(score, metres, lang = 'en'):
 async def get_top10_single(mode, lang = 'en'):
     try:
         top_10_users = await database.get_top10_single(mode)
-        logger.info("connected to db. got top 10 players in signle " + mode)
+        logger.info("In function: get_top10_single: connected to db. got top 10 players in signle " + mode)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"In function: get_top10_single: {e}")
     txt = ''
     # print("- - - - - - - ")
     # print(top_10_users)
@@ -88,9 +88,9 @@ async def get_top10_single(mode, lang = 'en'):
 async def get_last5_results_single(tele_id, mode, lang = 'en'):
     try:
         games = await database.get_last5_results(tele_id, mode)
-        logger.info("connected to db. got last 5 games in signle " + mode)
+        logger.info("In function: get_last5_results_single: connected to db. got last 5 games in signle " + mode)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"In function: get_last5_results_single: {e}")
 
     txt = ''
     for i in range(len(games)):
