@@ -1,10 +1,12 @@
 import logging
 import os
+
 from math import cos, sin, asin, sqrt, radians, log
+from dotenv import load_dotenv
 
 import database
 
-from dotenv import load_dotenv
+
 
 load_dotenv()
 

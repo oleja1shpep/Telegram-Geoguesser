@@ -1,5 +1,6 @@
 import os
 import logging
+
 from pymongo import MongoClient
 from urllib.parse import quote_plus as quote
 from dotenv import load_dotenv

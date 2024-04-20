@@ -3,7 +3,6 @@ import logging
 import sys
 import os
 import json
-import traceback
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode

@@ -1,9 +1,15 @@
+import os
+
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from config import URL_SITE
 from translation import t, lang_code
 from coords_generator import generate_seed, coordinates_from_seed
+from dotenv import load_dotenv
+
+load_dotenv()
+
+URL_SITE = os.getenv("URL_SITE")
 
 async def create_start_markup():
     return ReplyKeyboardMarkup(

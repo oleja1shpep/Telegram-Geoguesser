@@ -1,12 +1,9 @@
 __pycache__
-all_users.db
 config.*
-init_db.py
-aiogram_bot.py
-test_distance.py
 backend.py
 test_func.py
 test_uploader.sh
+uploader.sh
 function.zip
 file.json
 file2.json
