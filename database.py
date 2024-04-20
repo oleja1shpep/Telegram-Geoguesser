@@ -117,7 +117,7 @@ async def init_game(tele_id, mode):
 
     user = users.find_one({"tele_id" : tele_id})
     if not(user["is_active_session_" + mode]):
-        await set_seed(tele_id, generate_seed())
+        await set_seed(tele_id, generate_seed(), mode)
 
     users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session_" + mode : True}})
     conn.close()

@@ -3,6 +3,7 @@ import os
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+import database
 from translation import t, lang_code
 from coords_generator import generate_seed, coordinates_from_seed
 from dotenv import load_dotenv
@@ -55,12 +56,14 @@ async def create_gamemodes_markup(lang = "en"):
     markup.resize_keyboard = True
     return markup
 
-async def create_single_game_menu_markup(mode, lang = 'en'):
+async def create_single_game_menu_markup(mode, lang, tele_id):
     builder = ReplyKeyboardBuilder()
     keyboard = t["single game modes"][lang_code[lang]]
+
+    await database.init_game(tele_id, mode)
+    seed = await database.get_seed(tele_id, mode)
     
     # new seed generation
-    seed = generate_seed()
     coords = coordinates_from_seed(seed, mode)
     builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '|' + '|'.join(map(str, coords))))
     for i in range(1,5):

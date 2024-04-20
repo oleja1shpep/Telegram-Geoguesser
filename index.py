@@ -249,6 +249,7 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
 
 @form_router.message(Form.gamemodes, F.text.split()[0].in_(t["single"]))
 async def signle_game(message: Message, state: FSMContext) -> None:
+    tele_id = message.from_user.id
     answer = message.text
     try:
         lang = await database.get_language(message.from_user.id)
@@ -258,7 +259,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
     mode = "msk"
     if (answer == t["gamemodes"][lang_code[lang]][0]):
         mode = "msk"
-        markup = await markups.create_single_game_menu_markup(mode, lang)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
                 t['single msk'][lang_code[lang]],
@@ -269,7 +270,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.error(f"In function: signle_game: {e}")
     elif (answer == t["gamemodes"][lang_code[lang]][1]):
         mode = "spb"
-        markup = await markups.create_single_game_menu_markup(mode, lang)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
                 t['single spb'][lang_code[lang]],
@@ -280,7 +281,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.error(f"In function: signle_game: {e}")
     elif (answer == t["gamemodes"][lang_code[lang]][2]):
         mode = "rus"
-        markup = await markups.create_single_game_menu_markup(mode, lang)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
                 t['single rus'][lang_code[lang]],
@@ -291,7 +292,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.error(f"In function: signle_game: {e}")
     elif (answer == t["gamemodes"][lang_code[lang]][3]):
         mode = "blrs"
-        markup = await markups.create_single_game_menu_markup(mode, lang)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
                 t['single bel'][lang_code[lang]],
@@ -309,6 +310,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
 async def single_game_menu(message: Message, state: FSMContext) -> None:
     mode = await state.get_data()
     mode = mode["gamemodes"]
+    
     try:
         lang = await database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu: Got language from user")
@@ -392,7 +394,10 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
     else:
         if (hasattr(message, 'web_app_data')):
             if message.web_app_data.data:
-                logger.info("In function: single_game_menu: Got answer from " + message.from_user.username)
+                tele_id = message.from_user.id
+                username = message.from_user.username
+
+                logger.info("In function: single_game_menu: Got answer from " + username)
                 #print("ответ получен", message.from_user.id, message.from_user.username)
                 cords = message.web_app_data.data
                 if (mode == "spb" or mode == "msk"):
@@ -405,13 +410,13 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
 
                 # print(score, metres, message.from_user.username)
                 try:
-                    await database.add_results_single(message.from_user.id, score, mode)
-                    logger.info("In function: single_game_menu: added results to single: {}, score = {}, name = {}".format(mode, score, message.from_user.username))
+                    await database.add_results_single(tele_id, score, mode)
+                    logger.info("In function: single_game_menu: added results to single: {}, score = {}, name = {}".format(mode, score, username))
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: unable to add results: {e}")
                 try:
-                    await database.add_game_single(tele_id=message.from_user.id, score=score, metres=metres, mode=mode)
-                    logger.info("In function: single_game_menu: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, message.from_user.username))
+                    await database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
+                    logger.info("In function: single_game_menu: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: unable to add game: {e}")
 
@@ -422,6 +427,8 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                     logger.info("In function: single_game_menu: sent photo answer")
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: {e}")
+
+                await database.end_game(tele_id, mode)
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
 
