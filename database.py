@@ -4,6 +4,7 @@ import logging
 from pymongo import MongoClient
 from urllib.parse import quote_plus as quote
 from dotenv import load_dotenv
+from coords_generator import generate_seed
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
@@ -31,6 +32,8 @@ async def add_user(tele_id, username):
         "tele_id" : tele_id,
         "username" : username,
         "language" : "en",
+        "seed" : "",
+        "is_active_session" : False,
         # "moscow_single_total_score" : 0,
         # "moscow_single_game_counter": 0,
         # "moscow_single_mean_score" : 0,
@@ -81,6 +84,44 @@ async def show_database():
 
     conn.close()
 
+async def set_seed(tele_id, seed):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"seed" : seed}})
+
+    conn.close()
+
+async def get_seed(tele_id):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    user = users.find_one({"tele_id" : tele_id})
+    seed = user["seed"]
+
+    conn.close()
+    return seed
+
+async def init_game(tele_id):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+
+    user = users.find_one({"tele_id" : tele_id})
+    if not(user["is_active_session"]):
+        await set_seed(tele_id, generate_seed())
+
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session" : True}})
+    conn.close()
+
+async def end_game(tele_id):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session" : False}})
+    conn.close()
 
 async def get_top10_single(mode):
     conn = MongoClient(URL)
