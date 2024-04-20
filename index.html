@@ -58,29 +58,30 @@
             font-size: large;
             /* font-weight: 500; */
             cursor: pointer;
-            transition: all 500ms ease;
+            opacity: 0.5;
+            transition: all 150ms ease;
             color: var(--tg-theme-button-text-color);
             background: var(--tg-theme-button-color);
             z-index: 101;
         }
 
-        /* button:hover {
-            opacity: 0.5;
-        } */
+        button:hover {
+            opacity: 0.8;
+        }
 
         button:active {
-            opacity: 0.5;
+            opacity: 1;
         }
 
         #submit {
-            background: var(--tg-theme-button-color) url("icons//send.svg") no-repeat;
+            background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
             background-size: 50%;
             background-position: center;
             right: 10px;
         }
 
         #map_toggler {
-            background: var(--tg-theme-button-color) url("icons//map-icon.svg") no-repeat;
+            background: var(--tg-theme-button-color) url("icons/map-icon.svg") no-repeat;
             background-position: center;
             background-size: 50%;
             left: 2%;
@@ -88,7 +89,7 @@
         }
 
         #home_pano {
-            background: var(--tg-theme-button-color) url("icons//home.svg") no-repeat;
+            background: var(--tg-theme-button-color) url("icons/home.svg") no-repeat;
             background-position: center;
             background-size: 50%;
             left: 2%;
