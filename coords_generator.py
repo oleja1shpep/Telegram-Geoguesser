@@ -1,4 +1,5 @@
 import random
+MODES = ['msk', 'spb', 'rus', 'blrs', 'wrld']
 
 def generate_seed():
     seed = ''
@@ -42,7 +43,11 @@ def coordinates_from_seed(seed, mode):
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
     return lat, lng, (x + x2) / 2, (y + y2) / 2, zoom
 
-if __name__ == '__main__':
-    seed = generate_seed()
-    print(seed)
-    print(coordinates_from_seed(seed, 'world'))
+def multiplayer_seed_processor(string):
+    unpacked = string.split('_')
+    if len(unpacked) != 2: 
+        return False
+    mode, seed = unpacked
+    if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
+        return mode, seed
+    return False
