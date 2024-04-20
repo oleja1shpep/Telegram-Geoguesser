@@ -420,15 +420,16 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: unable to add game: {e}")
 
-
+                await database.end_game(tele_id, mode)
+                markup = markups.create_single_game_menu_markup(mode, lang, tele_id)
                 txt = await bot_functions.create_result_text(score=score, metres=metres,lang = lang)
                 try:
-                    await message.answer_photo(photo_url, caption=txt)
+                    await message.answer_photo(photo_url, caption=txt,reply_markup=markup)
                     logger.info("In function: single_game_menu: sent photo answer")
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: {e}")
 
-                await database.end_game(tele_id, mode)
+                
                 # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
                 #                         metres} метров", reply_markup=markup)
 
