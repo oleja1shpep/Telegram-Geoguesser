@@ -32,20 +32,26 @@ async def add_user(tele_id, username):
         "tele_id" : tele_id,
         "username" : username,
         "language" : "en",
-        "seed" : "",
-        "is_active_session" : False,
-        # "moscow_single_total_score" : 0,
-        # "moscow_single_game_counter": 0,
-        # "moscow_single_mean_score" : 0,
-        # "last_games_moscow" : [],
+        "seed_msk" : "",
+        "seed_spb" : "",
+        "seed_rus" : "",
+        "seed_blrs" : "",
+        "is_active_session_msk" : False,
+        "is_active_session_spb" : False,
+        "is_active_session_rus" : False,
+        "is_active_session_blrs" : False,
+        # "msk_single_total_score" : 0,
+        # "msk_single_game_counter": 0,
+        # "msk_single_mean_score" : 0,
+        # "last_games_msk" : [],
         # "spb_single_total_score" : 0,
         # "spb_single_game_counter" : 0,
         # "spb_single_mean_score" : 0,
         # "last_games_spb" : [],
-        # "russia_single_total_score" : 0,
-        # "russia_single_game_counter" : 0,
-        # "russia_single_mean_score" : 0,
-        # "last_games_russia" : []
+        # "rus_single_total_score" : 0,
+        # "rus_single_game_counter" : 0,
+        # "rus_single_mean_score" : 0,
+        # "last_games_rus" : []
     }
     
     users.insert_one(user)
@@ -84,43 +90,43 @@ async def show_database():
 
     conn.close()
 
-async def set_seed(tele_id, seed):
+async def set_seed(tele_id, seed, mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
 
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"seed" : seed}})
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"seed_" + mode : seed}})
 
     conn.close()
 
-async def get_seed(tele_id):
+async def get_seed(tele_id, mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
 
     user = users.find_one({"tele_id" : tele_id})
-    seed = user["seed"]
+    seed = user["seed_" + mode]
 
     conn.close()
     return seed
 
-async def init_game(tele_id):
+async def init_game(tele_id, mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
 
     user = users.find_one({"tele_id" : tele_id})
-    if not(user["is_active_session"]):
+    if not(user["is_active_session_" + mode]):
         await set_seed(tele_id, generate_seed())
 
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session" : True}})
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session_" + mode : True}})
     conn.close()
 
-async def end_game(tele_id):
+async def end_game(tele_id, mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session" : False}})
+    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session_" + mode : False}})
     conn.close()
 
 async def get_top10_single(mode):
