@@ -1,17 +1,19 @@
 import logging
 import os
+import asyncio
+import g4f
 
+from asyncio import WindowsSelectorEventLoopPolicy
 from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
 
+from translation import lang_code, t
+
 import database
-
-
 
 load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
-from translation import lang_code, t
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
@@ -60,7 +62,7 @@ async def calculate_score_and_distance_russia(cords):
     score = max(min(5000-log((metres + 2900)/ 3000, 1.00141), 5000), 0)
     return [int(score), int(metres)]
 
-async def create_result_text(score, metres, lang = 'en'):
+async def create_result_text(score, metres, message, lang = 'en'):
     txt = ""
     if metres < 10000:
         txt = (t['score and meters'][lang_code[lang]]).format(score, metres)
@@ -68,7 +70,11 @@ async def create_result_text(score, metres, lang = 'en'):
         txt = (t['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 2))
     else:
         txt = (t['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 0))
-
+    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
+    response = await g4f.ChatCompletion.create_async(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": message}])
+    txt += "\n" + response
     return txt
 
 async def get_top10_single(mode, lang = 'en'):
