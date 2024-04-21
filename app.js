@@ -27,7 +27,10 @@ async function get_cords() {
     zoom = parseFloat(hash[5])
 }
 
-ymaps.ready(function () {
+const radiuses = [500, 5000, 50000, 500000, 5000000, 50000000]
+let radius_index = 0;
+
+function get_panorama() {
     // Ищем панораму в переданной точке.
     get_cords();
     console.log(x, y, x_center, y_center, zoom)
@@ -46,8 +49,36 @@ ymaps.ready(function () {
     );
 
     // const pan_loc = {x, y};
-    sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: 100000, source: "outdoor"}).then(processSVData);
+    sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: radiuses[radius_index], source: "outdoor"}, processSVData);
+};
 
+function processSVData(data, status) {
+    if (status == google.maps.StreetViewStatus.OK) {
+        console.log('status: OK')
+    } else if (status == google.maps.StreetViewStatus.ZERO_RESULTS) {
+        console.log('status: zero results, radius:', radiuses[radius_index])
+        radius_index = radius_index + 1;
+        get_panorama();
+        return;
+    } else {
+        console.log('status:', status)
+        return;
+    }
+    loc = data.location;
+
+    start_lat = loc.latLng.lat();
+    start_lng = loc.latLng.lng();
+    console.log("!", start_lat, start_lng);
+
+    panorama.setPano(loc.pano);
+    panorama.setPov({
+      heading: 270,
+      pitch: 0,
+    });
+    panorama.setVisible(true);
+  }
+
+ymaps.ready(function () {
     myMap = new ymaps.Map("map", {
         center: [x_center, y_center],
         zoom: zoom,
@@ -85,24 +116,14 @@ ymaps.ready(function () {
     });
 });
 
-function processSVData({ data }) {
-    loc = data.location;
-
-    start_lat = loc.latLng.lat();
-    start_lng = loc.latLng.lng();
-    console.log("!", start_lat, start_lng);
-
-    panorama.setPano(loc.pano);
-    panorama.setPov({
-      heading: 270,
-      pitch: 0,
-    });
-    panorama.setVisible(true);
-  }
-
 function GetPanoramaCords() {
     // var res = `${panorama_pos} ${marker.geometry.getCoordinates().join(' ')}`;
-    var res = `${start_lat} ${start_lng} ${marker.geometry.getCoordinates().join(' ')}`
+    try {
+        var res = `${start_lat} ${start_lng} ${marker.geometry.getCoordinates().join(' ')}`
+    } 
+    catch (error) {
+        var res = `${start_lat} ${start_lng} 0 0`
+    }
     console.log(res);
     return res;
 }
