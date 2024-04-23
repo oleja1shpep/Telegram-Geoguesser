@@ -2,9 +2,10 @@
     "play": ["Играть", "Play"],
     "modes": ["Режимы", "Modes"],
     "how to play": ["Как играть", "How to play"],
-    "language": ["Язык", "Language"],
+    "settings": ["Настройки", "Settings"],
     "eng_language": ["Английский", "English"],
     "rus_language": ["Русский", "Russian"],
+    "use_gpt" : ["Факты про места", "Facts about places"],
     "back": ["Назад", "Back"],
     "gamemodes": [
       [
@@ -44,7 +45,6 @@
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],
     "last 5 games" : ["Прошлые 5 игр", "Last 5 games"],
-    "answer is received": ["Oтвет получен", "Answer is received"],
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Доступные режимы", "Available modes"],
     "single wrld" : ["Одиночный по всему миру", "Single across World"],
@@ -53,7 +53,7 @@
     "single rus": ["Одиночный по России", "Single across Russia"],
     "single bel": ["Одиночный по Беларуси", "Single across Belarus"],
     "main menu": ["Главное меню", "Main menu"],
-    "choose the language": ["Выберите язык", "Choose the language"],
+    "settings menu": ["Настройки", "Settings"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
     "score and meters": ["Вы набрали {} очков\n Расстояние {} метров", "You scored {} points\n Distance {} meters"],

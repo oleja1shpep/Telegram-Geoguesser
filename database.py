@@ -197,3 +197,10 @@ async def set_language(tele_id, language):
 
 async def get_language(tele_id):
     return await get_key(tele_id, "language", 'en')
+
+async def switch_gpt(tele_id):
+    res = await get_key(tele_id, "use_gpt", False)
+    await set_key(tele_id, "use_gpt", not(res))
+
+async def get_gpt(tele_id):
+    return await get_key(tele_id, "use_gpt", True)

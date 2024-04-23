@@ -143,22 +143,22 @@ async def main_menu(message: Message, state: FSMContext) -> None:
     await message.delete()
 
 
-@form_router.message(Form.menu, F.text.in_(translation["language"]))
-async def change_language(message: Message, state: FSMContext) -> None:
+@form_router.message(Form.menu, F.text.in_(translation["settings"]))
+async def settings_menu(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     if DEBUG_MODE:
         await database.show_database()
     await state.set_state(Form.language_menu)
     lang = await database.get_language(message.from_user.id)
-    markup = await markups.create_language_menu_markup(lang)
+    markup = await markups.create_settings_menu_markup(lang)
     try:
         await message.answer(
-            translation['choose the language'][lang_code[lang]],
+            translation['settings menu'][lang_code[lang]],
             reply_markup = markup
         )
-        logger.info("In function: change_language: sent answer: Выберите язык")
+        logger.info("In function: settings_menu: sent answer: Настройки")
     except Exception as e:
-        logger.error(f"In function: change_language: {e}")
+        logger.error(f"In function: settings_menu: {e}")
     await message.delete()
 
 @form_router.message(Form.language_menu, F.text.in_(translation["rus_language"]))
@@ -169,7 +169,7 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: change_language_rus: {e}")
 
-    markup = await markups.create_language_menu_markup("ru")
+    markup = await markups.create_settings_menu_markup("ru")
     try:
         await message.answer(
             "Выбран Русский язык",
@@ -187,7 +187,7 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language_eng: set language in db : en")
     except Exception as e:
         logger.error(f"In function: change_language_eng: {e}")
-    markup = await markups.create_language_menu_markup("en")
+    markup = await markups.create_settings_menu_markup("en")
     try:
         await message.answer(
             "Set English language",
@@ -198,14 +198,37 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_eng: {e}")
     await message.delete()
 
+@form_router.message(Form.language_menu, F.text.in_(translation["use_gpt"]))
+async def switch_use_gpt(message: Message, state: FSMContext) -> None:
+    try:
+        await database.switch_gpt(message.from_user.id)
+        logger.info("In function: switch_use_gpt: switched gpt use")
+    except Exception as e:
+        logger.error(f"In function: switch_use_gpt: {e}")
+
+    use_gpt = await database.get_gpt(message.from_user.id)
+    try:
+        if (use_gpt):
+            await message.answer(
+                "You are using gpt",
+            )
+        else:
+            await message.answer(
+                "You are not using gpt",
+            )
+        logger.info("In function: switch_use_gpt: sent answer: usage gpt")
+    except Exception as e:
+        logger.error(f"In function: switch_use_gpt: {e}")
+    await message.delete()
+
 @form_router.message(Form.language_menu, F.text.in_(translation["back"]))
-async def change_language_back(message: Message, state: FSMContext) -> None:
+async def settings_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: change_language_back: Got language from user")
+        logger.info("In function: settings_back: Got language from user")
     except Exception as e:
-        logger.error(f"In function: change_language_back: {e}")
+        logger.error(f"In function: settings_back: {e}")
 
     markup = await markups.create_menu_markup(lang)
     try:

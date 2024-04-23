@@ -38,18 +38,19 @@ async def create_menu_markup(lang = "en"):
             [
                 KeyboardButton(text=translation["modes"][lang_code[lang]]),
                 KeyboardButton(text=translation["how to play"][lang_code[lang]]),
-                KeyboardButton(text=translation["language"][lang_code[lang]]),
+                KeyboardButton(text=translation["settings"][lang_code[lang]]),
             ]
         ],
         resize_keyboard=True,
     )
 
-async def create_language_menu_markup(lang = "en"):
+async def create_settings_menu_markup(lang = "en"):
     return ReplyKeyboardMarkup(
         keyboard=[
             [
                 KeyboardButton(text=translation["rus_language"][lang_code[lang]]),
                 KeyboardButton(text=translation["eng_language"][lang_code[lang]]),
+                KeyboardButton(text=translation["use_gpt"][lang_code[lang]]),
                 KeyboardButton(text=translation["back"][lang_code[lang]]),
             ]
         ],
