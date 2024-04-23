@@ -43,6 +43,17 @@ How well do you know Belarus?
 You are given an unlimited amount of time to answer
 You can move through the streets in any direction""")]
 
+WORLD_SINGLE_PLAYER_RULES = [("""
+Как хорошо ты знаешь земной шар?
+
+Дается неограниченное количество времени на ответ
+Можно перемещаться по улицам в любых направлениях"""),
+("""
+How well do you know Earth?
+
+You are given an unlimited amount of time to answer
+You can move through the streets in any direction""")]
+
 
 HOW_TO_PLAY = [("""
 - Вы оказываетесь в случайной точке на карте мира

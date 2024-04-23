@@ -376,6 +376,14 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 logger.info("In function: single_game_menu: sent rules belarus")
             except Exception as e:
                 logger.error(f"In function: single_game_menu: {e}")
+        elif (mode == "wrld"):
+            try:
+                await message.answer(
+                    messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]]
+                )
+                logger.info("In function: single_game_menu: sent rules world")
+            except Exception as e:
+                logger.error(f"In function: single_game_menu: {e}")
 
     elif (answer == translation['top players'][lang_code[lang]]):
         top_10_text = ''
