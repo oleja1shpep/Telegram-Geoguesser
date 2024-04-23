@@ -207,14 +207,15 @@ async def switch_use_gpt(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: switch_use_gpt: {e}")
 
     use_gpt = await database.get_gpt(message.from_user.id)
+    lang = await database.get_language(message.from_user.id)
     try:
         if (use_gpt):
             await message.answer(
-                "You are using gpt",
+                translation['using gpt'][lang_code[lang]],
             )
         else:
             await message.answer(
-                "You are not using gpt",
+                translation['not using gpt'][lang_code[lang]],
             )
         logger.info("In function: switch_use_gpt: sent answer: usage gpt")
     except Exception as e:

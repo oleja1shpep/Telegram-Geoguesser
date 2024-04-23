@@ -54,6 +54,8 @@
     "single bel": ["Одиночный по Беларуси", "Single across Belarus"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
+    "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
+    "not using gpt" : ["Теперь вы не будете получать интересные факты про сгенерированные места", "Now you won't learn different facts about random places"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
     "score and meters": ["Вы набрали {} очков\n Расстояние {} метров", "You scored {} points\n Distance {} meters"],
