@@ -21,15 +21,18 @@ def coordinates_from_seed(seed, mode):
     if mode == 'msk':
         x, y = 55.571, 37.364
         x2, y2 = 55.912, 37.844
+        x_center, y_center = 55.753235, 37.622512
         zoom = 10 
     elif mode == 'spb':
         x, y = 59.81,  30.2
         x2, y2 = 60.06, 30.47
+        x_center, y_center = 59.939043, 30.315826
         zoom = 10
     elif mode == 'rus':
-        zoom = 2
         x, y =  54.943761, 31.875376
         x2, y2 = 69.321693, 135.542207
+        x_center, y_center = 61.680306, 90.125792
+        zoom = 3
         rand_case = random.randint(1, 12); 
         if rand_case == 1:
             x, y =  54.395809,  19.963150
@@ -70,6 +73,7 @@ def coordinates_from_seed(seed, mode):
     else:
         x, y = -90, -180
         x2, y2 = 90, 180
+        x_center, y_center = 0, 0
         zoom = 1
         # rand_case = random.randint(1, 3); 
         # South America
@@ -85,7 +89,7 @@ def coordinates_from_seed(seed, mode):
         
 
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
-    return lat, lng, (x + x2) / 2, (y + y2) / 2, zoom
+    return lat, lng, x_center, y_center, zoom
 
 def multiplayer_seed_processor(string):
     unpacked = string.split('_')
