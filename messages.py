@@ -70,9 +70,9 @@ Your task is to use the panorama to determine your location on the real map of t
                """)
                ]
 
-GREETING = [("""\nЯ - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в отгадывание мест по всей России или по отдельным городам и посоревноваться с другими игроками"""
+GREETING = [("""Привет, {}!\nЯ - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в отгадывание мест по всей России или по отдельным городам и посоревноваться с другими игроками"""
              ),
-             ("""\nI am an analogue of the Geoguessr game in telegram! Here you can play guessing places all over Russia or in individual cities and compete with other players"""
+             ("""Nice to meet you, {}!\nI am an analogue of the Geoguessr game in telegram! Here you can play guessing places all over Russia or in individual cities and compete with other players"""
               )]
 
 GPT_REQUEST = """

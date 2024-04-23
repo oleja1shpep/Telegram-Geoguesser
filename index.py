@@ -69,13 +69,13 @@ async def command_start(message: Message, state: FSMContext) -> None:
     try:
         if not(is_found):
             await message.answer(
-                ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[1]),
+                (messages.GREETING[1]).format(message.from_user.first_name),
                 reply_markup=await markups.create_start_markup()
             )
         else:
             lang = await database.get_language(tele_id)
             await message.answer(
-                ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[lang_code[lang]]),
+                (messages.GREETING[lang_code[lang]]).format(message.from_user.first_name),
                 reply_markup=await markups.create_start_markup(lang)
             )
         logger.info("In function: command_start: sent answer: Greeting")
