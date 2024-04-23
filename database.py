@@ -60,6 +60,46 @@ async def add_user(tele_id, username):
 
     conn.close()
 
+async def check_key(tele_id, key):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    user = users.find_one({"tele_id" : tele_id})
+    
+    if key in user:
+        conn.close()
+        return True
+    conn.close()
+    return False
+
+async def set_key(tele_id, key, value):
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    users.update_one({"tele_id" : tele_id}, {"$set" : {key : value}})
+    conn.close()
+
+async def inc_key(tele_id, key, value, default = 0):
+    if not(await check_key(tele_id, key)):
+        await set_key(tele_id, key, default)
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    users.update_one({"tele_id" : tele_id}, {"$inc" : {key : value}})
+    conn.close()
+
+async def get_key(tele_id, key, default):
+    if not(await check_key(tele_id, key)):
+        await set_key(tele_id, key, default)
+
+    conn = MongoClient(URL)
+    db = conn[DB_NAME]
+    users = db.users
+    user = users.find_one({"tele_id" : tele_id})
+    res = user[key]
+    conn.close()
+    return res
+    
 async def find_user(tele_id):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
@@ -93,55 +133,33 @@ async def show_database():
     conn.close()
 
 async def set_seed(tele_id, seed, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
+    await set_key(tele_id, "seed_" + mode, seed)
 
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"seed_" + mode : seed}})
-
-    conn.close()
 
 async def get_seed(tele_id, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-
-    user = users.find_one({"tele_id" : tele_id})
-    seed = user["seed_" + mode]
-
-    conn.close()
+    seed = await get_key(tele_id, "seed_" + mode, "")
     return seed
 
 async def init_game(tele_id, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-
-    user = users.find_one({"tele_id" : tele_id})
-    if not(user["is_active_session_" + mode]):
+    if not(await get_key(tele_id, "is_active_session_" + mode, False)):
         await set_seed(tele_id, generate_seed(), mode)
+    await set_key(tele_id, "is_active_session_" + mode, True)
 
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session_" + mode : True}})
-    conn.close()
 
 async def end_game(tele_id, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"is_active_session_" + mode : False}})
-    conn.close()
+    await set_key(tele_id, "is_active_session_" + mode, False)
+
 
 async def get_top10_single(mode):
     conn = MongoClient(URL)
     db = conn[DB_NAME]
     users = db.users
 
-
     for user in users.find():
         if (mode.lower() +"_single_mean_score" not in user.keys()):
-            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_mean_score" : 0}})
-            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_game_counter" : 0}})
-            users.update_one({"tele_id" : user["tele_id"]}, {"$set" : {mode.lower() +"_single_total_score" : 0}})
+            await set_key(user["tele_id"], mode +"_single_mean_score", 0)
+            await set_key(user["tele_id"], mode +"_single_game_counter", 0)
+            await set_key(user["tele_id"], mode +"_single_total_score", 0)
     logger.info("updated db. added column with single " + mode)
 
     sort = {"$sort":
@@ -155,61 +173,34 @@ async def get_top10_single(mode):
 
 
 async def add_results_single(tele_id, score, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
+    await inc_key(tele_id, mode + "_single_total_score", score)
+    await inc_key(tele_id, mode + "_single_game_counter", 1)
     
-    user = users.find_one({"tele_id" : tele_id})
-    if mode.lower() +"_single_total_score" not in user.keys():
-        users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_total_score": 0}})
-    if mode.lower() +"_single_game_counter" not in user.keys():
-        users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_game_counter": 0}})
+    try:
+        mean_score = round(await get_key(tele_id, mode + "_single_total_score", 0) / await get_key(tele_id, mode + "_single_game_counter", 0) ,2)
+    except:
+        mean_score = 0
 
-    users.update_one({"tele_id" : tele_id}, {'$inc': {mode.lower() +"_single_total_score": score}})
-    users.update_one({"tele_id" : tele_id}, {'$inc': {mode.lower() +"_single_game_counter": 1}})
-
-    user = users.find_one({"tele_id" : tele_id})
-    mean_score = round(user[mode.lower() +"_single_total_score"] / user[mode.lower() +"_single_game_counter"], 2)
-    users.update_one({"tele_id" : tele_id}, {'$set': {mode.lower() +"_single_mean_score": mean_score}})
+    await set_key(tele_id, mode +"_single_mean_score", mean_score)
     
-    conn.close()
-
 async def drop_duplicates():
     pass
 
 async def get_last5_results(tele_id, mode):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-
-    user = users.find_one({"tele_id" : tele_id})
-    if "last_games_" + mode.lower() not in user:
-        users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : []}})
-        user = users.find_one({"tele_id" : tele_id})
-
-    games = user["last_games_" + mode.lower()]
-    conn.close()
+    games = await get_key(tele_id, "last_games_" + mode, [])
     return games
 
 async def add_game_single(tele_id, score, metres, mode):
+    games = await get_last5_results(tele_id, mode)
 
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-    user = users.find_one({"tele_id" : tele_id})
-    if "last_games_" + mode.lower() not in user:
-        users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : []}})
-        user = users.find_one({"tele_id" : tele_id})
-
-    games = user["last_games_" + mode.lower()]
     if (len(games) < 5):
         games.insert(0, (score, metres))
     else:
         games.pop(-1)
         games.insert(0, (score, metres))
-    users.update_one({"tele_id" : tele_id}, {"$set" : {"last_games_" + mode.lower() : games}})
 
-    conn.close()
+    await set_key(tele_id, "last_games_" + mode, games)
+
 
 async def set_language(tele_id, language):
     conn = MongoClient(URL)
