@@ -44,13 +44,16 @@ async def create_menu_markup(lang = "en"):
         resize_keyboard=True,
     )
 
-async def create_settings_menu_markup(lang = "en"):
+async def create_settings_menu_markup(lang, use_gpt):
+    text_en = (lang == "en") * "✅" + translation["eng_language"][lang_code[lang]]
+    text_ru = (lang == "ru") * "✅" + translation["rus_language"][lang_code[lang]]
+    text_use_gpt = use_gpt * "✅" + (1 - use_gpt) * "🚫" + translation["use_gpt"][lang_code[lang]]
     return ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text=translation["rus_language"][lang_code[lang]]),
-                KeyboardButton(text=translation["eng_language"][lang_code[lang]]),
-                KeyboardButton(text=translation["use_gpt"][lang_code[lang]]),
+                KeyboardButton(text=text_ru),
+                KeyboardButton(text=text_en),
+                KeyboardButton(text=text_use_gpt),
                 KeyboardButton(text=translation["back"][lang_code[lang]]),
             ]
         ],

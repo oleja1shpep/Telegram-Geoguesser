@@ -3,9 +3,9 @@
     "modes": ["Режимы", "Modes"],
     "how to play": ["Как играть", "How to play"],
     "settings": ["Настройки", "Settings"],
-    "eng_language": ["Английский", "English"],
-    "rus_language": ["Русский", "Russian"],
-    "use_gpt" : ["Факты про места", "Facts about places"],
+    "eng_language": ["Английский", "English", "✅Английский", "✅English"],
+    "rus_language": ["Русский", "Russian", "✅Русский", "✅Russian"],
+    "use_gpt" : ["Факты про места", "Facts about places", "✅Факты про места", "✅Facts about places", "🚫Факты про места", "🚫Facts about places"],
     "back": ["Назад", "Back"],
     "gamemodes": [
       [

@@ -74,3 +74,8 @@ GREETING = [("""\nЯ - аналог игры Geoguessr в телеграме! З
              ),
              ("""\nI am an analogue of the Geoguessr game in telegram! Here you can play guessing places all over Russia or in individual cities and compete with other players"""
               )]
+
+GPT_REQUEST = """
+Give me some entertaining fact about {} using {} language. Message text should be no longer that 50 words. 
+Please, answer according to following structure: <address> : <fact about address>
+"""

@@ -3,7 +3,6 @@ import logging
 import sys
 import os
 import json
-import requests
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
@@ -150,7 +149,8 @@ async def settings_menu(message: Message, state: FSMContext) -> None:
         await database.show_database()
     await state.set_state(Form.language_menu)
     lang = await database.get_language(message.from_user.id)
-    markup = await markups.create_settings_menu_markup(lang)
+    use_gpt = await database.get_gpt(message.from_user.id)
+    markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         await message.answer(
             translation['settings menu'][lang_code[lang]],
@@ -169,7 +169,8 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: change_language_rus: {e}")
 
-    markup = await markups.create_settings_menu_markup("ru")
+    use_gpt = await database.get_gpt(message.from_user.id)
+    markup = await markups.create_settings_menu_markup("ru", use_gpt)
     try:
         await message.answer(
             "Выбран Русский язык",
@@ -187,7 +188,8 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.info("In function: change_language_eng: set language in db : en")
     except Exception as e:
         logger.error(f"In function: change_language_eng: {e}")
-    markup = await markups.create_settings_menu_markup("en")
+    use_gpt = await database.get_gpt(message.from_user.id)
+    markup = await markups.create_settings_menu_markup("en", use_gpt)
     try:
         await message.answer(
             "Set English language",
@@ -208,14 +210,18 @@ async def switch_use_gpt(message: Message, state: FSMContext) -> None:
 
     use_gpt = await database.get_gpt(message.from_user.id)
     lang = await database.get_language(message.from_user.id)
+    markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         if (use_gpt):
+            
             await message.answer(
                 translation['using gpt'][lang_code[lang]],
+                reply_markup=markup
             )
         else:
             await message.answer(
                 translation['not using gpt'][lang_code[lang]],
+                reply_markup=markup
             )
         logger.info("In function: switch_use_gpt: sent answer: usage gpt")
     except Exception as e:
