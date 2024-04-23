@@ -1,7 +1,5 @@
-let panorama;
-let marker;
-let start_lat, start_lng;
-let loc;
+let panorama, marker, start_lat, start_lng, loc;
+let radius_index = 0;
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -25,10 +23,11 @@ async function get_cords() {
     x_center = parseFloat(hash[3])
     y_center = parseFloat(hash[4])
     zoom = parseFloat(hash[5])
+    radius_index = parseInt(hash[6])
 }
 
-const radiuses = [500, 5000, 50000, 500000, 1500000, 5000000, 50000000]
-let radius_index = 0;
+const radiuses = [500, 2000, 5000, 50000, 500000, 1500000, 5000000, 50000000]
+
 
 function get_panorama() {
     // Ищем панораму в переданной точке.
@@ -58,7 +57,7 @@ function processSVData(data, status) {
     } else if (status == google.maps.StreetViewStatus.ZERO_RESULTS) {
         console.log('status: zero results, radius:', radiuses[radius_index])
         radius_index = radius_index + 1;
-        if (radius_index <= 6) {
+        if (radius_index <= 7) {
             get_panorama();
         }
         return;
