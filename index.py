@@ -18,8 +18,6 @@ import database
 import markups
 import bot_functions
 
-from translation import t, lang_code
-
 USE_DB = True
 DEBUG_MODE = False
 
@@ -33,6 +31,11 @@ TOKEN_BOT = os.getenv("TOKEN")
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
+
+with open('translations.json', 'r', encoding='utf-8') as file:
+    file = json.load(file)
+translation = file['translations']
+lang_code = file['lang_code']
 
 form_router = Router()
 dp = Dispatcher()
@@ -67,7 +70,7 @@ async def command_start(message: Message, state: FSMContext) -> None:
     logger.info("In function: command_start: finished <command_start>")
     await message.delete()
 
-@form_router.message(Form.start, F.text.in_(t["play"]))
+@form_router.message(Form.start, F.text.in_(translation['play']))
 async def process_name(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
 
@@ -106,12 +109,12 @@ async def process_name(message: Message, state: FSMContext) -> None:
     try:
         if (is_found):            
             await message.answer(
-                t['greeting'][lang_code[lang]],
+                translation['greeting'][lang_code[lang]],
                 reply_markup = markup
             )
         else:
             await message.answer(
-                t['registration'][lang_code[lang]],
+                translation['registration'][lang_code[lang]],
                 reply_markup = markup
             )
         logger.info("In function: process_name: sent answer: Registration")
@@ -120,7 +123,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     logger.info("In function: process_name: finished <process_name>")
     await message.delete()
 
-@form_router.message(Form.menu, F.text.in_(t["how to play"]))
+@form_router.message(Form.menu, F.text.in_(translation["how to play"]))
 async def main_menu(message: Message, state: FSMContext) -> None:
     
     await database.drop_duplicates()
@@ -140,7 +143,7 @@ async def main_menu(message: Message, state: FSMContext) -> None:
     await message.delete()
 
 
-@form_router.message(Form.menu, F.text.in_(t["language"]))
+@form_router.message(Form.menu, F.text.in_(translation["language"]))
 async def change_language(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     if DEBUG_MODE:
@@ -150,7 +153,7 @@ async def change_language(message: Message, state: FSMContext) -> None:
     markup = await markups.create_language_menu_markup(lang)
     try:
         await message.answer(
-            t['choose the language'][lang_code[lang]],
+            translation['choose the language'][lang_code[lang]],
             reply_markup = markup
         )
         logger.info("In function: change_language: sent answer: Выберите язык")
@@ -158,7 +161,7 @@ async def change_language(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(t["rus_language"]))
+@form_router.message(Form.language_menu, F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message, state: FSMContext) -> None:
     try:
         await database.set_language(message.from_user.id, 'ru')
@@ -177,7 +180,7 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_rus: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(t["eng_language"]))
+@form_router.message(Form.language_menu, F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message, state: FSMContext) -> None:
     try:
         await database.set_language(message.from_user.id, 'en')
@@ -195,7 +198,7 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_eng: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(t["back"]))
+@form_router.message(Form.language_menu, F.text.in_(translation["back"]))
 async def change_language_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
@@ -207,7 +210,7 @@ async def change_language_back(message: Message, state: FSMContext) -> None:
     markup = await markups.create_menu_markup(lang)
     try:
         await message.answer(
-            t['main menu'][lang_code[lang]],
+            translation['main menu'][lang_code[lang]],
             reply_markup= markup
         )
         logger.info("In function: change_language_back: sent answer: главное меню")
@@ -215,7 +218,7 @@ async def change_language_back(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_back: {e}")
     await message.delete()
 
-@form_router.message(Form.menu, F.text.in_(t["modes"]))
+@form_router.message(Form.menu, F.text.in_(translation["modes"]))
 async def gamemodes(message: Message, state: FSMContext) -> None:
     await database.drop_duplicates()
     await state.set_state(Form.gamemodes)
@@ -228,7 +231,7 @@ async def gamemodes(message: Message, state: FSMContext) -> None:
     markup = await markups.create_gamemodes_markup(lang)
     try:
         await message.answer(
-            t['available modes'][lang_code[lang]],
+            translation['available modes'][lang_code[lang]],
             reply_markup = markup
         )
         logger.info("In function: gamemodes: sent answer: Доступные режимы")
@@ -236,7 +239,7 @@ async def gamemodes(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: gamemodes: {e}")
     await message.delete()
 
-@form_router.message(Form.gamemodes, F.text.in_(t["back"]))
+@form_router.message(Form.gamemodes, F.text.in_(translation["back"]))
 async def gamemodes_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
@@ -248,7 +251,7 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
     markup = await markups.create_menu_markup(lang)
     try:
         await message.answer(
-            t['main menu'][lang_code[lang]],
+            translation['main menu'][lang_code[lang]],
             reply_markup= markup
         )
         logger.info("In function: gamemodes_back: sent answer: Главное меню")
@@ -257,7 +260,7 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
     await message.delete()
 
 
-@form_router.message(Form.gamemodes, F.text.split()[0].in_(t["single"]))
+@form_router.message(Form.gamemodes, F.text.split()[0].in_(translation["single"]))
 async def signle_game(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     answer = message.text
@@ -267,45 +270,45 @@ async def signle_game(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: signle_game: {e}")
     mode = "msk"
-    if (answer == t["gamemodes"][lang_code[lang]][0]):
+    if (answer == translation["gamemodes"][lang_code[lang]][0]):
         mode = "msk"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
-                t['single msk'][lang_code[lang]],
+                translation['single msk'][lang_code[lang]],
                 reply_markup = markup
             )
             logger.info("In function: signle_game: sent answer: Одиночный по москве")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == t["gamemodes"][lang_code[lang]][1]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][1]):
         mode = "spb"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
-                t['single spb'][lang_code[lang]],
+                translation['single spb'][lang_code[lang]],
                 reply_markup = markup
             )
             logger.info("In function: signle_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == t["gamemodes"][lang_code[lang]][2]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][2]):
         mode = "rus"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
-                t['single rus'][lang_code[lang]],
+                translation['single rus'][lang_code[lang]],
                 reply_markup = markup
             )
             logger.info("In function: signle_game: sent answer: Одиночный по России")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == t["gamemodes"][lang_code[lang]][3]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][3]):
         mode = "blrs"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
-                t['single bel'][lang_code[lang]],
+                translation['single bel'][lang_code[lang]],
                 reply_markup = markup
             )
             logger.info("In function: signle_game: sent answer: Одиночный по Беларуси")
@@ -329,7 +332,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: single_game_menu: {e}")
 
     answer = message.text
-    if (answer == t['rules'][lang_code[lang]]):
+    if (answer == translation['rules'][lang_code[lang]]):
         if (mode == "msk"):
             try:
                 await message.answer(
@@ -363,7 +366,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
             except Exception as e:
                 logger.error(f"In function: single_game_menu: {e}")
 
-    elif (answer == t['top players'][lang_code[lang]]):
+    elif (answer == translation['top players'][lang_code[lang]]):
         top_10_text = ''
         try:
             top_10_text = await bot_functions.get_top10_single(mode=mode, lang=lang)
@@ -378,7 +381,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
         except Exception as e:
             logger.error(f"In function: single_game_menu: {e}")
         
-    elif (answer == t['last 5 games'][lang_code[lang]]):
+    elif (answer == translation['last 5 games'][lang_code[lang]]):
         try:
             last_5_games = await bot_functions.get_last5_results_single(message.from_user.id, mode, lang)
             logger.info("In function: single_game_menu: got last 5 games in single " + mode)
@@ -388,15 +391,15 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
             await message.answer(
                 last_5_games
             )
-            logger.info("In function: single_game_menu: sent top 10 players in single " + mode)
+            logger.info("In function: single_game_menu: sent last 5 games in single " + mode)
         except Exception as e:
             logger.error(f"In function: single_game_menu: {e}")
-    elif (answer == t['back'][lang_code[lang]]):
+    elif (answer == translation['back'][lang_code[lang]]):
         await state.set_state(Form.gamemodes)
         markup = await markups.create_gamemodes_markup(lang)
         try:
             await message.answer(
-                t['available modes'][lang_code[lang]],
+                translation['available modes'][lang_code[lang]],
                 reply_markup= markup
             )
             logger.info("In function: single_game_menu: sent answer: Доступные режимы")
@@ -483,7 +486,7 @@ async def idk_bugs_or_smth(message: Message, state: FSMContext) -> None:
         lang = "en"
     try:
         await message.answer(
-            t['error'][lang_code[lang]]
+            translation['error'][lang_code[lang]]
         )
         logger.info("In function: idk_bugs_or_smth: someting broke or bot was restarted")
     except Exception as e:
