@@ -59,9 +59,9 @@ async def create_language_menu_markup(lang = "en"):
 async def create_gamemodes_markup(lang = "en"):
     builder = ReplyKeyboardBuilder()
     keyboard = translation['gamemodes'][lang_code[lang]]
-    for i in range(5):
+    for i in range(6):
         builder.button(text = keyboard[i])
-    builder.adjust(2,2,1)
+    builder.adjust(1,2,2,1)
     markup = builder.as_markup()
     markup.resize_keyboard = True
     return markup

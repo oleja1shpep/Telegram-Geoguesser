@@ -271,6 +271,17 @@ async def signle_game(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: signle_game: {e}")
     mode = "msk"
     if (answer == translation["gamemodes"][lang_code[lang]][0]):
+        mode = "wrld"
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+        try:
+            await message.answer(
+                translation['single wrld'][lang_code[lang]],
+                reply_markup = markup
+            )
+            logger.info("In function: signle_game: sent answer: Одиночный по миру")
+        except Exception as e:
+            logger.error(f"In function: signle_game: {e}")
+    elif (answer == translation["gamemodes"][lang_code[lang]][1]):
         mode = "msk"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -281,7 +292,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.info("In function: signle_game: sent answer: Одиночный по москве")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][1]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][2]):
         mode = "spb"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -292,7 +303,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.info("In function: signle_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][2]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][3]):
         mode = "rus"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -303,7 +314,7 @@ async def signle_game(message: Message, state: FSMContext) -> None:
             logger.info("In function: signle_game: sent answer: Одиночный по России")
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][3]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][4]):
         mode = "blrs"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -429,7 +440,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
 
                 if (mode == "spb" or mode == "msk"):
                     score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-                elif (mode == "rus" or mode == "blrs"):
+                elif (mode == "rus" or mode == "blrs" or mode == "wrld"):
                     score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
                 
                 photo_url = await bot_functions.get_url(cords=cords)

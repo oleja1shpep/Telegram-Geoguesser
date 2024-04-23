@@ -8,6 +8,7 @@
     "back": ["Назад", "Back"],
     "gamemodes": [
       [
+        "Одиночный | Весь мир",
         "Одиночный | Москва",
         "Одиночный | Санкт-Петербург",
         "Одиночный | Россия",
@@ -15,6 +16,7 @@
         "Назад"
       ],
       [
+        "Single | World",
         "Single | Moscow",
         "Single | St. Petersburg",
         "Single | Russia",
@@ -45,10 +47,11 @@
     "answer is received": ["Oтвет получен", "Answer is received"],
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Доступные режимы", "Available modes"],
-    "single msk": ["Одиночный по москве", "Single in Moscow"],
-    "single spb": ["Одиночный по Санкт-Петербургу", "Single in St. Petersburg"],
-    "single rus": ["Одиночный по России", "Single in Russia"],
-    "single bel": ["Одиночный по Беларуси", "Single in Belarus"],
+    "single wrld" : ["Одиночный по всему миру", "Single across World"],
+    "single msk": ["Одиночный по москве", "Single across Moscow"],
+    "single spb": ["Одиночный по Санкт-Петербургу", "Single across St. Petersburg"],
+    "single rus": ["Одиночный по России", "Single across Russia"],
+    "single bel": ["Одиночный по Беларуси", "Single across Belarus"],
     "main menu": ["Главное меню", "Main menu"],
     "choose the language": ["Выберите язык", "Choose the language"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
