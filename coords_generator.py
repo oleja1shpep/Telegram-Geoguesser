@@ -27,6 +27,7 @@ def coordinates_from_seed(seed, mode):
         x2, y2 = 60.06, 30.47
         zoom = 10
     elif mode == 'rus':
+        zoom = 2
         x, y =  54.943761, 31.875376
         x2, y2 = 69.321693, 135.542207
         rand_case = random.randint(1, 12); 
@@ -67,7 +68,7 @@ def coordinates_from_seed(seed, mode):
             x, y = 43.601399, 40.401071
             x2, y2 = 50.058438, 46.346261
     else:
-        x = -90, -180
+        x, y = -90, -180
         x2, y2 = 90, 180
         zoom = 1
         # rand_case = random.randint(1, 3); 

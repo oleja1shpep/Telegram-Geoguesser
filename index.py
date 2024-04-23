@@ -475,6 +475,9 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 tele_id = message.from_user.id
                 username = message.from_user.username
 
+                seed = await database.get_seed(tele_id, mode)
+                seed = mode + "_" + seed
+
                 logger.info("In function: single_game_menu: Got answer from " + username)
                 #print("ответ получен", message.from_user.id, message.from_user.username)
                 cords = message.web_app_data.data
@@ -502,10 +505,15 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 await database.end_game(tele_id, mode)
                 markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     
-                txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang)
+                txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
                 try:
-                    await message.answer_photo(photo_url, caption=txt,reply_markup=markup)
+                    await message.answer_photo(
+                        photo_url,
+                        caption=txt,
+                        reply_markup=markup,
+                        parse_mode="Markdown"
+                        )
                     logger.info("In function: single_game_menu: sent photo answer")
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: {e}")

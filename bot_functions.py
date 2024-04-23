@@ -87,7 +87,7 @@ async def calculate_score_and_distance_russia(cords):
         score = 5000
     return [int(score), int(distance)]
 
-async def create_result_text(score, metres, lang = 'en',):
+async def create_result_text(score, metres, seed, lang = 'en'):
     txt = ""
     if metres < 10000:
         txt = (translation['score and meters'][lang_code[lang]]).format(score, metres)
@@ -95,6 +95,7 @@ async def create_result_text(score, metres, lang = 'en',):
         txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 2))
     else:
         txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 0))
+    txt += f"\nSeed: `{seed}`"
     return txt
 
 async def get_top10_single(mode, lang = 'en'):
