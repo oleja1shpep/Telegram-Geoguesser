@@ -76,7 +76,7 @@ async def command_start(message: Message, state: FSMContext) -> None:
             lang = await database.get_language(tele_id)
             await message.answer(
                 ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[lang_code[lang]]),
-                reply_markup=await markups.create_start_markup()
+                reply_markup=await markups.create_start_markup(lang)
             )
         logger.info("In function: command_start: sent answer: Greeting")
     except Exception as e:
@@ -106,7 +106,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: process_name: could not add user: {e}")
 
     try:
-        if USE_DB: await database.set_language(message.from_user.id, 'en')
+        if USE_DB and not(is_found): await database.set_language(message.from_user.id, 'en')
         logger.info("In function: process_name: Set language")
     except Exception as e:
         logger.error(f"In function: process_name: {e}")
@@ -471,7 +471,7 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
             logger.error(f"In function: single_game_menu: {e}")
     else:
         if (hasattr(message, 'web_app_data')):
-            if message.web_app_data.data:
+            if hasattr(message.web_app_data, "data") and message.web_app_data.data:
                 tele_id = message.from_user.id
                 username = message.from_user.username
 

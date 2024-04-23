@@ -22,11 +22,11 @@ with open('translations.json', 'r', encoding='utf-8') as file:
 translation = file['translations']
 lang_code = file['lang_code']
 
-async def create_start_markup():
+async def create_start_markup(lang = 'en'):
     return ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="Play"),
+                KeyboardButton(text=translation["play"][lang_code[lang]]),
             ]
         ],
         resize_keyboard=True,
