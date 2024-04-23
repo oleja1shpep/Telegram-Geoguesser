@@ -62,6 +62,7 @@
     "score and kilometers": ["Вы набрали {} очков\n Расстояние {} километров", "You scored {} points\n Distance {} kilometers"],
     "top 10": ["{}. {} - среднее : {} | матчей : {}\n", "{}. {} - average : {} | matches : {}\n"],
     "last 5 res": ["{}. {} очков | {} метров\n", "{}. {} points | {} meters\n"],
+    "wait for gpt" : ["Пожалуйста, подождите интересный факт...", "Please, wait for interesting fact..."],
     "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"]},
 "lang_code": {"ru": 0, "en": 1}}
 

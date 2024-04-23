@@ -458,18 +458,6 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
                 #print("ответ получен", message.from_user.id, message.from_user.username)
                 cords = message.web_app_data.data
 
-                lat1, lon1, lat2, lon2 = map(str, cords.split())
-                url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat1}&lon={lon1}"
-                response = requests.get(url)
-                address = ''
-                if response.status_code == 200:
-                    data = response.json()
-                    address = data.get('display_name')
-                    logger.info("In function: single_game_menu: Got address")
-                else:
-                    logger.warning("In function: single_game_menu: Coords request error")
-
-
                 if (mode == "spb" or mode == "msk"):
                     score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
                 elif (mode == "rus" or mode == "blrs" or mode == "wrld"):
@@ -492,22 +480,31 @@ async def single_game_menu(message: Message, state: FSMContext) -> None:
 
                 await database.end_game(tele_id, mode)
                 markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
-                language = ''
-                if lang == 'en':
-                    language = 'english'
-                else:
-                    language = "russian"
-                message_value = f"give me some fan fact about {address} using {language} language. Message text should be no longer that 50 words"
-                txt = await bot_functions.create_result_text(score=score, metres=metres, message=message_value, lang = lang)
+    
+                txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang)
+
                 try:
                     await message.answer_photo(photo_url, caption=txt,reply_markup=markup)
                     logger.info("In function: single_game_menu: sent photo answer")
                 except Exception as e:
                     logger.error(f"In function: single_game_menu: {e}")
 
-                
-                # send = bot.send_message(message.chat.id, f"Вы набрали {score} очков\nРасстояние {
-                #                         metres} метров", reply_markup=markup)
+                if (await database.get_gpt(tele_id)):
+                    msg = await message.answer(
+                        translation['wait for gpt'][lang_code[lang]],
+                    )
+
+                    language = ''
+                    if lang == 'en':
+                        language = 'english'
+                    else:
+                        language = "russian"
+                    fact = await bot_functions.gpt_request(cords, language)
+                    await msg.delete()
+                    await message.answer(
+                        fact
+                    )
+
     await message.delete()
 
 @form_router.message(F.text)

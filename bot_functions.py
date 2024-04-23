@@ -4,6 +4,7 @@ import asyncio
 import g4f
 import json
 import numpy as np
+import requests
 
 from asyncio import WindowsSelectorEventLoopPolicy
 from math import cos, sin, asin, sqrt, radians, log
@@ -25,6 +26,26 @@ lang_code = file['lang_code']
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
+
+async def gpt_request(cords, language):
+    lat1, lon1, lat2, lon2 = map(str, cords.split())
+    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat1}&lon={lon1}"
+    response = requests.get(url)
+    address = ''
+    if response.status_code == 200:
+        data = response.json()
+        address = data.get('display_name')
+        logger.info("In function: gpt_request: Got address")
+    else:
+        logger.warning("In function: gpt_request: Coords request error")
+
+    request = f"give me some fan fact about {address} using {language} language. Message text should be no longer that 50 words"
+
+    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
+    answer = await g4f.ChatCompletion.create_async(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": request}])
+    return answer
 
 async def get_url(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
@@ -66,7 +87,7 @@ async def calculate_score_and_distance_russia(cords):
         score = 5000
     return [int(score), int(distance)]
 
-async def create_result_text(score, metres,  message, lang = 'en',):
+async def create_result_text(score, metres, lang = 'en',):
     txt = ""
     if metres < 10000:
         txt = (translation['score and meters'][lang_code[lang]]).format(score, metres)
@@ -74,11 +95,6 @@ async def create_result_text(score, metres,  message, lang = 'en',):
         txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 2))
     else:
         txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 0))
-    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
-    response = await g4f.ChatCompletion.create_async(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": message}])
-    txt += "\n" + response
     return txt
 
 async def get_top10_single(mode, lang = 'en'):
