@@ -1,7 +1,7 @@
 aiogram==3.4.1
 pyMongo==4.6.3
 python-dotenv==1.0.1
-g4f==0.3.0.5
+g4f==0.3.0.6
 requests==2.31.0
 asyncio==3.4.3
 geopy==2.4.1
