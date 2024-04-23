@@ -10,8 +10,6 @@ from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
 from geopy.distance import geodesic
 
-from translation import lang_code, t
-
 import database
 
 load_dotenv()

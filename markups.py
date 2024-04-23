@@ -1,11 +1,11 @@
 import os
 import logging
+import json
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 import database
-from translation import t, lang_code
 from coords_generator import generate_seed, coordinates_from_seed
 from dotenv import load_dotenv
 
@@ -16,6 +16,11 @@ logger.setLevel(logging.DEBUG)
 load_dotenv()
 
 URL_SITE = os.getenv("URL_SITE")
+
+with open('translations.json', 'r', encoding='utf-8') as file:
+    file = json.load(file)
+translation = file['translations']
+lang_code = file['lang_code']
 
 async def create_start_markup():
     return ReplyKeyboardMarkup(
@@ -31,9 +36,9 @@ async def create_menu_markup(lang = "en"):
     return ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text=t["modes"][lang_code[lang]]),
-                KeyboardButton(text=t["how to play"][lang_code[lang]]),
-                KeyboardButton(text=t["language"][lang_code[lang]]),
+                KeyboardButton(text=translation["modes"][lang_code[lang]]),
+                KeyboardButton(text=translation["how to play"][lang_code[lang]]),
+                KeyboardButton(text=translation["language"][lang_code[lang]]),
             ]
         ],
         resize_keyboard=True,
@@ -43,9 +48,9 @@ async def create_language_menu_markup(lang = "en"):
     return ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text=t["rus_language"][lang_code[lang]]),
-                KeyboardButton(text=t["eng_language"][lang_code[lang]]),
-                KeyboardButton(text=t["back"][lang_code[lang]]),
+                KeyboardButton(text=translation["rus_language"][lang_code[lang]]),
+                KeyboardButton(text=translation["eng_language"][lang_code[lang]]),
+                KeyboardButton(text=translation["back"][lang_code[lang]]),
             ]
         ],
         resize_keyboard=True,
@@ -53,7 +58,7 @@ async def create_language_menu_markup(lang = "en"):
 
 async def create_gamemodes_markup(lang = "en"):
     builder = ReplyKeyboardBuilder()
-    keyboard = t['gamemodes'][lang_code[lang]]
+    keyboard = translation['gamemodes'][lang_code[lang]]
     for i in range(5):
         builder.button(text = keyboard[i])
     builder.adjust(2,2,1)
@@ -63,7 +68,7 @@ async def create_gamemodes_markup(lang = "en"):
 
 async def create_single_game_menu_markup(mode, lang, tele_id):
     builder = ReplyKeyboardBuilder()
-    keyboard = t["single game modes"][lang_code[lang]]
+    keyboard = translation["single game modes"][lang_code[lang]]
 
     await database.init_game(tele_id, mode)
     seed = await database.get_seed(tele_id, mode)
