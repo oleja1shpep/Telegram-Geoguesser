@@ -9,3 +9,4 @@ file.json
 file2.json
 docker-compose.yml
 .env
+launch.json
