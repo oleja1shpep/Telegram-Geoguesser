@@ -193,23 +193,7 @@ async def add_game_single(tele_id, score, metres, mode):
 
 
 async def set_language(tele_id, language):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-
-    users.update_one(filter = {"tele_id" : tele_id}, update = {'$set': {'language': language}})
-
-    conn.close()
+    await set_key(tele_id, 'language', language)
 
 async def get_language(tele_id):
-    conn = MongoClient(URL)
-    db = conn[DB_NAME]
-    users = db.users
-
-    user = users.find_one({"tele_id" : tele_id})
-    if "language" not in user:
-        users.update_one({"tele_id" : tele_id}, {"$set" : {"language", "en"}})
-        user = users.find_one({"tele_id" : tele_id})
-
-    conn.close()
-    return user["language"]
+    return await get_key(tele_id, "language", 'en')
