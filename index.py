@@ -50,19 +50,34 @@ class Form(StatesGroup):
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message, state: FSMContext) -> None:
     logger.info("In function: command_start: Recieved command /start")
+    tele_id = message.from_user.id
     
     # try:
     #     if (USE_DB): await database.delete_database()
     #     logger.info("deleted db")
     # except Exception as e:
     #     logger.error(f"Error in command_start: {e}")
+    is_found = False
+    try:
+        is_found = await database.find_user(tele_id)
+        logger.info("In function: command_start: Connected to db")
+    except Exception as e:
+        logger.error(f"In function: command_start: {e}")
 
     await state.set_state(Form.start)
+    
     try:
-        await message.answer(
-            ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[1]),
-            reply_markup=await markups.create_start_markup()
-        )
+        if not(is_found):
+            await message.answer(
+                ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[1]),
+                reply_markup=await markups.create_start_markup()
+            )
+        else:
+            lang = await database.get_language(tele_id)
+            await message.answer(
+                ('Hello, {}!{}').format(message.from_user.first_name, messages.GREETING[lang_code[lang]]),
+                reply_markup=await markups.create_start_markup()
+            )
         logger.info("In function: command_start: sent answer: Greeting")
     except Exception as e:
         logger.error(e)
