@@ -10,3 +10,10 @@ docker-compose.yml
 .env
 launch.json
 generate_func.py
+config.*
+all_users.db
+config.py
+init_db.py
+backend.py
+change_db.py
+.vscode
