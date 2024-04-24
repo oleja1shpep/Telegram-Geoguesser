@@ -31,7 +31,7 @@
         "Правила",
         "Топ игроков",
         "Прошлые 5 игр",
-        "Сгенерировать сид",
+        "Сгенерировать seed",
         "Назад"
       ],
       [
@@ -47,7 +47,7 @@
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],
     "last 5 games" : ["Прошлые 5 игр", "Last 5 games"],
-    "generate seed": ["Сгенерировать сид", "Generate seed"], 
+    "generate seed": ["Сгенерировать seed", "Generate seed"], 
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Доступные режимы", "Available modes"],
     "single wrld" : ["Одиночный по всему миру", "Single across World"],
