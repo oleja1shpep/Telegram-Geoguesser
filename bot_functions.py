@@ -6,7 +6,6 @@ import json
 import numpy as np
 import requests
 
-from asyncio import WindowsSelectorEventLoopPolicy
 from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
 from geopy.distance import geodesic
@@ -42,7 +41,6 @@ async def gpt_request(cords, language):
 
     request = f"give me some fan fact about {address} using {language} language. Message text should be no longer that 50 words"
 
-    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
     answer = await g4f.ChatCompletion.create_async(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": request}])
