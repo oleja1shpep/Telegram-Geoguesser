@@ -63,27 +63,29 @@ async def create_settings_menu_markup(lang, use_gpt):
 async def create_gamemodes_markup(lang = "en"):
     builder = ReplyKeyboardBuilder()
     keyboard = translation['gamemodes'][lang_code[lang]]
-    for i in range(6):
+    for i in range(len(keyboard)):
         builder.button(text = keyboard[i])
     builder.adjust(1,2,2,1)
     markup = builder.as_markup()
     markup.resize_keyboard = True
     return markup
 
-async def create_single_game_menu_markup(mode, lang, tele_id):
+async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     builder = ReplyKeyboardBuilder()
     keyboard = translation["single game modes"][lang_code[lang]]
 
-    await database.init_game(tele_id, mode)
-    seed = await database.get_seed(tele_id, mode)
-    logger.debug(f" seed: {seed} | mode: {mode}")
+
+    if not(seed):
+        await database.init_game(tele_id, mode)
+        seed = await database.get_seed(tele_id, mode)
+        logger.debug(f" seed: {seed} | mode: {mode}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
     builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '|' + '|'.join(map(str, coords)) + '|' + str(MODE_TO_RADIUS[mode])))
-    for i in range(1,5):
+    for i in range(1,len(keyboard)):
         builder.button(text = keyboard[i])
 
-    builder.adjust(2,2,1)
+    builder.adjust(2,2,2)
     markup = builder.as_markup()
     markup.resize_keyboard = True
     return markup

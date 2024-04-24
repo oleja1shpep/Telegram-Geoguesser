@@ -130,7 +130,14 @@ async def get_seed(tele_id, mode):
     seed = await get_key(tele_id, "seed_" + mode, "")
     return seed
 
+async def set_track_changes(tele_id, mode, value):
+    await set_key(tele_id, "track_changes_" + mode, value)
+
+async def get_track_changes(tele_id, mode):
+    return await get_key(tele_id, "track_changes_" + mode, True)
+
 async def init_game(tele_id, mode):
+    await set_track_changes(tele_id, mode, True)
     if not(await get_key(tele_id, "is_active_session_" + mode, False)):
         await set_seed(tele_id, generate_seed(), mode)
     await set_key(tele_id, "is_active_session_" + mode, True)

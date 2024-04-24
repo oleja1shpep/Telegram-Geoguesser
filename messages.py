@@ -79,3 +79,12 @@ GPT_REQUEST = """
 Give me some entertaining fact about {} using {} language. Message text should be no longer that 50 words. 
 Please, answer according to following structure: <address> : <fact about address>
 """
+
+GENERATE_SEED = [
+    (
+        """seed: `{}`\nПришли его друзьям, чтобы поделиться панорамой!"""
+    ),
+    (
+        """seed: `{}`\nSend it to your friends to share the panorama!"""
+    )
+]
