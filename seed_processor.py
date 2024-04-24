@@ -1,6 +1,6 @@
 import random
-MODES = ['msk', 'spb', 'rus', 'blrs', 'wrld']
-MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 4, 'blrs': 4, 'wrld': 5}
+MODES = ['msk', 'spb', 'rus', 'usa', 'wrld']
+MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 4, 'usa': 4, 'wrld': 5}
 
 def generate_seed():
     seed = ''

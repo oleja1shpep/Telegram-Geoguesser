@@ -13,7 +13,7 @@
         "Одиночный | Москва",
         "Одиночный | Санкт-Петербург",
         "Одиночный | Россия",
-        "Одиночный | Беларусь",
+        "Одиночный | США",
         "Назад"
       ],
       [
@@ -21,7 +21,7 @@
         "Single | Moscow",
         "Single | St. Petersburg",
         "Single | Russia",
-        "Single | Belarus",
+        "Single | USA",
         "Back"
       ]
     ],
@@ -54,7 +54,7 @@
     "single msk": ["Одиночный по москве", "Single across Moscow"],
     "single spb": ["Одиночный по Санкт-Петербургу", "Single across St. Petersburg"],
     "single rus": ["Одиночный по России", "Single across Russia"],
-    "single bel": ["Одиночный по Беларуси", "Single across Belarus"],
+    "single usa": ["Одиночный по США", "Single across USA"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],

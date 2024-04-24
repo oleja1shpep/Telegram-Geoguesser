@@ -32,13 +32,13 @@ You are given an unlimited amount of time to answer
 You can move through the streets in any direction""")]
 
 
-BELARUS_SINGLE_PLAYER_RULES = [("""
-Как хорошо ты знаешь Беларусь?
+USA_SINGLE_PLAYER_RULES = [("""
+Как хорошо ты знаешь США?
 
 Дается неограниченное количество времени на ответ
 Можно перемещаться по улицам в любых направлениях"""),
 ("""
-How well do you know Belarus?
+How well do you know USA?
 
 You are given an unlimited amount of time to answer
 You can move through the streets in any direction""")]

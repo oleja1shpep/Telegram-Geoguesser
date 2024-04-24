@@ -362,11 +362,11 @@ async def signle_game(message: Message, state: FSMContext) -> None:
         except Exception as e:
             logger.error(f"In function: signle_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][4]):
-        mode = "blrs"
+        mode = "usa"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             await message.answer(
-                translation['single bel'][lang_code[lang]],
+                translation['single usa'][lang_code[lang]],
                 reply_markup = markup
             )
             logger.info("In function: signle_game: sent answer: Одиночный по Беларуси")
@@ -413,12 +413,12 @@ async def single_game_menu_rules(message: Message, state: FSMContext) -> None:
             logger.info("In function: single_game_menu_rules: sent rules russia")
         except Exception as e:
             logger.error(f"In function: single_game_menu_rules: {e}")
-    elif (mode == "blrs"):
+    elif (mode == "usa"):
         try:
             await message.answer(
-                messages.BELARUS_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.USA_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu_rules: sent rules belarus")
+            logger.info("In function: single_game_menu_rules: sent rules USA")
         except Exception as e:
             logger.error(f"In function: single_game_menu_rules: {e}")
     elif (mode == "wrld"):
@@ -556,7 +556,7 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
 
     if (mode == "spb" or mode == "msk"):
         score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-    elif (mode == "rus" or mode == "blrs" or mode == "wrld"):
+    elif (mode == "rus" or mode == "usa" or mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
     
     photo_url = await bot_functions.get_url(cords=cords)
