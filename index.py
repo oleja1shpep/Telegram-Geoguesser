@@ -558,6 +558,8 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
         score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
     elif (mode == "rus" or mode == "usa" or mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
+    elif (mode == "wrld"):
+        score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
     
     photo_url = await bot_functions.get_url(cords=cords)
     logger.info("In function: single_game_menu_recieve_answer: got photo url")

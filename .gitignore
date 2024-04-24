@@ -10,3 +10,4 @@ file2.json
 docker-compose.yml
 .env
 launch.json
+generate_func.py

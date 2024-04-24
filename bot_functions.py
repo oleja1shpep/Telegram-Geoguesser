@@ -70,7 +70,7 @@ async def calculate_score_and_distance_moscow_spb(cords):
     distance = geodesic(point1, point2).meters
     square = 2651
     scale = 1.99606121e-19 * square + 3.41291449e-12 * square + 5.83462311e-05 * square + 6.85055291e+00 * square
-    score = min(5000, int(np.exp(7.02299068e-13*distance**3 - 2.00281581e-08*distance**2 -2.14312600e-04*distance + 8.44295074e+00)))
+    score = min(5000, int(np.exp(-3.05857510e-04 * distance + 8.47977747e+00)+ 198.33077405051245))
     if (distance < 10):
         score = 5000
     return [score, int(distance)]
@@ -80,8 +80,17 @@ async def calculate_score_and_distance_russia(cords):
     point1 = (lat1, lon1)
     point2 = (lat2, lon2)
     distance = geodesic(point1, point2).meters
-    score = min(5000, int(np.exp(8.92179927e-21*distance**3 - 1.08930162e-13*distance**2 - 5.00975103e-07*distance +
-    8.44085571e+00)))
+    score = min(5000, int(np.exp(-7.13667523e-07*distance +  8.47673317e+00) + 198.33077405052063))
+    if (distance < 100):
+        score = 5000
+    return [int(score), int(distance)]
+
+async def calculate_score_and_distance_world(cords):
+    lat1, lon1, lat2, lon2 = map(float, cords.split())
+    point1 = (lat1, lon1)
+    point2 = (lat2, lon2)
+    distance = geodesic(point1, point2).meters
+    score = min(5000, int(np.exp(-5.35250642e-07*distance +  8.47672960e+00) + 198.33077405050426))
     if (distance < 100):
         score = 5000
     return [int(score), int(distance)]
