@@ -5,8 +5,8 @@ import json
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-import database as database
-from seed_processor import coordinates_from_seed, MODE_TO_RADIUS
+from backend import database
+from backend.seed_processor import coordinates_from_seed, MODE_TO_RADIUS
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG)
@@ -17,7 +17,7 @@ load_dotenv()
 
 URL_SITE = os.getenv("URL_SITE")
 
-with open("telegram bot/translations.json", 'r', encoding='utf-8') as file:
+with open("telegram bot/backend/text/translations.json", 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']

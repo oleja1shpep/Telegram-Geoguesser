@@ -9,13 +9,13 @@ from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
 from geopy.distance import geodesic
 
-import database
+from backend import database
 
 load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 
-with open('telegram bot/translations.json', 'r', encoding='utf-8') as file:
+with open('telegram bot/backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']

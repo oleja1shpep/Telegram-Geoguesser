@@ -4,7 +4,7 @@ import logging
 from pymongo import MongoClient
 from urllib.parse import quote_plus as quote
 from dotenv import load_dotenv
-from seed_processor import generate_seed
+from backend.seed_processor import generate_seed
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')

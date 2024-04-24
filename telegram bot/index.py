@@ -12,12 +12,10 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, Update
 from dotenv import load_dotenv
 
-import messages
-import database
-import markups
-import bot_functions
+from backend import database, markups, bot_functions
+from backend.text import messages
 
-from seed_processor import generate_seed, check_seed
+from backend.seed_processor import generate_seed, check_seed
 
 USE_DB = True
 DEBUG_MODE = False
@@ -33,7 +31,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
-with open('telegram bot/translations.json', 'r', encoding='utf-8') as file:
+with open('telegram bot/backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
