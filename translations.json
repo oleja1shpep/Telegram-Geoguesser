@@ -31,6 +31,7 @@
         "Правила",
         "Топ игроков",
         "Прошлые 5 игр",
+        "Сгенерировать сид",
         "Назад"
       ],
       [
@@ -38,6 +39,7 @@
         "Rules",
         "Top players",
         "Last 5 games",
+        "Generate seed",
         "Back"
       ]
     ],
@@ -45,6 +47,7 @@
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],
     "last 5 games" : ["Прошлые 5 игр", "Last 5 games"],
+    "generate seed": ["Сгенерировать сид", "Generate seed"], 
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Доступные режимы", "Available modes"],
     "single wrld" : ["Одиночный по всему миру", "Single across World"],
@@ -56,6 +59,8 @@
     "settings menu": ["Настройки", "Settings"],
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
     "not using gpt" : ["Теперь вы не будете получать интересные факты про сгенерированные места", "Now you won't learn different facts about random places"],
+    "set seed": ["Вы установили seed: `{}`", "You had set seed: `{}`"],
+    "not a seed": ["Неверный seed или команда\nЕсли что-то не работает пришлите /start", "Incorrect seed or command\nIf something doesn't work send /start"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
     "score and meters": ["Вы набрали {} очков\nРасстояние {} метров", "You scored {} points\nDistance {} meters"],

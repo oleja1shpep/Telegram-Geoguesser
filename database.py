@@ -204,3 +204,9 @@ async def switch_gpt(tele_id):
 
 async def get_gpt(tele_id):
     return await get_key(tele_id, "use_gpt", True)
+
+async def set_track_changes(tele_id, mode, value):
+    await set_key(tele_id, "track_changes_" + mode, value)
+
+async def get_track_changes(tele_id, mode):
+    return await get_key(tele_id, "track_changes_" + mode, True)
