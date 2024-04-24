@@ -91,11 +91,14 @@ def coordinates_from_seed(seed, mode):
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
     return lat, lng, x_center, y_center, zoom
 
-def multiplayer_seed_processor(string):
+
+def check_seed(string, right_mode):
     unpacked = string.split('_')
     if len(unpacked) != 2: 
         return False
     mode, seed = unpacked
+    if (mode != right_mode):
+        return False
     if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
-        return mode, seed
+        return True
     return False
