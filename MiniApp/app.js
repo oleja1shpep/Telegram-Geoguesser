@@ -70,8 +70,7 @@ async function initMap() {
         disableDefaultUI: true,
         zoom: zoom,
         center: {lat: x_center, lng: y_center},
-        mapId: "answer_map",
-        zoomControl: true
+        mapId: "answer_map"
     });
 
     marker = new AdvancedMarkerElement({
