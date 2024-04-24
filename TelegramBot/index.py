@@ -31,7 +31,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
-with open('telegram bot/backend/text/translations.json', 'r', encoding='utf-8') as file:
+with open('TelegramBot/backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
