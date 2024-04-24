@@ -1,16 +1,6 @@
 let panorama, marker, start_lat, start_lng, loc;
 let radius_index = 0;
 
-function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 let x, x_center, y, y_center, zoom;
 
 console.log(window.location.hash)
@@ -117,7 +107,6 @@ ymaps.ready(function () {
 });
 
 function GetPanoramaCords() {
-    // var res = `${panorama_pos} ${marker.geometry.getCoordinates().join(' ')}`;
     try {
         var res = `${start_lat} ${start_lng} ${marker.geometry.getCoordinates().join(' ')}`
     } 
