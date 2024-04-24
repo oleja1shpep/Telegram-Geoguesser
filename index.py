@@ -533,6 +533,7 @@ async def single_game_menu_generate_seed(message: Message, state: FSMContext) ->
 
 @form_router.message(Form.single_game_menu, F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -> None:
+    logger.info("In function: single_game_menu_recieve_answer: Got answer from " + username)
     mode = await state.get_data()
     mode = mode["gamemodes"]
     
@@ -545,11 +546,13 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     tele_id = message.from_user.id
     username = message.from_user.username
 
-    seed = await database.get_seed(tele_id, mode)
+    try:
+        seed = await database.get_seed(tele_id, mode)
+        logger.info("In function: single_game_menu_recieve_answer: got seed from db")
+    except Exception as e:
+        logger.error(f"In function: single_game_menu_recieve_answer: {e}")
     seed = mode + "_" + seed
 
-    logger.info("In function: single_game_menu_recieve_answer: Got answer from " + username)
-    #print("ответ получен", message.from_user.id, message.from_user.username)
     cords = message.web_app_data.data
 
     if (mode == "spb" or mode == "msk"):
@@ -560,7 +563,6 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     photo_url = await bot_functions.get_url(cords=cords)
     logger.info("In function: single_game_menu_recieve_answer: got photo url")
 
-    # print(score, metres, message.from_user.username)
     try:
         track_changes = await database.get_track_changes(tele_id, mode)
         logger.info("In function: single_game_menu_recieve_answer: connected to db and got track changes")
@@ -580,14 +582,22 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
         await database.end_game(tele_id, mode)
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     else:
-        seed_prev = await database.get_seed(tele_id, mode)
-        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed_prev)
-        seed = await database.get_multiplayer_seed(tele_id, mode)
-        seed = mode + "_" + seed
+        try:
+            markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
+            seed = await database.get_multiplayer_seed(tele_id, mode)
+            seed = mode + "_" + seed
+            logger.info("In function: single_game_menu_recieve_answer: got multuplayer seed")
+        except Exception as e:
+            logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
-    await database.set_track_changes(tele_id, mode, True)
+    try:
+        await database.set_track_changes(tele_id, mode, True)
+        logger.info("In function: single_game_menu_recieve_answer: set track changes to true")
+    except Exception as e:
+        logger.error(f"In function: single_game_menu_recieve_answer: {e}")
     
-    await database.show_database()
+    if (DEBUG_MODE):
+        await database.show_database()
     
     txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
