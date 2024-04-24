@@ -1,6 +1,5 @@
 import logging
 import os
-import asyncio
 import g4f
 import json
 import numpy as np
@@ -11,13 +10,12 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic
 
 import database
-from seed_processor import generate_seed
 
 load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 
-with open('translations.json', 'r', encoding='utf-8') as file:
+with open('telegram bot/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']

@@ -17,7 +17,7 @@ load_dotenv()
 
 URL_SITE = os.getenv("URL_SITE")
 
-with open('translations.json', 'r', encoding='utf-8') as file:
+with open("telegram bot/translations.json", 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
