@@ -26,17 +26,18 @@
             height: 100%;
             text-align: center;
             z-index: 0;
+            position: fixed;
         }
 
         #map {
             position: fixed;
-            top: 45%;
+            top: -55%;
             height: 55%;
             text-align: center;
             z-index: 100;
             width: 100%;
-            /* border: 3px solid green;
-            background: white; */
+            /* border: 5px solid green; */
+            /* background: white; */
             /* Другие стили для map */
         }
 
@@ -94,13 +95,10 @@
             left: 2%;
             bottom: 14%;
         }
-
     </style>
-    <script src='https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=c508f12d-ce34-4d52-b259-2446d90ab6c2'></script>
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJGP7d4OZjl15qiQy612uno5rZKu4DBmg&callback=get_panorama&v=weekly"
-      defer
-    ></script>
+        src="https://maps.googleapis.com/maps/api/js?key=[YOUR_API_KEY]&callback=get_panorama&v=weekly"
+        defer></script>
     <script src="app.js"></script>
 </head>
 
@@ -118,8 +116,8 @@
         let submit = document.getElementById("submit");
         let map_open = document.getElementById("map_toggler");
         let home_pano = document.getElementById("home_pano");
-        let map = document.getElementById("map");
-        map.hidden = true;
+        let map_for_answer = document.getElementById("map");
+        map_for_answer.hidden = true;
         submit.hidden = true;
         tg.expand();
 
@@ -133,7 +131,7 @@
         });
 
         map_open.addEventListener("click", () => {
-            map.hidden = !map.hidden;
+            map_for_answer.hidden = !map_for_answer.hidden;
             submit.hidden = !submit.hidden;
             home_pano.hidden = !home_pano.hidden;
         });

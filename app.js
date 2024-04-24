@@ -1,11 +1,8 @@
-let panorama, marker, start_lat, start_lng, loc;
+let map, panorama, marker, loc;
+let x, y, x_center, y_center, zoom;
 let radius_index = 0;
 
-let x, x_center, y, y_center, zoom;
-
-console.log(window.location.hash)
 let hash = window.location.hash.split('?')[0].split('|')
-console.log(hash)
 
 async function get_cords() {
     x = parseFloat(hash[1])
@@ -35,12 +32,11 @@ function get_panorama() {
         showRoadLabels: false
       }
     );
-
-    // const pan_loc = {x, y};
     sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: radiuses[radius_index], source: "outdoor"}, processSVData);
 };
 
 function processSVData(data, status) {
+    initMap()
     if (status == google.maps.StreetViewStatus.OK) {
         console.log('status: OK')
     } else if (status == google.maps.StreetViewStatus.ZERO_RESULTS) {
@@ -56,62 +52,47 @@ function processSVData(data, status) {
     }
     loc = data.location;
 
-    start_lat = loc.latLng.lat();
-    start_lng = loc.latLng.lng();
-    console.log("!", start_lat, start_lng);
-
     panorama.setPano(loc.pano);
     panorama.setPov({
       heading: 270,
       pitch: 0,
     });
     panorama.setVisible(true);
-  }
+}
 
-ymaps.ready(function () {
-    myMap = new ymaps.Map("map", {
-        center: [x_center, y_center],
+async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    map = new Map(document.getElementById("map"), {
+        controls: {},
+        clickableIcons: false,
+        disableDefaultUI: true,
         zoom: zoom,
-        controls: []
-    }, {
-        searchControlProvider: 'yandex#search'
-    }),
-        // Создаем геообъект с типом геометрии "Точка".
-        marker = new ymaps.GeoObject({
-            // Описание геометрии.
-            geometry: {
-                type: "Point",
-                coordinates: [x_center, y_center]
-            },
-            // Свойства.
-            properties: {
-                // Контент метки.
-                iconContent: 'Тут!',
-                hintContent: 'Тащи!'
-            }
-        }, {
-            // Опции.
-            // Иконка метки будет растягиваться под размер ее содержимого.
-            preset: 'islands#blueDotIcon',
-            // Метку можно перемещать.
-            draggable: true
-        })
-
-    myMap.geoObjects
-        .add(marker)
-
-    myMap.events.add('click', function (e) {
-        var coords = e.get('coords');
-        marker.geometry.setCoordinates(coords);
+        center: {lat: x_center, lng: y_center},
+        mapId: "answer_map",
+        zoomControl: true
     });
-});
+
+    marker = new AdvancedMarkerElement({
+        map: map,
+        gmpDraggable: true,
+        position: {lat: x_center, lng: y_center},
+        title: "Answer",
+    });
+
+    map.addListener("click", (mapsMouseEvent) => {
+        marker.position = mapsMouseEvent.latLng;
+    })
+}
 
 function GetPanoramaCords() {
     try {
-        var res = `${start_lat} ${start_lng} ${marker.geometry.getCoordinates().join(' ')}`
+        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.Gg} ${marker.position.Hg}`
     } 
     catch (error) {
-        var res = `${start_lat} ${start_lng} 0 0`
+        console.log('error:', error)
+        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} 0 0`
     }
     console.log(res);
     return res;
