@@ -561,19 +561,24 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     logger.info("In function: single_game_menu: got photo url")
 
     # print(score, metres, message.from_user.username)
-    try:
-        await database.add_results_single(tele_id, score, mode)
-        logger.info("In function: single_game_menu: added results to single: {}, score = {}, name = {}".format(mode, score, username))
-    except Exception as e:
-        logger.error(f"In function: single_game_menu: unable to add results: {e}")
-    try:
-        await database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
-        logger.info("In function: single_game_menu: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
-    except Exception as e:
-        logger.error(f"In function: single_game_menu: unable to add game: {e}")
-
-    await database.end_game(tele_id, mode)
-    markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+    track_changes = await database.get_track_changes(tele_id, mode)
+    if (track_changes):
+        try:
+            await database.add_results_single(tele_id, score, mode)
+            logger.info("In function: single_game_menu: added results to single: {}, score = {}, name = {}".format(mode, score, username))
+        except Exception as e:
+            logger.error(f"In function: single_game_menu: unable to add results: {e}")
+        try:
+            await database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
+            logger.info("In function: single_game_menu: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
+        except Exception as e:
+            logger.error(f"In function: single_game_menu: unable to add game: {e}")
+        await database.end_game(tele_id, mode)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+    else:
+        seed_prev = await database.get_seed(tele_id, mode)
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed_prev)
+    
 
     txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
@@ -612,6 +617,7 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
 
     mode = await state.get_data()
     mode = mode["gamemodes"]
+    tele_id = message.from_user.id
 
     try:
         lang = await database.get_language(message.from_user.id)
@@ -633,15 +639,10 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
         
         await message.delete()
         return
-    
-    
-
-    tele_id = message.from_user.id
 
     await database.set_track_changes(tele_id, mode, False)
 
     seed = string.split('_')[1]
-
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
 
     await message.answer(
