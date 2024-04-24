@@ -582,11 +582,13 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     else:
         seed_prev = await database.get_seed(tele_id, mode)
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed_prev)
+        seed = await database.get_multiplayer_seed(tele_id, mode)
+        seed = mode + "_" + seed
 
     await database.set_track_changes(tele_id, mode, True)
     
     await database.show_database()
-
+    
     txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
     try:
@@ -619,7 +621,7 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     await message.delete()
 
 
-@form_router.message(Form.single_game_menu)
+@form_router.message(Form.single_game_menu, F.text)
 async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None:
 
     mode = await state.get_data()
@@ -655,7 +657,12 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
 
     seed = string.split('_')[1]
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
-
+    try:
+        await database.set_multiplayer_seed(tele_id, seed, mode)
+        logger.info("In function: single_game_menu_set_seed: set multiplayer seed")
+    except Exception as e:
+        logger.error(f"In function: single_game_menu_set_seed: {e}")
+        
     await message.answer(
             (translation["set seed"][lang_code[lang]]).format(string),
             parse_mode="Markdown",

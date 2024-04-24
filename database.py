@@ -211,3 +211,9 @@ async def switch_gpt(tele_id):
 
 async def get_gpt(tele_id):
     return await get_key(tele_id, "use_gpt", True)
+
+async def set_multiplayer_seed(tele_id, seed, mode):
+    await set_key(tele_id, "mul_seed_" + mode, seed)
+
+async def get_multiplayer_seed(tele_id, mode):
+    return await get_key(tele_id, "mul_seed_" + mode, "")
