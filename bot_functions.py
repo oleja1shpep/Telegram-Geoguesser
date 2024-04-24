@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic
 
 import database
-from coords_generator import generate_seed
+from seed_processor import generate_seed
 
 load_dotenv()
 

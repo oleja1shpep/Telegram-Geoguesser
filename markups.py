@@ -6,7 +6,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 import database
-from coords_generator import generate_seed, coordinates_from_seed, MODE_TO_RADIUS
+from seed_processor import generate_seed, coordinates_from_seed, MODE_TO_RADIUS
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG)
@@ -78,7 +78,7 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     if not(seed):
         await database.init_game(tele_id, mode)
         seed = await database.get_seed(tele_id, mode)
-        logger.debug(f" seed: {seed} | mode: {mode}")
+    logger.debug(f" seed: {seed} | mode: {mode}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
     builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '|' + '|'.join(map(str, coords)) + '|' + str(MODE_TO_RADIUS[mode])))

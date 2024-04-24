@@ -17,7 +17,7 @@ import database
 import markups
 import bot_functions
 
-from coords_generator import generate_seed, check_seed
+from seed_processor import generate_seed, check_seed
 
 USE_DB = True
 DEBUG_MODE = False
@@ -384,51 +384,51 @@ async def single_game_menu_rules(message: Message, state: FSMContext) -> None:
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_rules: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_rules: {e}")
 
     if (mode == "msk"):
         try:
             await message.answer(
                 messages.MOSCOW_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu: sent rules moscow")
+            logger.info("In function: single_game_menu_rules: sent rules moscow")
         except Exception as e:
-            logger.error(f"In function: single_game_menu: {e}")
+            logger.error(f"In function: single_game_menu_rules: {e}")
 
     elif (mode == "spb"):
         try:
             await message.answer(
                 messages.SPB_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu: sent rules spb")
+            logger.info("In function: single_game_menu_rules: sent rules spb")
         except Exception as e:
-            logger.error(f"In function: single_game_menu: {e}")
+            logger.error(f"In function: single_game_menu_rules: {e}")
     elif (mode == "rus"):
         try:
             await message.answer(
                 messages.RUSSIA_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu: sent rules russia")
+            logger.info("In function: single_game_menu_rules: sent rules russia")
         except Exception as e:
-            logger.error(f"In function: single_game_menu: {e}")
+            logger.error(f"In function: single_game_menu_rules: {e}")
     elif (mode == "blrs"):
         try:
             await message.answer(
                 messages.BELARUS_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu: sent rules belarus")
+            logger.info("In function: single_game_menu_rules: sent rules belarus")
         except Exception as e:
-            logger.error(f"In function: single_game_menu: {e}")
+            logger.error(f"In function: single_game_menu_rules: {e}")
     elif (mode == "wrld"):
         try:
             await message.answer(
                 messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]]
             )
-            logger.info("In function: single_game_menu: sent rules world")
+            logger.info("In function: single_game_menu_rules: sent rules world")
         except Exception as e:
-            logger.error(f"In function: single_game_menu: {e}")
+            logger.error(f"In function: single_game_menu_rules: {e}")
     await message.delete()
 
 @form_router.message(Form.single_game_menu, F.text.in_(translation['top players']))
@@ -438,23 +438,23 @@ async def single_game_menu_top_10_players(message: Message, state: FSMContext) -
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_top_10_players: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_top_10_players: {e}")
 
     top_10_text = ''
     try:
         top_10_text = await bot_functions.get_top10_single(mode=mode, lang=lang)
-        logger.info("In function: single_game_menu: got top 10 players in single " + mode)
+        logger.info("In function: single_game_menu_top_10_players: got top 10 players in single " + mode)
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_top_10_players: {e}")
     try:
         await message.answer(
             top_10_text
         )
-        logger.info("In function: single_game_menu: sent top 10 players in single " + mode)
+        logger.info("In function: single_game_menu_top_10_players: sent top 10 players in single " + mode)
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_top_10_players: {e}")
     await message.delete()
 
 @form_router.message(Form.single_game_menu, F.text.in_(translation['last 5 games']))
@@ -464,22 +464,22 @@ async def single_game_menu_last_5_games(message: Message, state: FSMContext) -> 
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_last_5_games: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_last_5_games: {e}")
 
     try:
         last_5_games = await bot_functions.get_last5_results_single(message.from_user.id, mode, lang)
-        logger.info("In function: single_game_menu: got last 5 games in single " + mode)
+        logger.info("In function: single_game_menu_last_5_games: got last 5 games in single " + mode)
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_last_5_games: {e}")
     try:
         await message.answer(
             last_5_games
         )
-        logger.info("In function: single_game_menu: sent last 5 games in single " + mode)
+        logger.info("In function: single_game_menu_last_5_games: sent last 5 games in single " + mode)
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_last_5_games: {e}")
     await message.delete()
 
 
@@ -490,9 +490,9 @@ async def single_game_menu_back(message: Message, state: FSMContext) -> None:
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_back: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_back: {e}")
 
     await state.set_state(Form.gamemodes)
 
@@ -502,9 +502,9 @@ async def single_game_menu_back(message: Message, state: FSMContext) -> None:
             translation['available modes'][lang_code[lang]],
             reply_markup= markup
         )
-        logger.info("In function: single_game_menu: sent answer: Доступные режимы")
+        logger.info("In function: single_game_menu_back: sent answer: Доступные режимы")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_back: {e}")
     await message.delete()
 
 @form_router.message(Form.single_game_menu, F.text.in_(translation['generate seed']))
@@ -514,9 +514,9 @@ async def single_game_menu_generate_seed(message: Message, state: FSMContext) ->
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_generate_seed: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_generate_seed: {e}")
 
     seed = generate_seed()
     
@@ -538,9 +538,9 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: single_game_menu: Got language from user")
+        logger.info("In function: single_game_menu_recieve_answer: Got language from user")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
     tele_id = message.from_user.id
     username = message.from_user.username
@@ -548,7 +548,7 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     seed = await database.get_seed(tele_id, mode)
     seed = mode + "_" + seed
 
-    logger.info("In function: single_game_menu: Got answer from " + username)
+    logger.info("In function: single_game_menu_recieve_answer: Got answer from " + username)
     #print("ответ получен", message.from_user.id, message.from_user.username)
     cords = message.web_app_data.data
 
@@ -558,27 +558,34 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
         score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
     
     photo_url = await bot_functions.get_url(cords=cords)
-    logger.info("In function: single_game_menu: got photo url")
+    logger.info("In function: single_game_menu_recieve_answer: got photo url")
 
     # print(score, metres, message.from_user.username)
-    track_changes = await database.get_track_changes(tele_id, mode)
+    try:
+        track_changes = await database.get_track_changes(tele_id, mode)
+        logger.info("In function: single_game_menu_recieve_answer: connected to db and got track changes")
+    except Exception as e:
+        logger.error(f"In function: single_game_menu_recieve_answer: {e}")
     if (track_changes):
         try:
             await database.add_results_single(tele_id, score, mode)
-            logger.info("In function: single_game_menu: added results to single: {}, score = {}, name = {}".format(mode, score, username))
+            logger.info("In function: single_game_menu_recieve_answer: added results to single: {}, score = {}, name = {}".format(mode, score, username))
         except Exception as e:
-            logger.error(f"In function: single_game_menu: unable to add results: {e}")
+            logger.error(f"In function: single_game_menu_recieve_answer: unable to add results: {e}")
         try:
             await database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
-            logger.info("In function: single_game_menu: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
+            logger.info("In function: single_game_menu_recieve_answer: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
         except Exception as e:
-            logger.error(f"In function: single_game_menu: unable to add game: {e}")
+            logger.error(f"In function: single_game_menu_recieve_answer: unable to add game: {e}")
         await database.end_game(tele_id, mode)
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     else:
         seed_prev = await database.get_seed(tele_id, mode)
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed_prev)
+
+    await database.set_track_changes(tele_id, mode, True)
     
+    await database.show_database()
 
     txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
@@ -589,9 +596,9 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
             reply_markup=markup,
             parse_mode="Markdown"
             )
-        logger.info("In function: single_game_menu: sent photo answer")
+        logger.info("In function: single_game_menu_recieve_answer: sent photo answer")
     except Exception as e:
-        logger.error(f"In function: single_game_menu: {e}")
+        logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
     if (await database.get_gpt(tele_id)):
         msg = await message.answer(
@@ -639,8 +646,12 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
         
         await message.delete()
         return
+    try:
+        await database.set_track_changes(tele_id, mode, False)
+        logger.info("In function: single_game_menu_set_seed: sent answer: set track changes in db")
+    except Exception as e:
+        logger.info(f"In function: single_game_menu_set_seed: {e}")
 
-    await database.set_track_changes(tele_id, mode, False)
 
     seed = string.split('_')[1]
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
