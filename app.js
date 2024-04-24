@@ -27,11 +27,10 @@ async function get_cords() {
 }
 
 const radiuses = [500, 2000, 5000, 50000, 500000, 1500000, 5000000, 50000000]
-
+get_cords();
 
 function get_panorama() {
     // Ищем панораму в переданной точке.
-    get_cords();
     console.log(x, y, x_center, y_center, zoom)
     const sv = new google.maps.StreetViewService();
     panorama = new google.maps.StreetViewPanorama(
