@@ -533,6 +533,8 @@ async def single_game_menu_generate_seed(message: Message, state: FSMContext) ->
 
 @form_router.message(Form.single_game_menu, F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -> None:
+    tele_id = message.from_user.id
+    username = message.from_user.username
     logger.info("In function: single_game_menu_recieve_answer: Got answer from " + username)
     mode = await state.get_data()
     mode = mode["gamemodes"]
@@ -542,9 +544,6 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
         logger.info("In function: single_game_menu_recieve_answer: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
-
-    tele_id = message.from_user.id
-    username = message.from_user.username
 
     try:
         seed = await database.get_seed(tele_id, mode)
