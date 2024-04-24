@@ -5,8 +5,8 @@ import json
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-import database
-from seed_processor import generate_seed, coordinates_from_seed, MODE_TO_RADIUS
+import database as database
+from seed_processor import coordinates_from_seed, MODE_TO_RADIUS
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG)
