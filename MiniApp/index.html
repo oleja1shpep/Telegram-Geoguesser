@@ -120,6 +120,7 @@
         map_for_answer.hidden = true;
         submit.hidden = true;
         tg.expand();
+        tg.enableClosingConfirmation()
 
         submit.addEventListener("click", () => {
             tg.sendData(GetPanoramaCords())
