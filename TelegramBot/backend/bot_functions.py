@@ -48,9 +48,9 @@ async def gpt_request(cords, language):
 
 async def get_url(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
-    return f"https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{lat1},{lon1}|\
-       {lat2},{lon2}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{lat1},{lon1}&markers=icon:https://\
-            storage.yandexcloud.net/test-geoguessr/marker.png|{lat2},{lon2}|&size=400x400&key=AIzaSyB90M6YMN89duMBupapc6x7_K8gRNGw7sk"
+    return f"https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{lat1},{lon1}|
+       {lat2},{lon2}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{lat1},{lon1}&
+       markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{lat2},{lon2}|&size=600x600&key=AIzaSyB90M6YMN89duMBupapc6x7_K8gRNGw7sk"
 
 async def calculate_score_and_distance(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
