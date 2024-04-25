@@ -73,10 +73,14 @@ async function initMap() {
         mapId: "answer_map"
     });
 
+    const markerImg = document.createElement("img");
+    markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
+
     marker = new AdvancedMarkerElement({
         map: map,
         gmpDraggable: true,
         position: {lat: x_center, lng: y_center},
+        content: markerImg,
         title: "Answer",
     });
 
