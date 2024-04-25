@@ -222,7 +222,13 @@ def set_state(tele_id, state):
     set_key(tele_id, "state", state)
 
 def get_state(tele_id):
-    return get_key(tele_id, "state", "")
+    if (find_user(tele_id)):
+        state = get_key(tele_id, "state", "menu")
+        logger.debug(f"state: {state}")
+        return state
+    else:
+        return "start"
+
 
 def set_state_data(tele_id, data):
     set_key(tele_id, "state_data", data)

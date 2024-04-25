@@ -3,12 +3,12 @@ import logging
 import sys
 import os
 import json
+import random
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, Update
 from dotenv import load_dotenv
 
@@ -39,13 +39,6 @@ lang_code = file['lang_code']
 form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
-
-# class Form(StatesGroup):
-#     start = State()
-#     menu = State()
-#     language_menu = State()
-#     gamemodes = State()
-#     single_game_menu = State()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message, state: FSMContext) -> None:
@@ -735,7 +728,9 @@ async def process_event(event, bot: Bot):
         logger.error(f"In function: process_event: {e}")
 
 async def handler(event, context):
-    logger.info("In function: handler: recieved event") 
+    number = random.randint(1000, 9999)
+    logger.info(f"In function: handler: recieved event, code = {number}")
+    logger.debug(event)
     bot = Bot(token=TOKEN_BOT)
     await process_event(event, bot)
     return {'statusCode': 200, 'body': 'ok',}
@@ -745,5 +740,6 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    # database.delete_database()
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
