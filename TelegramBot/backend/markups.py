@@ -76,8 +76,8 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
 
 
     if not(seed):
-        await database.init_game(tele_id, mode)
-        seed = await database.get_seed(tele_id, mode)
+        database.init_game(tele_id, mode)
+        seed = database.get_seed(tele_id, mode)
     logger.debug(f" seed: {seed} | mode: {mode}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)

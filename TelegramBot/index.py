@@ -53,17 +53,18 @@ async def command_start(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     
     # try:
-    #     if (USE_DB): await database.delete_database()
+    #     if (USE_DB): database.delete_database()
     #     logger.info("deleted db")
     # except Exception as e:
     #     logger.error(f"Error in command_start: {e}")
     is_found = False
     try:
-        is_found = await database.find_user(tele_id)
+        is_found = database.find_user(tele_id)
         logger.info("In function: command_start: Connected to db")
     except Exception as e:
         logger.error(f"In function: command_start: {e}")
 
+    # database.set_state(tele_id, "start")
     await state.set_state(Form.start)
     
     try:
@@ -73,7 +74,7 @@ async def command_start(message: Message, state: FSMContext) -> None:
                 reply_markup=await markups.create_start_markup()
             )
         else:
-            lang = await database.get_language(tele_id)
+            lang = database.get_language(tele_id)
             await message.answer(
                 (messages.GREETING[lang_code[lang]]).format(message.from_user.first_name),
                 reply_markup=await markups.create_start_markup(lang)
@@ -92,7 +93,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     username = message.from_user.username
     is_found = False
     try:
-        if (USE_DB): is_found = await database.find_user(tele_id)
+        if (USE_DB): is_found = database.find_user(tele_id)
         logger.info("In function: process_name: read info from mongodb")
     except Exception as e:
         logger.error(f"In function: process_name: Could not access database: {e}")
@@ -100,13 +101,13 @@ async def process_name(message: Message, state: FSMContext) -> None:
 
     try:
         if USE_DB and not(is_found):
-            await database.add_user(tele_id, username)
+            database.add_user(tele_id, username)
             logger.info("In function: process_name: added user \"" + username + "\" to db")
     except Exception as e:
         logger.error(f"In function: process_name: could not add user: {e}")
 
     try:
-        if USE_DB and not(is_found): await database.set_language(message.from_user.id, 'en')
+        if USE_DB and not(is_found): database.set_language(message.from_user.id, 'en')
         logger.info("In function: process_name: Set language")
     except Exception as e:
         logger.error(f"In function: process_name: {e}")
@@ -114,7 +115,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     lang = "en"
     
     try:
-        if USE_DB: lang = await database.get_language(message.from_user.id)
+        if USE_DB: lang = database.get_language(message.from_user.id)
         logger.info("In function: process_name: got lang")
     except Exception as e:
         logger.error("In function: process_name: anable to get lang: {e}")
@@ -140,9 +141,9 @@ async def process_name(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.menu, F.text.in_(translation["how to play"]))
 async def main_menu(message: Message, state: FSMContext) -> None:
     
-    await database.drop_duplicates()
+    database.drop_duplicates()
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: main_menu: got lang from user")
     except Exception as e:
         logger.error(f"In function: main_menu: {e}")
@@ -159,12 +160,12 @@ async def main_menu(message: Message, state: FSMContext) -> None:
 
 @form_router.message(Form.menu, F.text.in_(translation["settings"]))
 async def settings_menu(message: Message, state: FSMContext) -> None:
-    await database.drop_duplicates()
+    database.drop_duplicates()
     if DEBUG_MODE:
-        await database.show_database()
+        database.show_database()
     await state.set_state(Form.language_menu)
-    lang = await database.get_language(message.from_user.id)
-    use_gpt = await database.get_gpt(message.from_user.id)
+    lang = database.get_language(message.from_user.id)
+    use_gpt = database.get_gpt(message.from_user.id)
     markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         await message.answer(
@@ -179,12 +180,12 @@ async def settings_menu(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.language_menu, F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message, state: FSMContext) -> None:
     try:
-        await database.set_language(message.from_user.id, 'ru')
+        database.set_language(message.from_user.id, 'ru')
         logger.info("In function: change_language_rus: set language in db : ru")
     except Exception as e:
         logger.error(f"In function: change_language_rus: {e}")
 
-    use_gpt = await database.get_gpt(message.from_user.id)
+    use_gpt = database.get_gpt(message.from_user.id)
     markup = await markups.create_settings_menu_markup("ru", use_gpt)
     try:
         await message.answer(
@@ -199,11 +200,11 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.language_menu, F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message, state: FSMContext) -> None:
     try:
-        await database.set_language(message.from_user.id, 'en')
+        database.set_language(message.from_user.id, 'en')
         logger.info("In function: change_language_eng: set language in db : en")
     except Exception as e:
         logger.error(f"In function: change_language_eng: {e}")
-    use_gpt = await database.get_gpt(message.from_user.id)
+    use_gpt = database.get_gpt(message.from_user.id)
     markup = await markups.create_settings_menu_markup("en", use_gpt)
     try:
         await message.answer(
@@ -218,13 +219,13 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.language_menu, F.text.in_(translation["use_gpt"]))
 async def switch_use_gpt(message: Message, state: FSMContext) -> None:
     try:
-        await database.switch_gpt(message.from_user.id)
+        database.switch_gpt(message.from_user.id)
         logger.info("In function: switch_use_gpt: switched gpt use")
     except Exception as e:
         logger.error(f"In function: switch_use_gpt: {e}")
 
-    use_gpt = await database.get_gpt(message.from_user.id)
-    lang = await database.get_language(message.from_user.id)
+    use_gpt = database.get_gpt(message.from_user.id)
+    lang = database.get_language(message.from_user.id)
     markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         if (use_gpt):
@@ -247,7 +248,7 @@ async def switch_use_gpt(message: Message, state: FSMContext) -> None:
 async def settings_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: settings_back: Got language from user")
     except Exception as e:
         logger.error(f"In function: settings_back: {e}")
@@ -265,10 +266,10 @@ async def settings_back(message: Message, state: FSMContext) -> None:
 
 @form_router.message(Form.menu, F.text.in_(translation["modes"]))
 async def gamemodes(message: Message, state: FSMContext) -> None:
-    await database.drop_duplicates()
+    database.drop_duplicates()
     await state.set_state(Form.gamemodes)
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: gamemodes: Got language from user")
     except Exception as e:
         logger.error(f"In function: gamemodes: {e}")
@@ -288,7 +289,7 @@ async def gamemodes(message: Message, state: FSMContext) -> None:
 async def gamemodes_back(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.menu)
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: gamemodes_back: Got language from user")
     except Exception as e:
         logger.error(f"In function: gamemodes_back: {e}")
@@ -310,7 +311,7 @@ async def single_game(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     answer = message.text
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game: {e}")
@@ -381,7 +382,7 @@ async def single_game_menu_rules(message: Message, state: FSMContext) -> None:
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_rules: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_rules: {e}")
@@ -435,7 +436,7 @@ async def single_game_menu_top_10_players(message: Message, state: FSMContext) -
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_top_10_players: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_top_10_players: {e}")
@@ -461,7 +462,7 @@ async def single_game_menu_last_5_games(message: Message, state: FSMContext) -> 
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_last_5_games: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_last_5_games: {e}")
@@ -487,7 +488,7 @@ async def single_game_menu_back(message: Message, state: FSMContext) -> None:
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_back: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_back: {e}")
@@ -511,7 +512,7 @@ async def single_game_menu_generate_seed(message: Message, state: FSMContext) ->
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_generate_seed: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_generate_seed: {e}")
@@ -538,13 +539,13 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     mode = mode["gamemodes"]
     
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_recieve_answer: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
     try:
-        seed = await database.get_seed(tele_id, mode)
+        seed = database.get_seed(tele_id, mode)
         logger.info("In function: single_game_menu_recieve_answer: got seed from db")
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
@@ -563,40 +564,40 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     logger.info("In function: single_game_menu_recieve_answer: got photo url")
 
     try:
-        track_changes = await database.get_track_changes(tele_id, mode)
+        track_changes = database.get_track_changes(tele_id, mode)
         logger.info("In function: single_game_menu_recieve_answer: connected to db and got track changes")
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
     if (track_changes):
         try:
-            await database.add_results_single(tele_id, score, mode)
+            database.add_results_single(tele_id, score, mode)
             logger.info("In function: single_game_menu_recieve_answer: added results to single: {}, score = {}, name = {}".format(mode, score, username))
         except Exception as e:
             logger.error(f"In function: single_game_menu_recieve_answer: unable to add results: {e}")
         try:
-            await database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
+            database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
             logger.info("In function: single_game_menu_recieve_answer: added game to single: {}, score = {}, metres = {}, name = {}".format(mode, score, metres, username))
         except Exception as e:
             logger.error(f"In function: single_game_menu_recieve_answer: unable to add game: {e}")
-        await database.end_game(tele_id, mode)
+        database.end_game(tele_id, mode)
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     else:
         try:
             markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
-            seed = await database.get_multiplayer_seed(tele_id, mode)
+            seed = database.get_multiplayer_seed(tele_id, mode)
             seed = mode + "_" + seed
             logger.info("In function: single_game_menu_recieve_answer: got multuplayer seed")
         except Exception as e:
             logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
     try:
-        await database.set_track_changes(tele_id, mode, True)
+        database.set_track_changes(tele_id, mode, True)
         logger.info("In function: single_game_menu_recieve_answer: set track changes to true")
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
     
     if (DEBUG_MODE):
-        await database.show_database()
+        database.show_database()
     
     txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
 
@@ -611,7 +612,7 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     except Exception as e:
         logger.error(f"In function: single_game_menu_recieve_answer: {e}")
 
-    if (await database.get_gpt(tele_id)):
+    if (database.get_gpt(tele_id)):
         msg = await message.answer(
             translation['wait for gpt'][lang_code[lang]],
         )
@@ -638,7 +639,7 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
     tele_id = message.from_user.id
 
     try:
-        lang = await database.get_language(message.from_user.id)
+        lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_set_seed: Got language from user")
     except Exception as e:
         logger.error(f"In function: single_game_menu_set_seed: {e}")
@@ -658,7 +659,7 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
         await message.delete()
         return
     try:
-        await database.set_track_changes(tele_id, mode, False)
+        database.set_track_changes(tele_id, mode, False)
         logger.info("In function: single_game_menu_set_seed: sent answer: set track changes in db")
     except Exception as e:
         logger.info(f"In function: single_game_menu_set_seed: {e}")
@@ -667,7 +668,7 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
     seed = string.split('_')[1]
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
     try:
-        await database.set_multiplayer_seed(tele_id, seed, mode)
+        database.set_multiplayer_seed(tele_id, seed, mode)
         logger.info("In function: single_game_menu_set_seed: set multiplayer seed")
     except Exception as e:
         logger.error(f"In function: single_game_menu_set_seed: {e}")
@@ -684,13 +685,13 @@ async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None
 async def idk_bugs_or_smth(message: Message, state: FSMContext) -> None:
     is_found = False
     try:
-        is_found = await database.find_user(message.from_user.id)
+        is_found = database.find_user(message.from_user.id)
         logger.info("In function: idk_bugs_or_smth: successfully connected to db")
     except Exception as e:
         logger.error(f"In function: idk_bugs_or_smth: unable to connect to db: {e}")
     if is_found:
         try:
-            lang = await database.get_language(message.from_user.id)
+            lang = database.get_language(message.from_user.id)
             logger.info("In function: idk_bugs_or_smth: Got language from user")
         except Exception as e:
             lang = "en"
