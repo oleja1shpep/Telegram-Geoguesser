@@ -31,7 +31,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
-with open('TelegramBot/backend/text/translations.json', 'r', encoding='utf-8') as file:
+with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
@@ -306,14 +306,14 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
 
 
 @form_router.message(Form.gamemodes, F.text.split()[0].in_(translation["single"]))
-async def signle_game(message: Message, state: FSMContext) -> None:
+async def single_game(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     answer = message.text
     try:
         lang = await database.get_language(message.from_user.id)
-        logger.info("In function: signle_game: Got language from user")
+        logger.info("In function: single_game: Got language from user")
     except Exception as e:
-        logger.error(f"In function: signle_game: {e}")
+        logger.error(f"In function: single_game: {e}")
     mode = "msk"
     if (answer == translation["gamemodes"][lang_code[lang]][0]):
         mode = "wrld"
@@ -323,9 +323,9 @@ async def signle_game(message: Message, state: FSMContext) -> None:
                 translation['single wrld'][lang_code[lang]],
                 reply_markup = markup
             )
-            logger.info("In function: signle_game: sent answer: Одиночный по миру")
+            logger.info("In function: single_game: sent answer: Одиночный по миру")
         except Exception as e:
-            logger.error(f"In function: signle_game: {e}")
+            logger.error(f"In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][1]):
         mode = "msk"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
@@ -334,9 +334,9 @@ async def signle_game(message: Message, state: FSMContext) -> None:
                 translation['single msk'][lang_code[lang]],
                 reply_markup = markup
             )
-            logger.info("In function: signle_game: sent answer: Одиночный по москве")
+            logger.info("In function: single_game: sent answer: Одиночный по москве")
         except Exception as e:
-            logger.error(f"In function: signle_game: {e}")
+            logger.error(f"In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][2]):
         mode = "spb"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
@@ -345,9 +345,9 @@ async def signle_game(message: Message, state: FSMContext) -> None:
                 translation['single spb'][lang_code[lang]],
                 reply_markup = markup
             )
-            logger.info("In function: signle_game: sent answer: Одиночный по Санкт-Петербургу")
+            logger.info("In function: single_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
-            logger.error(f"In function: signle_game: {e}")
+            logger.error(f"In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][3]):
         mode = "rus"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
@@ -356,9 +356,9 @@ async def signle_game(message: Message, state: FSMContext) -> None:
                 translation['single rus'][lang_code[lang]],
                 reply_markup = markup
             )
-            logger.info("In function: signle_game: sent answer: Одиночный по России")
+            logger.info("In function: single_game: sent answer: Одиночный по России")
         except Exception as e:
-            logger.error(f"In function: signle_game: {e}")
+            logger.error(f"In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][4]):
         mode = "usa"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
@@ -367,9 +367,9 @@ async def signle_game(message: Message, state: FSMContext) -> None:
                 translation['single usa'][lang_code[lang]],
                 reply_markup = markup
             )
-            logger.info("In function: signle_game: sent answer: Одиночный по Беларуси")
+            logger.info("In function: single_game: sent answer: Одиночный по Беларуси")
         except Exception as e:
-            logger.error(f"In function: signle_game: {e}")
+            logger.error(f"In function: single_game: {e}")
 
     await state.set_state(Form.single_game_menu)
     await state.update_data(gamemodes = mode)
@@ -716,12 +716,9 @@ async def process_event(event, bot: Bot):
         logger.error(f"In function: process_event: {e}")
 
 async def handler(event, context):
-    #raise Exception({'event':event,'conext':context})
-    # print(event['body'])
     logger.info("In function: handler: recieved event") 
     bot = Bot(token=TOKEN_BOT)
     await process_event(event, bot)
-    # await dp.start_polling(bot)
     return {'statusCode': 200, 'body': 'ok',}
 
 async def main():

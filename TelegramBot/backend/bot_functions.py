@@ -15,7 +15,7 @@ load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 
-with open('TelegramBot/backend/text/translations.json', 'r', encoding='utf-8') as file:
+with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']

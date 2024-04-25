@@ -17,7 +17,7 @@ load_dotenv()
 
 URL_SITE = os.getenv("URL_SITE")
 
-with open("TelegramBot/backend/text/translations.json", 'r', encoding='utf-8') as file:
+with open("./backend/text/translations.json", 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
@@ -81,7 +81,7 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     logger.debug(f" seed: {seed} | mode: {mode}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
-    builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '|' + '|'.join(map(str, coords)) + '|' + str(MODE_TO_RADIUS[mode])))
+    builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '&' + '&'.join(map(str, coords)) + '&' + str(MODE_TO_RADIUS[mode])))
     for i in range(1,len(keyboard)):
         builder.button(text = keyboard[i])
 
