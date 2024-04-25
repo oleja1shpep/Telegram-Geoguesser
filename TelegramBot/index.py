@@ -31,7 +31,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
-with open('TelegramBot/backend/text/translations.json', 'r', encoding='utf-8') as file:
+with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
 translation = file['translations']
 lang_code = file['lang_code']
@@ -716,12 +716,9 @@ async def process_event(event, bot: Bot):
         logger.error(f"In function: process_event: {e}")
 
 async def handler(event, context):
-    #raise Exception({'event':event,'conext':context})
-    # print(event['body'])
     logger.info("In function: handler: recieved event") 
     bot = Bot(token=TOKEN_BOT)
     await process_event(event, bot)
-    # await dp.start_polling(bot)
     return {'statusCode': 200, 'body': 'ok',}
 
 async def main():
