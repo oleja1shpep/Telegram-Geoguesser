@@ -190,7 +190,7 @@ class MongoDB:
 
     def get_state(self, tele_id):
         if (self.find_user(tele_id)):
-            state = self.get_key(tele_id, "state", "menu")
+            state = self.get_key(tele_id, "state", "start")
             # logger.debug(f"state: {state}")
             return state
         else:
