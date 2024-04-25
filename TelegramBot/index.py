@@ -40,12 +40,12 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
-class Form(StatesGroup):
-    start = State()
-    menu = State()
-    language_menu = State()
-    gamemodes = State()
-    single_game_menu = State()
+# class Form(StatesGroup):
+#     start = State()
+#     menu = State()
+#     language_menu = State()
+#     gamemodes = State()
+#     single_game_menu = State()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message, state: FSMContext) -> None:
@@ -64,8 +64,8 @@ async def command_start(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: command_start: {e}")
 
-    # database.set_state(tele_id, "start")
-    await state.set_state(Form.start)
+    # await state.set_state(Form.start)
+    database.set_state(tele_id, "start")
     
     try:
         if not(is_found):
@@ -85,11 +85,12 @@ async def command_start(message: Message, state: FSMContext) -> None:
     logger.info("In function: command_start: finished <command_start>")
     await message.delete()
 
-@form_router.message(Form.start, F.text.in_(translation['play']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
 async def process_name(message: Message, state: FSMContext) -> None:
-    await state.set_state(Form.menu)
+    # await state.set_state(Form.menu)
 
     tele_id = message.from_user.id
+    database.set_state(tele_id, "menu")
     username = message.from_user.username
     is_found = False
     try:
@@ -138,7 +139,7 @@ async def process_name(message: Message, state: FSMContext) -> None:
     logger.info("In function: process_name: finished <process_name>")
     await message.delete()
 
-@form_router.message(Form.menu, F.text.in_(translation["how to play"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
 async def main_menu(message: Message, state: FSMContext) -> None:
     
     database.drop_duplicates()
@@ -158,12 +159,14 @@ async def main_menu(message: Message, state: FSMContext) -> None:
     await message.delete()
 
 
-@form_router.message(Form.menu, F.text.in_(translation["settings"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
 async def settings_menu(message: Message, state: FSMContext) -> None:
     database.drop_duplicates()
+    tele_id = message.from_user.id
     if DEBUG_MODE:
         database.show_database()
-    await state.set_state(Form.language_menu)
+    # await state.set_state(Form.language_menu)
+    database.set_state(tele_id, "language_menu")
     lang = database.get_language(message.from_user.id)
     use_gpt = database.get_gpt(message.from_user.id)
     markup = await markups.create_settings_menu_markup(lang, use_gpt)
@@ -177,7 +180,7 @@ async def settings_menu(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: settings_menu: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(translation["rus_language"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message, state: FSMContext) -> None:
     try:
         database.set_language(message.from_user.id, 'ru')
@@ -197,7 +200,7 @@ async def change_language_rus(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_rus: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(translation["eng_language"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message, state: FSMContext) -> None:
     try:
         database.set_language(message.from_user.id, 'en')
@@ -216,7 +219,7 @@ async def change_language_eng(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_eng: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(translation["use_gpt"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
 async def switch_use_gpt(message: Message, state: FSMContext) -> None:
     try:
         database.switch_gpt(message.from_user.id)
@@ -244,9 +247,11 @@ async def switch_use_gpt(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: switch_use_gpt: {e}")
     await message.delete()
 
-@form_router.message(Form.language_menu, F.text.in_(translation["back"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
 async def settings_back(message: Message, state: FSMContext) -> None:
-    await state.set_state(Form.menu)
+    # await state.set_state(Form.menu)
+    tele_id = message.from_user.id
+    database.set_state(tele_id, "menu")
     try:
         lang = database.get_language(message.from_user.id)
         logger.info("In function: settings_back: Got language from user")
@@ -264,10 +269,12 @@ async def settings_back(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: change_language_back: {e}")
     await message.delete()
 
-@form_router.message(Form.menu, F.text.in_(translation["modes"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
 async def gamemodes(message: Message, state: FSMContext) -> None:
     database.drop_duplicates()
-    await state.set_state(Form.gamemodes)
+    # await state.set_state(Form.gamemodes)
+    tele_id = message.from_user.id
+    database.set_state(tele_id, "gamemodes")
     try:
         lang = database.get_language(message.from_user.id)
         logger.info("In function: gamemodes: Got language from user")
@@ -285,9 +292,11 @@ async def gamemodes(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: gamemodes: {e}")
     await message.delete()
 
-@form_router.message(Form.gamemodes, F.text.in_(translation["back"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.in_(translation["back"]))
 async def gamemodes_back(message: Message, state: FSMContext) -> None:
-    await state.set_state(Form.menu)
+    # await state.set_state(Form.menu)
+    tele_id = message.from_user.id
+    database.set_state(tele_id, "menu")
     try:
         lang = database.get_language(message.from_user.id)
         logger.info("In function: gamemodes_back: Got language from user")
@@ -306,7 +315,7 @@ async def gamemodes_back(message: Message, state: FSMContext) -> None:
     await message.delete()
 
 
-@form_router.message(Form.gamemodes, F.text.split()[0].in_(translation["single"]))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.split()[0].in_(translation["single"]))
 async def single_game(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     answer = message.text
@@ -372,14 +381,16 @@ async def single_game(message: Message, state: FSMContext) -> None:
         except Exception as e:
             logger.error(f"In function: single_game: {e}")
 
-    await state.set_state(Form.single_game_menu)
-    await state.update_data(gamemodes = mode)
+    database.set_state(tele_id, "single_game_menu")
+    database.set_state_data(tele_id, mode)
     await message.delete()
 
-@form_router.message(Form.single_game_menu, F.text.in_(translation['rules']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
 async def single_game_menu_rules(message: Message, state: FSMContext) -> None:
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    # mode = await state.get_data()
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
+    # mode = mode["gamemodes"]
     
     try:
         lang = database.get_language(message.from_user.id)
@@ -430,10 +441,12 @@ async def single_game_menu_rules(message: Message, state: FSMContext) -> None:
             logger.error(f"In function: single_game_menu_rules: {e}")
     await message.delete()
 
-@form_router.message(Form.single_game_menu, F.text.in_(translation['top players']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
 async def single_game_menu_top_10_players(message: Message, state: FSMContext) -> None:
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    # mode = await state.get_data()
+    # mode = mode["gamemodes"]
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
     
     try:
         lang = database.get_language(message.from_user.id)
@@ -456,10 +469,12 @@ async def single_game_menu_top_10_players(message: Message, state: FSMContext) -
         logger.error(f"In function: single_game_menu_top_10_players: {e}")
     await message.delete()
 
-@form_router.message(Form.single_game_menu, F.text.in_(translation['last 5 games']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
 async def single_game_menu_last_5_games(message: Message, state: FSMContext) -> None:
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    # mode = await state.get_data()
+    # mode = mode["gamemodes"]
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
     
     try:
         lang = database.get_language(message.from_user.id)
@@ -482,10 +497,10 @@ async def single_game_menu_last_5_games(message: Message, state: FSMContext) -> 
     await message.delete()
 
 
-@form_router.message(Form.single_game_menu, F.text.in_(translation['back']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['back']))
 async def single_game_menu_back(message: Message, state: FSMContext) -> None:
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
     
     try:
         lang = database.get_language(message.from_user.id)
@@ -493,7 +508,8 @@ async def single_game_menu_back(message: Message, state: FSMContext) -> None:
     except Exception as e:
         logger.error(f"In function: single_game_menu_back: {e}")
 
-    await state.set_state(Form.gamemodes)
+    database.set_state(tele_id, "gamemodes")
+    # await state.set_state(Form.gamemodes)
 
     markup = await markups.create_gamemodes_markup(lang)
     try:
@@ -506,10 +522,10 @@ async def single_game_menu_back(message: Message, state: FSMContext) -> None:
         logger.error(f"In function: single_game_menu_back: {e}")
     await message.delete()
 
-@form_router.message(Form.single_game_menu, F.text.in_(translation['generate seed']))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
 async def single_game_menu_generate_seed(message: Message, state: FSMContext) -> None:
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
     
     try:
         lang = database.get_language(message.from_user.id)
@@ -530,14 +546,15 @@ async def single_game_menu_generate_seed(message: Message, state: FSMContext) ->
     
     await message.delete()
 
-@form_router.message(Form.single_game_menu, F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -> None:
     tele_id = message.from_user.id
     username = message.from_user.username
     logger.info("In function: single_game_menu_recieve_answer: Got answer from " + username)
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
-    
+    # mode = await state.get_data()
+    # mode = mode["gamemodes"]
+    mode = database.get_state_data(tele_id)
+
     try:
         lang = database.get_language(message.from_user.id)
         logger.info("In function: single_game_menu_recieve_answer: Got language from user")
@@ -631,12 +648,13 @@ async def single_game_menu_recieve_answer(message: Message, state: FSMContext) -
     await message.delete()
 
 
-@form_router.message(Form.single_game_menu, F.text)
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)
 async def single_game_menu_set_seed(message: Message, state: FSMContext) -> None:
 
-    mode = await state.get_data()
-    mode = mode["gamemodes"]
+    # mode = await state.get_data()
+    # mode = mode["gamemodes"]
     tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
 
     try:
         lang = database.get_language(message.from_user.id)

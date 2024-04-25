@@ -223,3 +223,10 @@ def set_state(tele_id, state):
 
 def get_state(tele_id):
     return get_key(tele_id, "state", "")
+
+def set_state_data(tele_id, data):
+    set_key(tele_id, "state_data", data)
+
+def get_state_data(tele_id):
+    return get_key(tele_id, "state_data", "")
+
