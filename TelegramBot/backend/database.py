@@ -224,7 +224,7 @@ def set_state(tele_id, state):
 def get_state(tele_id):
     if (find_user(tele_id)):
         state = get_key(tele_id, "state", "menu")
-        logger.debug(f"state: {state}")
+        # logger.debug(f"state: {state}")
         return state
     else:
         return "start"

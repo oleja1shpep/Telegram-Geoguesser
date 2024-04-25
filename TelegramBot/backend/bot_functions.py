@@ -129,7 +129,14 @@ async def get_last5_results_single(tele_id, mode, lang = 'en'):
 
     txt = ''
     for i in range(len(games)):
-        txt += (translation['last 5 res'][lang_code[lang]]).format(i + 1, games[i][0], games[i][1])
+        metres = games[i][1]
+        if metres < 10000:
+            txt += (translation['last 5 res metres'][lang_code[lang]]).format(i + 1, games[i][0], metres)
+        elif metres < 100000:
+            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], round(metres / 1000, 2))
+        else:
+            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], round(metres / 1000, 0))
+
     if len(games) == 0:
         txt = (translation['no games'][lang_code[lang]])
     return txt
