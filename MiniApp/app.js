@@ -2,7 +2,7 @@ let map, panorama, marker, loc;
 let x, y, x_center, y_center, zoom;
 let radius_index = 0;
 
-let hash = window.location.hash.split('?')[0].split('|')
+let hash = window.location.hash.split('?')[0].split('&')
 
 async function get_cords() {
     x = parseFloat(hash[1])
