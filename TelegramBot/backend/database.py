@@ -53,6 +53,9 @@ class MongoDB:
         
         self.users.insert_one(user)
 
+    def delete_user(self, tele_id):
+        self.users.delete_many({"tele_id" : tele_id})
+
     def check_key(self, tele_id, key):
         user = self.users.find_one({"tele_id" : tele_id})
 
