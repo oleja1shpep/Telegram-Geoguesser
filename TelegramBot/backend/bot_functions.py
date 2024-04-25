@@ -9,7 +9,9 @@ from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
 from geopy.distance import geodesic
 
-from backend import database
+from backend.database import MongoDB
+
+database = MongoDB()
 
 load_dotenv()
 

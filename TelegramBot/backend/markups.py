@@ -5,9 +5,11 @@ import json
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from backend import database
+from backend.database import MongoDB
 from backend.seed_processor import coordinates_from_seed, MODE_TO_RADIUS
 from dotenv import load_dotenv
+
+database = MongoDB()
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
