@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -eu
 
 FUNCTION_ID=d4etua5b0mijijqgq8gs
