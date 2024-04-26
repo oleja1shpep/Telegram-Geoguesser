@@ -25,42 +25,37 @@ translation = file['translations']
 lang_code = file['lang_code']
 
 async def create_start_markup(lang = 'en'):
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text=translation["play"][lang_code[lang]]),
-            ]
-        ],
-        resize_keyboard=True,
-    )
+    builder = ReplyKeyboardBuilder()
+    builder.button(text=translation["play"][lang_code[lang]])
+    markup = builder.as_markup()
+    markup.resize_keyboard = True
+    return markup
 
 async def create_menu_markup(lang = "en"):
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text=translation["modes"][lang_code[lang]]),
-                KeyboardButton(text=translation["how to play"][lang_code[lang]]),
-                KeyboardButton(text=translation["settings"][lang_code[lang]]),
-            ]
-        ],
-        resize_keyboard=True,
-    )
+    builder = ReplyKeyboardBuilder()
+    builder.button(text=translation["modes"][lang_code[lang]])
+    builder.button(text=translation["how to play"][lang_code[lang]])
+    builder.button(text=translation["settings"][lang_code[lang]])
+    builder.adjust(3)
+    markup = builder.as_markup()
+    markup.resize_keyboard = True
+    return markup
+
 
 async def create_settings_menu_markup(lang, use_gpt):
     text_en = (lang == "en") * "✅" + translation["eng_language"][lang_code[lang]]
     text_ru = (lang == "ru") * "✅" + translation["rus_language"][lang_code[lang]]
     text_use_gpt = use_gpt * "✅" + (1 - use_gpt) * "🚫" + translation["use_gpt"][lang_code[lang]]
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text=text_ru),
-                KeyboardButton(text=text_en),
-                KeyboardButton(text=text_use_gpt),
-                KeyboardButton(text=translation["back"][lang_code[lang]]),
-            ]
-        ],
-        resize_keyboard=True,
-    )
+    builder = ReplyKeyboardBuilder()
+    builder.button(text=text_ru)
+    builder.button(text=text_en)
+    builder.button(text=text_use_gpt)
+    builder.button(text=translation["back"][lang_code[lang]])
+    builder.adjust(2,1,1)
+    markup = builder.as_markup()
+    markup.resize_keyboard = True
+    return markup
+
 
 async def create_gamemodes_markup(lang = "en"):
     builder = ReplyKeyboardBuilder()

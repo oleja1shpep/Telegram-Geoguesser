@@ -125,20 +125,23 @@ Send it to your friends, so you'll guess same places
 To set *seed* send it to bot in the corresponding gamemode menu""")]
 
 
-HOW_TO_PLAY = [("""
+HOW_TO_PLAY = [
+("""
 - Вы оказываетесь в случайной точке на карте мира
 - Можете перемещаться на панораме в любых направлениях
 
 Ваша задача: по панораме определить ваше местоположение на реальной карте мира, поставив метку на предполагаемое место вашего нахождения
 
+Каждый раунд по умолчанию будут присылаться интересные факты про геолокацию (это занимает какое-то время). Отключить это можно в настройках
 """),
-               ("""
+("""
 - You find yourself at a random point on the world map
 - You can move on the panorama in any direction
 
-Your task is to use the panorama to determine your location on the real map of the world, putting a label on your intended location
-               """)
-               ]
+Your goal is to use the panorama to determine your location on the real map of the world, putting a label on your intended location
+
+Each match you will get entertaining facts about geolocation (it may take a few seconds). You can turn it off in settings
+""")]
 
 GREETING = [("""Привет, {}!\nЯ - аналог игры Geoguessr в телеграме! Здесь ты можешь сыграть в отгадывание мест по всей России или по отдельным городам и посоревноваться с другими игроками"""
              ),
