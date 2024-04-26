@@ -29,6 +29,7 @@ logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
 
 def form_payload(request):
+    logger.debug(FOLDER_ID)
     payload = json.dumps({
     "modelUri": f"gpt://{FOLDER_ID}/yandexgpt",
     "completionOptions": {
@@ -53,22 +54,29 @@ async def gpt_request(cords, language):
     if response.status_code == 200:
         data = response.json()
         address = data.get('display_name')
-        logger.info("In function: gpt_request: Got address")
+        logger.info(f"In function: gpt_request: Got address: {address}")
     else:
-        logger.warning("In function: gpt_request: Coords request error")
+        logger.warning(f"In function: gpt_request: Coords request error. Address = {address}")
+    
+    if (address == "" or address == None or type(address) != str):
         if (language == "english"):
             return "Unable to come up with interesting fact"
         else:
             return "Не удалось найти интересный факт"
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
-    request = f"give me some fan fact about {address} using {language} language. Message text should be no longer that 50 words"
+    request = f"Дай мне забавный факт не больше 50 слов на {language} языке об адресе: {address} (сократи адрес до улицы)"
     payload = form_payload(request)
     headers = {
     'Authorization': f'Api-Key {YAGPT_APIKEY}',
     'Content-Type': 'application/json'
     }
     response = requests.request("POST", url_2, headers=headers, data=payload)
-    text = json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+    logger.debug(f"In function: gpt_request: response = {response.text}")
+    try:
+        text = json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+    except Exception as e:
+        logger.error(f"In function: gpt_request: {e}")
+        return "Ошибка"
 
     return text
 
