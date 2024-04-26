@@ -400,7 +400,8 @@ async def single_game_menu_rules(message: Message) -> None:
     if (mode == "msk"):
         try:
             await message.answer(
-                messages.MOSCOW_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.MOSCOW_SINGLE_PLAYER_RULES[lang_code[lang]],
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules moscow")
         except Exception as e:
@@ -409,7 +410,8 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "spb"):
         try:
             await message.answer(
-                messages.SPB_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.SPB_SINGLE_PLAYER_RULES[lang_code[lang]],
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules spb")
         except Exception as e:
@@ -417,7 +419,8 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "rus"):
         try:
             await message.answer(
-                messages.RUSSIA_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.RUSSIA_SINGLE_PLAYER_RULES[lang_code[lang]],
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules russia")
         except Exception as e:
@@ -425,7 +428,8 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "usa"):
         try:
             await message.answer(
-                messages.USA_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.USA_SINGLE_PLAYER_RULES[lang_code[lang]],
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules USA")
         except Exception as e:
@@ -433,7 +437,8 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "wrld"):
         try:
             await message.answer(
-                messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]]
+                messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]],
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules world")
         except Exception as e:
@@ -734,7 +739,6 @@ async def process_event(event, bot: Bot):
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_event: {e}")
 
 async def handler(event, context):
-    
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: handler: recieved event")
     logger.debug(event)
     bot = Bot(token=TOKEN_BOT)

@@ -2,57 +2,127 @@ MOSCOW_SINGLE_PLAYER_RULES = [("""
 Проверь своё знание Москвы!
 
 Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""),
-("""
-Check your knowledge of Moscow!
+Можно перемещаться по улицам в любых направлениях
+
+Мультиплеер:
+Нажми кнопку *Сгенерировать seed*, чтобы получить случайный ключ генерации
+                               
+Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
+                               
+Чтобы установить *seed*, отправьте его боту в соответствующем меню режима"""),
+("""Check your knowledge of Moscow!
 
 You are given an unlimited amount of time to answer
-You can move through the streets in any direction""")]
+You can move through the streets in any direction
+ 
+Multuplayer:
+Press the button *Generate seed* to get random generation key
+
+Send it to your friends, so you'll guess same places
+
+To set *seed* send it to bot in the corresponding gamemode menu
+""")]
 
 RUSSIA_SINGLE_PLAYER_RULES = [("""
 Как хорошо ты знаешь Россию?
 
 Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""),
+Можно перемещаться по улицам в любых направлениях
+
+Мультиплеер:
+Нажми кнопку *Сгенерировать seed*, чтобы получить случайный ключ генерации
+                               
+Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
+                               
+Чтобы установить *seed*, отправьте его боту в соответствующем меню режима"""),
 ("""
-Check your knowledge of Russian!
+Check your knowledge of Russia!
 
 You are given an unlimited amount of time to answer
-You can move through the streets in any direction""")]
+You can move through the streets in any direction
+ 
+Multuplayer:
+Press the button *Generate seed* to get random generation key
+
+Send it to your friends, so you'll guess same places
+
+To set *seed* send it to bot in the corresponding gamemode menu""")]
 
 SPB_SINGLE_PLAYER_RULES = [("""
 Проверь своё знание Санкт-Петербурга!
 
 Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""),
+Можно перемещаться по улицам в любых направлениях
+
+Мультиплеер:
+Нажми кнопку *Сгенерировать seed*, чтобы получить случайный ключ генерации
+                               
+Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
+                               
+Чтобы установить *seed*, отправьте его боту в соответствующем меню режима"""),
 ("""
 Check your knowledge of St. Petersburg!
 
 You are given an unlimited amount of time to answer
-You can move through the streets in any direction""")]
+You can move through the streets in any direction
+ 
+Multuplayer:
+Press the button *Generate seed* to get random generation key
+
+Send it to your friends, so you'll guess same places
+
+To set *seed* send it to bot in the corresponding gamemode menu""")]
 
 
 USA_SINGLE_PLAYER_RULES = [("""
 Как хорошо ты знаешь США?
 
 Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""),
+Можно перемещаться по улицам в любых направлениях
+                 
+Мультиплеер:
+Нажми кнопку *Сгенерировать seed*, чтобы получить случайный ключ генерации
+                               
+Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
+                               
+Чтобы установить *seed*, отправьте его боту в соответствующем меню режима"""),
 ("""
 How well do you know USA?
 
 You are given an unlimited amount of time to answer
-You can move through the streets in any direction""")]
+You can move through the streets in any direction
+ 
+Multuplayer:
+Press the button *Generate seed* to get random generation key
+
+Send it to your friends, so you'll guess same places
+
+To set *seed* send it to bot in the corresponding gamemode menu""")]
 
 WORLD_SINGLE_PLAYER_RULES = [("""
 Как хорошо ты знаешь земной шар?
 
 Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях"""),
+Можно перемещаться по улицам в любых направлениях
+                              
+Мультиплеер:
+Нажми кнопку *Сгенерировать seed*, чтобы получить случайный ключ генерации
+                               
+Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
+                               
+Чтобы установить *seed*, отправьте его боту в соответствующем меню режима"""),
 ("""
 How well do you know Earth?
 
 You are given an unlimited amount of time to answer
-You can move through the streets in any direction""")]
+You can move through the streets in any direction
+ 
+Multuplayer:
+Press the button *Generate seed* to get random generation key
+
+Send it to your friends, so you'll guess same places
+
+To set *seed* send it to bot in the corresponding gamemode menu""")]
 
 
 HOW_TO_PLAY = [("""
