@@ -16,6 +16,8 @@ database = MongoDB()
 load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
+YAGPT_APIKEY = os.getenv("YAGPT_APIKEY")
+FOLDER_ID = os.getenv("FOLDER_ID")
 
 with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
     file = json.load(file)
@@ -26,6 +28,23 @@ lang_code = file['lang_code']
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
 logger.setLevel(logging.DEBUG)
+
+def form_payload(request):
+    payload = json.dumps({
+    "modelUri": f"gpt://{FOLDER_ID}/yandexgpt",
+    "completionOptions": {
+        "stream": False,
+        "temperature": 0.3,
+        "maxTokens": "2000"
+    },
+    "messages": [
+        {
+        "role": "user",
+        "text": request
+        }
+    ]
+    })
+    return payload
 
 async def gpt_request(cords, language):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
@@ -38,13 +57,21 @@ async def gpt_request(cords, language):
         logger.info("In function: gpt_request: Got address")
     else:
         logger.warning("In function: gpt_request: Coords request error")
-
+        if (language == "english"):
+            return "Unable to come up with interesting fact"
+        else:
+            return "Не удалось найти интересный факт"
+    url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     request = f"give me some fan fact about {address} using {language} language. Message text should be no longer that 50 words"
+    payload = form_payload(request)
+    headers = {
+    'Authorization': f'Api-Key {YAGPT_APIKEY}',
+    'Content-Type': 'application/json'
+    }
+    response = requests.request("POST", url_2, headers=headers, data=payload)
+    text = json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
 
-    answer = await g4f.ChatCompletion.create_async(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": request}])
-    return answer
+    return text
 
 async def get_url(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
