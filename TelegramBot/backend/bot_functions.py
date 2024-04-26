@@ -1,6 +1,5 @@
 import logging
 import os
-import g4f
 import json
 import numpy as np
 import requests
