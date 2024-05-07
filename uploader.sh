@@ -24,7 +24,7 @@ yc serverless function version create \
     --entrypoint index.handler \
     --memory 256MB \
     --environment FOLDER_ID=$FOLDER_ID,TOKEN=$TOKEN,TOKEN_STATIC=$TOKEN_STATIC,DB_USER=$DB_USER,DB_HOST=$DB_HOST,DB_PASS=$DB_PASS,DB_NAME=$DB_NAME,URL_SITE=$URL_SITE,YAGPT_APIKEY=$YAGPT_APIKEY \
-    --execution-timeout 2m \
+    --execution-timeout 10m \
     --source-path function.zip \
     --service-account-id $SA_ID \
     --network-id $NETWORK_ID
