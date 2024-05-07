@@ -73,8 +73,8 @@ def coordinates_from_seed(seed, mode):
     elif mode == 'usa':
         x, y = 34.949688, -113.990370
         x2, y2 = 42.801610, -85.994596
-        x_center, y_center = 38.2149907, -101.4041103
-        zoom = 4.5
+        x_center, y_center = 38.2149907, -95.4041103
+        zoom = 3.2
         rand_case = random.randint(1, 25)
         if rand_case == 1:
             x, y = 38.023709, -124.508643
