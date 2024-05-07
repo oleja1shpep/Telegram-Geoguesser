@@ -56,6 +56,10 @@ class MongoDB:
     def delete_user(self, tele_id):
         self.users.delete_many({"tele_id" : tele_id})
 
+    def get_user(self, username):
+        user = self.users.find_one({"username" : username})
+        return user
+
     def check_key(self, tele_id, key):
         user = self.users.find_one({"tele_id" : tele_id})
 
@@ -65,7 +69,6 @@ class MongoDB:
 
     def set_key(self, tele_id, key, value):
         self.users.update_one({"tele_id" : tele_id}, {"$set" : {key : value}})
-
 
     def inc_key(self, tele_id, key, value, default = 0):
         if not(self.check_key(tele_id, key)):
@@ -90,15 +93,12 @@ class MongoDB:
     def delete_database(self):
         self.users.delete_many({})
 
-
     def show_database(self):
         for user in self.users.find():
             print(user)
 
-
     def set_seed(self, tele_id, seed, mode):
         self.set_key(tele_id, "seed_" + mode, seed)
-
 
     def get_seed(self, tele_id, mode):
         seed = self.get_key(tele_id, "seed_" + mode, "")
@@ -116,10 +116,8 @@ class MongoDB:
             self.set_seed(tele_id, generate_seed(), mode)
         self.set_key(tele_id, "is_active_session_" + mode, True)
 
-
     def end_game(self, tele_id, mode):
         self.set_key(tele_id, "is_active_session_" + mode, False)
-
 
     def get_top10_single(self, mode):
 
@@ -137,7 +135,6 @@ class MongoDB:
 
         res = list(self.users.aggregate([sort, limit]))
         return res
-
 
     def add_results_single(self, tele_id, score, mode):
         self.inc_key(tele_id, mode + "_single_total_score", score)
@@ -168,7 +165,6 @@ class MongoDB:
 
         self.set_key(tele_id, "last_games_" + mode, games)
 
-
     def set_language(self, tele_id, language):
         self.set_key(tele_id, 'language', language)
 
@@ -198,11 +194,17 @@ class MongoDB:
             return state
         else:
             return "start"
-
-
+        
     def set_state_data(self, tele_id, data):
         self.set_key(tele_id, "state_data", data)
 
     def get_state_data(self, tele_id):
         return self.get_key(tele_id, "state_data", "")
 
+    def set_prev_message(self, tele_id, info):
+        self.set_key(tele_id, "prev_message", info)
+
+    def get_prev_message(self, tele_id):
+        return self.get_key(tele_id, "prev_message", [0,0])
+
+    

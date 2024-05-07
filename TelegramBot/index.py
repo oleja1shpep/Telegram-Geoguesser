@@ -63,16 +63,16 @@ async def command_start(message: Message) -> None:
 
     # await state.set_state(Form.start)
     database.set_state(tele_id, "start")
-    
+    msg = ""
     try:
         if not(is_found):
-            await message.answer(
+            msg = await message.answer(
                 (messages.GREETING[1]).format(message.from_user.first_name),
                 reply_markup=await markups.create_start_markup()
             )
         else:
             lang = database.get_language(tele_id)
-            await message.answer(
+            msg = await message.answer(
                 (messages.GREETING[lang_code[lang]]).format(message.from_user.first_name),
                 reply_markup=await markups.create_start_markup(lang)
             )
@@ -119,14 +119,15 @@ async def process_name(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: anable to get lang: {e}")
     markup = await markups.create_menu_markup(lang)
 
+    msg = ""
     try:
         if (is_found):            
-            await message.answer(
+            msg = await message.answer(
                 translation['greeting'][lang_code[lang]],
                 reply_markup = markup
             )
         else:
-            await message.answer(
+            msg = await message.answer(
                 translation['registration'][lang_code[lang]],
                 reply_markup = markup
             )
