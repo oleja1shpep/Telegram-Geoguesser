@@ -156,7 +156,7 @@ def coordinates_from_seed(seed, mode):
         x2, y2 = 90, 180
         x_center, y_center = 0, 0
         zoom = 1
-        rand_case = random.randint(1, 30); 
+        rand_case = random.randint(1, 46); 
         # South America
         if rand_case == 1:
             x, y = -49.284542, -72.608645
@@ -250,6 +250,55 @@ def coordinates_from_seed(seed, mode):
         elif rand_case == 30: 
             x, y = 72.099301, -24.622787
             x2, y2 = 73.034822, -21.955264
+        # Europe
+        elif rand_case == 31: 
+            x, y = 63.479438, -24.225472
+            x2, y2 = 66.459564, -13.681468
+        elif rand_case == 32: 
+            x, y = 36.269117, -9.277221
+            x2, y2 = 43.587757, -0.799876
+        elif rand_case == 33: 
+            x, y = 37.486593, -0.850123
+            x2, y2 = 41.229653, 0.497947
+        elif rand_case == 34: 
+            x, y = 38.456167, 1.152376
+            x2, y2 = 40.091257, 4.350759
+        elif rand_case == 35: 
+            x, y = 41.343102, -0.820690
+            x2, y2 = 43.780178, 28.689869
+        elif rand_case == 36: 
+            x, y = 43.753602, -1.491100
+            x2, y2 = 46.671733, 47.056305
+        elif rand_case == 37: 
+            x, y = 46.680389, -4.882195
+            x2, y2 = 50.188704, 39.971850
+        elif rand_case == 38: 
+            x, y = 50.179092, -10.579633
+            x2, y2 = 60.733477, 1.727627
+        elif rand_case == 39: 
+            x, y = 50.208775, 1.631428
+            x2, y2 = 54.710563, 40.168937
+        elif rand_case == 40: 
+            x, y = 54.812812, 4.911457
+            x2, y2 = 68.454907, 16.611117
+        elif rand_case == 41: 
+            x, y = 54.761425, 16.677855
+            x2, y2 = 70.855292, 40.118145
+        elif rand_case == 42: 
+            x, y = 34.704660, 21.498593
+            x2, y2 = 37.063880, 28.541162
+        elif rand_case == 43: 
+            x, y = 35.980587, 28.701700
+            x2, y2 = 37.052345, 36.313121
+        elif rand_case == 44: 
+            x, y = 38.431218, 41.463445
+            x2, y2 = 43.907716, 49.285717
+        elif rand_case == 45: 
+            x, y = 34.466932, 32.187156
+            x2, y2 = 35.685885, 34.587197
+        elif rand_case == 46: 
+            x, y = 37.138231,  8.207695
+            x2, y2 = 41.215093, 43.901051
 
 
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
