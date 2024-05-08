@@ -156,7 +156,7 @@ def coordinates_from_seed(seed, mode):
         x2, y2 = 90, 180
         x_center, y_center = 0, 0
         zoom = 1
-        rand_case = random.randint(1, 46); 
+        rand_case = random.randint(1, 72); 
         # South America
         if rand_case == 1:
             x, y = -49.284542, -72.608645
