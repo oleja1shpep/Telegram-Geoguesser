@@ -156,7 +156,7 @@ def coordinates_from_seed(seed, mode):
         x2, y2 = 90, 180
         x_center, y_center = 0, 0
         zoom = 1
-        rand_case = random.randint(1, 116); 
+        rand_case = random.randint(1, 132)
         # South America
         if rand_case == 1:
             x, y = -49.284542, -72.608645
@@ -511,6 +511,56 @@ def coordinates_from_seed(seed, mode):
         elif rand_case == 116: 
             x, y = -35.516820, 173.084998
             x2, y2 = -34.927814, 174.449831
+        # Africa
+        elif rand_case == 117: 
+            x, y = 12.516875, -17.249842
+            x2, y2 = 15.788435, -13.900877
+        elif rand_case == 118: 
+            x, y = 5.254146, -2.620917
+            x2, y2 = 10.598853, 0.277236
+        elif rand_case == 119: 
+            x, y = 6.370575, 2.751405
+            x2, y2 = 8.648428, 5.794935
+        elif rand_case == 120: 
+            x, y = 4.395859, 5.773598
+            x2, y2 = 12.399362, 8.856268
+        elif rand_case == 121: 
+            x, y = 7.092054, 8.886881
+            x2, y2 = 12.796579, 11.952741
+        elif rand_case == 122: 
+            x, y = -2.532627, 28.886304
+            x2, y2 = -2.415786, 28.963852
+        elif rand_case == 123: 
+            x, y = -2.076954, 29.979036
+            x2, y2 = -1.806400, 30.270670
+        elif rand_case == 124: 
+            x, y = -2.141581,  30.520799
+            x2, y2 = -2.023741, 30.599641
+        elif rand_case == 125: 
+            x, y = -2.378588, 34.589484
+            x2, y2 = 1.449790, 40.497329
+        elif rand_case == 126: 
+            x, y = -6.532803, 39.037975
+            x2, y2 = -3.778890, 39.858652
+        elif rand_case == 127: 
+            x, y = -27.767192, 16.354517
+            x2, y2 = -18.647511, 18.931315
+        elif rand_case == 128: 
+            x, y = -26.961534, 21.721059
+            x2, y2 = -19.294798, 26.675005
+        elif rand_case == 129: 
+            x, y = -34.417807, 18.286856
+            x2, y2 = -30.092770, 27.053938
+        elif rand_case == 130: 
+            x, y = -33.072586, 27.029135
+            x2, y2 = -29.213054, 29.366289
+        elif rand_case == 131: 
+            x, y = -30.906745, 29.393937
+            x2, y2 = -29.266316, 31.336038
+        elif rand_case == 132: 
+            x, y = -29.232541, 26.864213
+            x2, y2 = -23.012380, 32.019880
+        
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
     return lat, lng, x_center, y_center, zoom
 
