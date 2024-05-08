@@ -65,7 +65,7 @@ def gpt_request(cords, language):
         else:
             return "Не удалось найти интересный факт"
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
-    request = f"Дай мне забавный факт не больше 50 слов на {language} языке об адресе: {address} (убери из адреса номер дома и переведи его на русский язык)"
+    request = f"Дай мне забавный факт не больше 50 слов на {language} языке об адресе: {address} (убери из адреса номер дома и переведи его на {language} язык, чтобы пользователь смог прочитать адрес)"
     payload = form_payload(request)
     headers = {
     'Authorization': f'Api-Key {YAGPT_APIKEY}',
