@@ -177,6 +177,37 @@ async def main_menu(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: finished <main_menu>")
     database.set_prev_message(tele_id, msg.message_id)
 
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["donations"]))
+async def main_menu_donations(message: Message) -> None:
+    tele_id = message.from_user.id
+    
+    database.drop_duplicates()
+    try:
+        lang = database.get_language(message.from_user.id)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: got lang from user")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+    markup = await markups.create_menu_markup(lang)
+    try: 
+        msg = await message.answer(
+            text = translation["support authors"][lang_code[lang]],
+            reply_markup=markup,
+            parse_mode="Markdown"
+        )
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: sent answer: donations")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+    
+    await message.delete()
+    chat = msg.chat
+    try:
+        await chat.delete_message(database.get_prev_message(tele_id))
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: deleted prev message")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+    logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: finished <main_menu_donations>")
+    database.set_prev_message(tele_id, msg.message_id)
+
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
 async def settings_menu(message: Message) -> None:
     database.drop_duplicates()
