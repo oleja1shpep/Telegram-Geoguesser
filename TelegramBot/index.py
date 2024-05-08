@@ -81,6 +81,15 @@ async def command_start(message: Message) -> None:
         logger.error(e)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: finished <command_start>")
     await message.delete()
+    prev_msg = database.get_prev_message(tele_id)
+    if (prev_msg != 0):
+        chat = msg.chat
+        try:
+            await chat.delete_message(prev_msg)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: deleted prev message")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
+
     database.set_prev_message(tele_id, msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
@@ -673,12 +682,13 @@ async def single_game_menu_back(message: Message) -> None:
 async def single_game_menu_generate_seed(message: Message) -> None:
     tele_id = message.from_user.id
     mode = database.get_state_data(tele_id)
-    markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+    
     try:
         lang = database.get_language(message.from_user.id)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
+    markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
 
     seed = generate_seed()
     
@@ -898,7 +908,7 @@ async def idk_bugs_or_smth(message: Message) -> None:
     chat = msg.chat
     try:
         prev_msg = database.get_prev_message(tele_id)
-        if (prev_msg != ""):
+        if (prev_msg != 0):
             await chat.delete_message(prev_msg)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: deleted prev message")
     except Exception as e:
