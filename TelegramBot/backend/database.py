@@ -201,10 +201,10 @@ class MongoDB:
     def get_state_data(self, tele_id):
         return self.get_key(tele_id, "state_data", "")
 
-    def set_prev_message(self, tele_id, info):
-        self.set_key(tele_id, "prev_message", info)
+    def set_prev_message(self, tele_id, message_id):
+        self.set_key(tele_id, "prev_message", message_id)
 
     def get_prev_message(self, tele_id):
-        return self.get_key(tele_id, "prev_message", [0,0])
+        return self.get_key(tele_id, "prev_message", 0)
 
     

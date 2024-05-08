@@ -46,7 +46,7 @@ def form_payload(request):
     })
     return payload
 
-async def gpt_request(cords, language):
+def gpt_request(cords, language):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
     url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat1}&lon={lon1}"
