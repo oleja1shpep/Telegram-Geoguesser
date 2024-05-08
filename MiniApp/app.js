@@ -69,7 +69,16 @@ async function initMap() {
         clickableIcons: false,
         disableDefaultUI: true,
         zoom: zoom,
+        minZoom: 1, 
         center: {lat: x_center, lng: y_center},
+        restriction: {
+            latLngBounds: {
+              north: 80,
+              south: -80,
+              east: 180,
+              west: -180,
+            },
+        },
         mapId: "answer_map"
     });
 
