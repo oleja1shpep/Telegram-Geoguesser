@@ -13,7 +13,7 @@ async function get_cords() {
     radius_index = parseInt(hash[6])
 }
 
-const radiuses = [500, 2000, 5000, 50000, 500000, 1500000, 5000000, 50000000]
+const radiuses = [500, 2500, 12500, 50000, 100000, 300000, 600000, 50000000]
 get_cords();
 
 function get_panorama() {
@@ -42,7 +42,7 @@ function processSVData(data, status) {
     } else if (status == google.maps.StreetViewStatus.ZERO_RESULTS) {
         console.log('status: zero results, radius:', radiuses[radius_index])
         radius_index = radius_index + 1;
-        if (radius_index <= 7) {
+        if (radius_index < radiuses.length) {
             get_panorama();
         }
         return;
