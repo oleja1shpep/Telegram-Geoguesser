@@ -802,7 +802,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         await msg_to_delete.delete()
         await message.answer(
             fact,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             reply_markup=markup
         )
     chat = message.chat

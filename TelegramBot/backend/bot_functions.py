@@ -106,9 +106,9 @@ def gpt_request(cords, lang, mode):
     logger.debug(f"In function: gpt_request: response = {response.text}")
     try:
         if lang == 'en':
-           text = f"Interesting fact about {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+           text = f"Interesting fact about {address}:\n<blockquote>" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"] + "</blockquote>"
         else:
-            text = f"Интересный факт про {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+            text = f"Интересный факт про {address}:\n<blockquote>" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"] + "</blockquote>"
     except Exception as e:
         logger.error(f"In function: gpt_request: {e}")
         if lang == "en":
