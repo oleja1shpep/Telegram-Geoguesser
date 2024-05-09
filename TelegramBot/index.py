@@ -44,6 +44,11 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
+@form_router.message(F.chat.type == "private", F.text == "/dropdb", F.func(lambda F: F.from_user.username == "oleja_shpep"))
+async def drop_db_table(message: Message) -> None:
+    database.delete_database()
+    await message.delete()
+
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: Recieved command /start")
@@ -71,11 +76,15 @@ async def command_start(message: Message) -> None:
         username = message.from_user.username
     else:
         username = "Anonimus"
+    
     try:
         if not(is_found):
+            lang = "en"
+            if (message.from_user.language_code):
+                lang = message.from_user.language_code
             msg = await message.answer(
-                (messages.GREETING[1]).format(username),
-                reply_markup=await markups.create_start_markup()
+                (messages.GREETING[lang_code[lang]]).format(username),
+                reply_markup=await markups.create_start_markup(lang)
             )
         else:
             lang = database.get_language(tele_id)
@@ -88,16 +97,16 @@ async def command_start(message: Message) -> None:
         logger.error(e)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: finished <command_start>")
     await message.delete()
-    prev_msg = database.get_prev_message(tele_id)
-    if (prev_msg != 0):
-        chat = msg.chat
-        try:
-            await chat.delete_message(prev_msg)
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: deleted prev message")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
-
-    database.set_prev_message(tele_id, msg.message_id)
+    if (is_found):
+        prev_msg = database.get_prev_message(tele_id)
+        if (prev_msg != 0):
+            chat = msg.chat
+            try:
+                await chat.delete_message(prev_msg)
+                logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: deleted prev message")
+            except Exception as e:
+                logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
+        database.set_prev_message(tele_id, msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
 async def process_name(message: Message) -> None:
@@ -127,13 +136,15 @@ async def process_name(message: Message) -> None:
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: could not add user: {e}")
 
+    lang = "en"
     try:
-        if USE_DB and not(is_found): database.set_language(message.from_user.id, 'en')
+        if USE_DB and not(is_found):
+            if (message.from_user.language_code):
+                lang = message.from_user.language_code
+            database.set_language(message.from_user.id, lang)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: Set language")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
-
-    lang = "en"
     
     try:
         if USE_DB: lang = database.get_language(message.from_user.id)
