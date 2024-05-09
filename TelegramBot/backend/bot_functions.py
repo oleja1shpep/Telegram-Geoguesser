@@ -16,6 +16,7 @@ load_dotenv()
 
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 YAGPT_APIKEY = os.getenv("YAGPT_APIKEY")
+GEOCODER_APIKEY = os.getenv("GEOCODER_APIKEY")
 FOLDER_ID = os.getenv("FOLDER_ID")
 
 with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
@@ -46,27 +47,47 @@ def form_payload(request):
     })
     return payload
 
+def get_address(lat, lon, mode, lang):
+    mode_to_result_type = {'msk': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
+    url = f'https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lon}&result_type={mode_to_result_type[mode]}&language={lang}&key={GEOCODER_APIKEY}'
+    response = requests.get(url)
+    code = response.status_code
+    if code != 200:
+        logger.warning(f"In function: get_address: Coords request error. Status code: {code}")
+        return None
+    data = response.json()
+    addresses = data.get('results')
+    if addresses == None:
+        logger.info(f"In function: get_address: Incorrect response: no key 'results'")
+        return None
+    elif len(addresses) == 0:
+        logger.info(f'In function: get_address: Zero results for {lat}, {lon}')
+        return None
+    
+    address = addresses[0].get('formatted_address').split(', ')
+    if mode == 'msk':
+        address = ', '.join([address[0]] + address[2:-1])
+    elif mode == 'rus' or mode == 'usa':
+        address = ', '.join(address[:-1])
+    if mode == 'wrld':
+        address = ', '.join(address)
+    logger.info(f"In function: get_address: Got address: {address}")
+    return address
+        
+
 def gpt_request(cords, language):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
-    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat1}&lon={lon1}&zoom=16"
-    response = requests.get(url)
-    address = ''
-    code = response.status_code
-    if code == 200:
-        data = response.json()
-        address = data.get('display_name')
-        logger.info(f"In function: gpt_request: Got address: {address}")
-    else:
-        logger.warning(f"In function: gpt_request: Coords request error. Address = {address}")
     
-    if (address == "" or address == None or type(address) != str):
+    address = get_address(lat1, lon1, 'wrld', 'ru')
+    
+    if not address:
         if (language == "english"):
-            return f"Status code: {code}. Unable to come up with interesting fact on `{lat1} {lon1}`"
+            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
         else:
-            return f"Status code: {code}. Не удалось найти интересный факт в `{lat1} {lon1}`"
+            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
-    request = f"Дай мне забавный факт не больше 50 слов на {language} языке об адресе: {address} (убери из адреса номер дома и переведи его на {language} язык, чтобы пользователь смог прочитать адрес)"
+    request = f"Дай мне забавный факт длиной не больше 50 слов на {language} языке об адресе: {address}"
     payload = form_payload(request)
     headers = {
     'Authorization': f'Api-Key {YAGPT_APIKEY}',
@@ -75,7 +96,10 @@ def gpt_request(cords, language):
     response = requests.request("POST", url_2, headers=headers, data=payload)
     logger.debug(f"In function: gpt_request: response = {response.text}")
     try:
-        text = json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+        if language == "english":
+           text = f"Interesting fact about {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+        else:
+            text = f"Интересный факт о {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
     except Exception as e:
         logger.error(f"In function: gpt_request: {e}")
         return "Ошибка"
