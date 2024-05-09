@@ -155,9 +155,9 @@ Please, answer according to following structure: <address> : <fact about address
 
 GENERATE_SEED = [
     (
-        """seed: `{}`\nПришли его друзьям, чтобы поделиться панорамой!"""
+        """*seed*: `{}`\nПришли его друзьям, чтобы поделиться панорамой!\n\nЧтобы установить *seed*, отправьте его боту в соответствующем меню режима"""
     ),
     (
-        """seed: `{}`\nSend it to your friends to share the panorama!"""
+        """*seed*: `{}`\nSend it to your friends to share the panorama!\n\nTo set *seed* send it to bot in the corresponding gamemode menu"""
     )
 ]
