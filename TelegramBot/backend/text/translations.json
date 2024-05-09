@@ -52,7 +52,7 @@
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Доступные режимы", "Available modes"],
     "single wrld" : ["Одиночный по всему миру", "Single across World"],
-    "single msk": ["Одиночный по москве", "Single across Moscow"],
+    "single msk": ["Одиночный по Москве", "Single across Moscow"],
     "single spb": ["Одиночный по Санкт-Петербургу", "Single across St. Petersburg"],
     "single rus": ["Одиночный по России", "Single across Russia"],
     "single usa": ["Одиночный по США", "Single across USA"],

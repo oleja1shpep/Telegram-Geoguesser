@@ -111,7 +111,10 @@ def gpt_request(cords, lang, mode):
             text = f"Интересный факт про {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
     except Exception as e:
         logger.error(f"In function: gpt_request: {e}")
-        return "Ошибка"
+        if lang == "en":
+            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
+        else:
+            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
 
     return text
 
