@@ -125,13 +125,15 @@ Send it to your friends, so you'll guess same places
 To set panorama send *seed* to bot in the corresponding gamemode menu""")]
 
 
-MULTIPLAYER_INFORMATION = [("""
-                            
+MULTIPLAYER_INFORMATION = [("""                    
 Чтобы сыграть с друзьями, сгенерируйте панораму, используя соответствующую кнопку
                             
 Если вам уже прислали *seed* для панорамы, отправьте его здесь
-"""), ("""
-To play with friends, generate a panorama using the corresponding button""")]
+"""),
+("""
+To play with friends, generate a panorama using the corresponding button
+       
+If you have already got the *seed* for a panorama, send in here""")]
 
 
 HOW_TO_PLAY = [
