@@ -425,7 +425,7 @@ async def gamemodes_back(message: Message) -> None:
     database.set_prev_message(tele_id, msg.message_id)
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: F.text in (translation["gamemodes"][0] or F.text in (translation["gamemodes"][1]))))
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: (F.text in translation["gamemodes"][0]) or (F.text in translation["gamemodes"][1])))
 async def single_game(message: Message) -> None:
     tele_id = message.from_user.id
     answer = message.text
