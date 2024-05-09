@@ -48,7 +48,7 @@ def form_payload(request):
     return payload
 
 def get_address(lat, lon, mode, lang):
-    mode_to_result_type = {'msk': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
+    mode_to_result_type = {'msk': 'street_address|political', 'spb': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
     url = f'https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lon}&result_type={mode_to_result_type[mode]}&language={lang}&key={GEOCODER_APIKEY}'
     response = requests.get(url)
     code = response.status_code
@@ -65,11 +65,11 @@ def get_address(lat, lon, mode, lang):
         return None
     
     address = addresses[0].get('formatted_address').split(', ')
-    if mode == 'msk':
+    if mode == 'msk' or mode == 'spb':
         address = ', '.join([address[0]] + address[2:-1])
     elif mode == 'rus' or mode == 'usa':
         address = ', '.join(address[:-1])
-    if mode == 'wrld':
+    else:
         address = ', '.join(address)
     logger.info(f"In function: get_address: Got address: {address}")
     return address
@@ -79,30 +79,33 @@ def gpt_request(cords, lang, mode):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
     
-    address = get_address(lat1, lon1, mode, lang)
-
+    address = ''
+    try:
+        address = get_address(lat1, lon1, mode, lang)
+    except Exception as e:
+        logger.error(f"In function: gpt_request: {e}")
+    if not address:
+        if lang == "en":
+            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
+        else:
+            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
+        
+    url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     language = ''
     if lang == 'en':
         language = 'английском'
     else:
         language = "русском"
-
-    if not address:
-        if (lang == "en"):
-            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
-        else:
-            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
-    url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     request = f"Дай мне интересный факт длиной не больше 50 слов на {language} языке об адресе: {address}. Не упоминай сам адрес при ответе"
     payload = form_payload(request)
     headers = {
-    'Authorization': f'Api-Key {YAGPT_APIKEY}',
-    'Content-Type': 'application/json'
+        'Authorization': f'Api-Key {YAGPT_APIKEY}',
+        'Content-Type': 'application/json'
     }
     response = requests.request("POST", url_2, headers=headers, data=payload)
     logger.debug(f"In function: gpt_request: response = {response.text}")
     try:
-        if language == "english":
+        if lang == 'en':
            text = f"Interesting fact about {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
         else:
             text = f"Интересный факт про {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
