@@ -75,19 +75,25 @@ def get_address(lat, lon, mode, lang):
     return address
         
 
-def gpt_request(cords, language):
+def gpt_request(cords, lang, mode):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
     
-    address = get_address(lat1, lon1, 'wrld', 'ru')
-    
+    address = get_address(lat1, lon1, mode, lang)
+
+    language = ''
+    if lang == 'en':
+        language = 'английском'
+    else:
+        language = "русском"
+
     if not address:
-        if (language == "english"):
+        if (lang == "en"):
             return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
         else:
             return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
-    request = f"Дай мне забавный факт длиной не больше 50 слов на {language} языке об адресе: {address}"
+    request = f"Дай мне интересный факт длиной не больше 50 слов на {language} языке об адресе: {address}. Не упоминай сам адрес при ответе"
     payload = form_payload(request)
     headers = {
     'Authorization': f'Api-Key {YAGPT_APIKEY}',
@@ -99,7 +105,7 @@ def gpt_request(cords, language):
         if language == "english":
            text = f"Interesting fact about {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
         else:
-            text = f"Интересный факт о {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
+            text = f"Интересный факт про {address}:\n" + json.loads(response.text)["result"]["alternatives"][0]["message"]["text"]
     except Exception as e:
         logger.error(f"In function: gpt_request: {e}")
         return "Ошибка"

@@ -798,13 +798,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         msg_to_delete = await message.answer(
             translation['wait for gpt'][lang_code[lang]],
         )
-
-        language = ''
-        if lang == 'en':
-            language = 'english'
-        else:
-            language = "russian"
-        fact = bot_functions.gpt_request(cords, language)
+        fact = bot_functions.gpt_request(cords, lang, mode)
         await msg_to_delete.delete()
         await message.answer(
             fact,
