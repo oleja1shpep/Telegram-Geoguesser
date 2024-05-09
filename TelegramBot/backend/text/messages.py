@@ -153,13 +153,13 @@ Each match you will get entertaining facts about geolocation (you can turn it of
 """)]
 
 GREETING = [("""Привет, {}!\nЯ - аналог игры Geoguessr в Telegram! 
-             Здесь ты можешь угадывать места по панорамам со всего мира! 
-             Соревнуйся со своими друзьями и другими игроками"""
-             ),
-            ("""Nice to meet you, {}!\nI am an analogue of the GeoGuessr in Telegram! 
-             Here you can guess places all over the world! 
-             Compete with your friends and other players"""
-             )]
+Здесь ты можешь угадывать места по панорамам со всего мира! 
+Соревнуйся со своими друзьями и другими игроками"""
+),
+("""Nice to meet you, {}!\nI am an analogue of the GeoGuessr in Telegram! 
+Here you can guess places all over the world! 
+Compete with your friends and other players"""
+)]
 
 GENERATE_SEED = [
     (
