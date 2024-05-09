@@ -52,7 +52,8 @@ def gpt_request(cords, language):
     url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat1}&lon={lon1}&zoom=16"
     response = requests.get(url)
     address = ''
-    if response.status_code == 200:
+    code = response.status_code
+    if code == 200:
         data = response.json()
         address = data.get('display_name')
         logger.info(f"In function: gpt_request: Got address: {address}")
@@ -61,9 +62,9 @@ def gpt_request(cords, language):
     
     if (address == "" or address == None or type(address) != str):
         if (language == "english"):
-            return f"Unable to come up with interesting fact on `{lat1} {lon1}`"
+            return f"Status code: {code}. Unable to come up with interesting fact on `{lat1} {lon1}`"
         else:
-            return f"Не удалось найти интересный факт в `{lat1} {lon1}`"
+            return f"Status code: {code}. Не удалось найти интересный факт в `{lat1} {lon1}`"
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     request = f"Дай мне забавный факт не больше 50 слов на {language} языке об адресе: {address} (убери из адреса номер дома и переведи его на {language} язык, чтобы пользователь смог прочитать адрес)"
     payload = form_payload(request)
