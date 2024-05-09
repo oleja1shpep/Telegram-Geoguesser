@@ -206,5 +206,3 @@ class MongoDB:
 
     def get_prev_message(self, tele_id):
         return self.get_key(tele_id, "prev_message", 0)
-
-    

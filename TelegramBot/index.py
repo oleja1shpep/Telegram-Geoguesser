@@ -44,8 +44,9 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
-@form_router.message(F.chat.type == "private", F.text == "/dropdb", F.func(lambda F: F.from_user.username == "oleja_shpep"))
+@form_router.message(F.chat.type == "private", F.text == "/dropdb", F.func(lambda F: F.from_user.id == 679428900))
 async def drop_db_table(message: Message) -> None:
+    print(message.from_user.id)
     database.delete_database()
     await message.delete()
 
