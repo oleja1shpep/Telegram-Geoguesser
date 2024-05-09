@@ -58,6 +58,7 @@
     "single usa": ["Выбран режим по США", "The \"USA\" mode is selected"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
+    "no games left" : ["Вы исчерпали лимит игр, подождите начала следующего дня", "You have reached the limit of games for today, wait till the start of next day"],
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
     "not using gpt" : ["Вы больше не будете получать интересные факты про сгенерированные места", "You will no longer receive interesting facts about the generated places"],
     "set seed": ["Вы установили панораму: `{}`\nЧтобы запустить установленную панораму, нажмите *Играть!*", "You had set seed: `{}`\nTo start the given panorama, click *Play!*"],

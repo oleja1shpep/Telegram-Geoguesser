@@ -2,6 +2,7 @@ import os
 import logging
 import json
 
+from datetime import date, timedelta
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
@@ -10,6 +11,8 @@ from backend.seed_processor import coordinates_from_seed, MODE_TO_RADIUS
 from dotenv import load_dotenv
 
 database = MongoDB()
+
+AVAILIBLE_GAMES = 20
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
@@ -79,7 +82,22 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     logger.debug(f" seed: {seed} | mode: {mode}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
-    builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '&' + '&'.join(map(str, coords)) + '&' + str(MODE_TO_RADIUS[mode])))
+    allowed_to_play = False
+    print((date.today() - database.get_time_of_prev_request(tele_id)).days)
+    if (date.today() - database.get_time_of_prev_request(tele_id)).days >= 1:
+        database.set_time_of_prev_request(tele_id)
+        database.set_game_counter(tele_id)
+        allowed_to_play = True
+    else:
+        if (database.get_game_counter(tele_id) < AVAILIBLE_GAMES):
+            allowed_to_play = True
+            
+    if (allowed_to_play):
+        database.inc_game_counter(tele_id)
+        builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '&' + '&'.join(map(str, coords)) + '&' + str(MODE_TO_RADIUS[mode])))
+    else:
+        builder.button(text = keyboard[0])
+
     for i in range(1,len(keyboard)):
         builder.button(text = keyboard[i])
 

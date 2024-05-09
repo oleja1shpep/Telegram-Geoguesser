@@ -1,6 +1,7 @@
 import os
 import logging
 
+from datetime import date, timedelta
 from pymongo import MongoClient
 from urllib.parse import quote_plus as quote
 from dotenv import load_dotenv
@@ -206,3 +207,18 @@ class MongoDB:
 
     def get_prev_message(self, tele_id):
         return self.get_key(tele_id, "prev_message", 0)
+    
+    def set_game_counter(self, tele_id, value = 0):
+        self.set_key(tele_id, "game_counter", value)
+    
+    def inc_game_counter(self, tele_id):
+        self.inc_key(tele_id, "game_counter", 1, 0)
+    
+    def get_game_counter(self, tele_id):
+        return self.get_key(tele_id, "game_counter", 0)
+    
+    def get_time_of_prev_request(self, tele_id):
+        return date.fromisoformat(self.get_key(tele_id, "time_of_prev_request", (date.today()).strftime('%Y-%m-%d')))
+    
+    def set_time_of_prev_request(self, tele_id, value = date.today()):
+        self.set_key(tele_id, "time_of_prev_request", value.strftime('%Y-%m-%d'))

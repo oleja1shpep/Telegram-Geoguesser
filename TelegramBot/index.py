@@ -5,6 +5,7 @@ import os
 import json
 import random
 
+from datetime import date, timedelta
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
@@ -46,9 +47,14 @@ dp.include_router(form_router)
 
 @form_router.message(F.chat.type == "private", F.text == "/dropdb", F.func(lambda F: F.from_user.id == 679428900))
 async def drop_db_table(message: Message) -> None:
-    print(message.from_user.id)
     database.delete_database()
     await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
+async def drop_db_table(message: Message) -> None:
+    database.set_time_of_prev_request(message.from_user.id, date.today() - timedelta(days=1))
+    await message.delete()
+
 
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message) -> None:
@@ -602,6 +608,38 @@ async def single_game_menu_rules(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: deleted prev message")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
+    database.set_prev_message(tele_id, msg.message_id)
+
+@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
+async def single_game_menu_not_allowed_to_play(message: Message) -> None:
+    # mode = await state.get_data()
+    tele_id = message.from_user.id
+    mode = database.get_state_data(tele_id)
+    # mode = mode["gamemodes"]
+    
+    try:
+        lang = database.get_language(message.from_user.id)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: Got language from user")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
+    markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+    
+    try:
+        msg = await message.answer(
+            translation["no games left"][lang_code[lang]],
+            reply_markup=markup
+        )
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: sentno games left message")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
+
+    await message.delete()
+    chat = msg.chat
+    try:
+        await chat.delete_message(database.get_prev_message(tele_id))
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: deleted prev message")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
     database.set_prev_message(tele_id, msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
