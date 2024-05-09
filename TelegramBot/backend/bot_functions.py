@@ -35,7 +35,7 @@ def form_payload(request):
     "modelUri": f"gpt://{FOLDER_ID}/yandexgpt",
     "completionOptions": {
         "stream": False,
-        "temperature": 0.3,
+        "temperature": 0.2,
         "maxTokens": "2000"
     },
     "messages": [
