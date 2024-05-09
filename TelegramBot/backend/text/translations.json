@@ -51,7 +51,7 @@
     "generate seed": ["Сгенерировать панораму", "Generate panorama"], 
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Выберите один из доступных режимов", "Select one of the available modes"],
-    "single wrld" : ["Выбран режим по всему миру", "Single across World"],
+    "single wrld" : ["Выбран режим по всему миру", "The \"World\" mode is selected"],
     "single msk": ["Выбран режим по Москве", "The \"Moscow\" mode is selected"],
     "single spb": ["Выбран режим по Санкт-Петербургу", "The \"St. Petersburg\" mode is selected"],
     "single rus": ["Выбран режим по России", "The \"Russia\" mode is selected"],
