@@ -165,9 +165,9 @@ async def create_result_text(score, metres, seed, lang = 'en'):
     if metres < 10000:
         txt = (translation['score and meters'][lang_code[lang]]).format(score, metres)
     elif metres < 100000:
-        txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 2))
+        txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 1))
     else:
-        txt = (translation['score and kilometers'][lang_code[lang]]).format(score, round(metres / 1000, 0))
+        txt = (translation['score and kilometers'][lang_code[lang]]).format(score, int(round(metres / 1000, 0)))
     txt += f"\nSeed: `{seed}`"
     return txt
 
@@ -200,9 +200,9 @@ async def get_last5_results_single(tele_id, mode, lang = 'en'):
         if metres < 10000:
             txt += (translation['last 5 res metres'][lang_code[lang]]).format(i + 1, games[i][0], metres)
         elif metres < 100000:
-            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], round(metres / 1000, 2))
+            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], round(metres / 1000, 1))
         else:
-            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], round(metres / 1000, 0))
+            txt += (translation['last 5 res km'][lang_code[lang]]).format(i + 1, games[i][0], int(round(metres / 1000, 0)))
 
     if len(games) == 0:
         txt = (translation['no games'][lang_code[lang]])

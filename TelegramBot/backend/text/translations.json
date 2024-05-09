@@ -1,5 +1,5 @@
 {"translations" : {
-    "play": ["Играть", "Play"],
+    "play": ["Играть!", "Play!"],
     "modes": ["Режимы", "Modes"],
     "how to play": ["Как играть", "How to play"],
     "settings": ["Настройки", "Settings"],
@@ -28,7 +28,7 @@
     ],
     "single game modes": [
       [
-        "Начать игру",
+        "Играть!",
         "Правила",
         "Топ игроков",
         "Прошлые 5 игр",
@@ -36,7 +36,7 @@
         "Назад"
       ],
       [
-        "Start the game",
+        "Play!",
         "Rules",
         "Top players",
         "Last 5 games",
@@ -48,9 +48,9 @@
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],
     "last 5 games" : ["Прошлые 5 игр", "Last 5 games"],
-    "generate seed": ["Сгенерировать seed", "Generate seed"], 
+    "generate seed": ["Сгенерировать панораму", "Generate panorama"], 
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
-    "available modes": ["Доступные режимы", "Available modes"],
+    "available modes": ["Выберите один из доступных режимов", "Select one of the available modes"],
     "single wrld" : ["Одиночный по всему миру", "Single across World"],
     "single msk": ["Одиночный по Москве", "Single across Moscow"],
     "single spb": ["Одиночный по Санкт-Петербургу", "Single across St. Petersburg"],
@@ -59,19 +59,19 @@
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
-    "not using gpt" : ["Теперь вы не будете получать интересные факты про сгенерированные места", "Now you won't learn different facts about random places"],
-    "set seed": ["Вы установили seed: `{}`", "You had set seed: `{}`"],
+    "not using gpt" : ["Вы больше не будете получать интересные факты про сгенерированные места", "You will no longer receive interesting facts about the generated places"],
+    "set seed": ["Вы установили seed: `{}`\nЧтобы запустить установленную панораму, нажмите *Играть!*", "You had set seed: `{}`\nTo start the given panorama, click *Play!*"],
     "support authors" : [
     "Если понравилась наша игра, можете нас поддержать 🙂\nТинькофф: `2200701089775990`",
     "If you enjoy playing our game, you can support us 🙂\nTinkoff bank: `2200701089775990`"],
-    "not a seed": ["Неверный seed или команда\nЕсли что-то не работает пришлите /start", "Incorrect seed or command\nIf something doesn't work send /start"],
+    "not a seed": ["Неверный *seed* или команда\nЕсли что-то не работает пришлите /start", "Incorrect *seed* or command\nIf something doesn't work send /start"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
-    "score and meters": ["Вы набрали {} очков\nРасстояние {} метров", "You scored {} points\nDistance {} meters"],
-    "score and kilometers": ["Вы набрали {} очков\nРасстояние {} километров", "You scored {} points\nDistance {} kilometers"],
+    "score and meters": ["Вы набрали {} оч\nРасстояние {} м", "You scored {} pts\nDistance {} m"],
+    "score and kilometers": ["Вы набрали {} оч\nРасстояние {} км", "You scored {} pts\nDistance {} km"],
     "top 10": ["{}. {} - среднее : {} | матчей : {}\n", "{}. {} - average : {} | matches : {}\n"],
-    "last 5 res metres": ["{}. {} очков | {} метров\n", "{}. {} points | {} meters\n"],
-    "last 5 res km" : ["{}. {} очков | {} километров\n", "{}. {} points | {} kilometers\n"],
+    "last 5 res metres": ["{}. {} оч | {} м\n", "{}. {} pts | {} m\n"],
+    "last 5 res km" : ["{}. {} оч | {} км\n", "{}. {} pts | {} km\n"],
     "wait for gpt" : ["Пожалуйста, подождите интересный факт...", "Please, wait for interesting fact..."],
     "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"]},
 "lang_code": {"ru": 0, "en": 1}}

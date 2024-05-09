@@ -440,8 +440,9 @@ async def single_game(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             msg = await message.answer(
-                translation['single wrld'][lang_code[lang]],
-                reply_markup = markup
+                translation['single wrld'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по миру")
         except Exception as e:
@@ -451,8 +452,9 @@ async def single_game(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             msg = await message.answer(
-                translation['single msk'][lang_code[lang]],
-                reply_markup = markup
+                translation['single msk'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по москве")
         except Exception as e:
@@ -462,8 +464,9 @@ async def single_game(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             msg = await message.answer(
-                translation['single spb'][lang_code[lang]],
-                reply_markup = markup
+                translation['single spb'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
@@ -473,8 +476,9 @@ async def single_game(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             msg = await message.answer(
-                translation['single rus'][lang_code[lang]],
-                reply_markup = markup
+                translation['single rus'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по России")
         except Exception as e:
@@ -484,8 +488,9 @@ async def single_game(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
             msg = await message.answer(
-                translation['single usa'][lang_code[lang]],
-                reply_markup = markup
+                translation['single usa'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Беларуси")
         except Exception as e:
