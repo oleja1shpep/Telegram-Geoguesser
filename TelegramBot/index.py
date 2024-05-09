@@ -64,16 +64,23 @@ async def command_start(message: Message) -> None:
     # await state.set_state(Form.start)
     database.set_state(tele_id, "start")
     msg = ""
+    username = ""
+    if (message.from_user.first_name):
+        username = message.from_user.first_name
+    elif (message.from_user.username):
+        username = message.from_user.username
+    else:
+        username = "Anonimus"
     try:
         if not(is_found):
             msg = await message.answer(
-                (messages.GREETING[1]).format(message.from_user.first_name),
+                (messages.GREETING[1]).format(username),
                 reply_markup=await markups.create_start_markup()
             )
         else:
             lang = database.get_language(tele_id)
             msg = await message.answer(
-                (messages.GREETING[lang_code[lang]]).format(message.from_user.first_name),
+                (messages.GREETING[lang_code[lang]]).format(username),
                 reply_markup=await markups.create_start_markup(lang)
             )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: sent answer: Greeting")
@@ -98,7 +105,13 @@ async def process_name(message: Message) -> None:
 
     tele_id = message.from_user.id
     
-    username = message.from_user.username
+    username = ""
+    if (message.from_user.first_name):
+        username = message.from_user.first_name
+    elif (message.from_user.username):
+        username = message.from_user.username
+    else:
+        username = "Anonimus " + str(message.from_user.id)
     is_found = False
     try:
         if (USE_DB): is_found = database.find_user(tele_id)
@@ -719,8 +732,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message) -> None:
     tele_id = message.from_user.id
-    username = message.from_user.username
-    logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: Got answer from " + username)
+    logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: Got answer from " + str(tele_id))
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
     mode = database.get_state_data(tele_id)
@@ -758,12 +770,12 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     if (track_changes):
         try:
             database.add_results_single(tele_id, score, mode)
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, name = {username}")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, id = {tele_id}")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add results: {e}")
         try:
             database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added game to single: {mode}, score = {score}, metres = {metres}, name = {username}")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added game to single: {mode}, score = {score}, metres = {metres}, id = {tele_id}")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add game: {e}")
         database.end_game(tele_id, mode)
