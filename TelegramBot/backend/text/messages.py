@@ -128,6 +128,8 @@ To set panorama send *seed* to bot in the corresponding gamemode menu""")]
 MULTIPLAYER_INFORMATION = [("""
                             
 Чтобы сыграть с друзьями, сгенерируйте панораму, используя соответствующую кнопку
+                            
+Если вам уже прислали *seed* для панорамы, отправьте его здесь
 """), ("""
 To play with friends, generate a panorama using the corresponding button""")]
 
@@ -150,14 +152,18 @@ Your goal is to use the panorama to determine your location on the real map of t
 Each match you will get entertaining facts about geolocation (you can turn it off in settings)
 """)]
 
-GREETING = [("""Привет, {}!\nЯ - аналог игры Geoguessr в Telegram! Здесь ты можешь угадывать места по панорамам со всего мира! Соревнуйся со своими друзьями и другими игроками"""
+GREETING = [("""Привет, {}!\nЯ - аналог игры Geoguessr в Telegram! 
+             Здесь ты можешь угадывать места по панорамам со всего мира! 
+             Соревнуйся со своими друзьями и другими игроками"""
              ),
-            ("""Nice to meet you, {}!\nI am an analogue of the GeoGuessr in Telegram! Here you can guess places all over the world! Compete with your friends and other players"""
+            ("""Nice to meet you, {}!\nI am an analogue of the GeoGuessr in Telegram! 
+             Here you can guess places all over the world! 
+             Compete with your friends and other players"""
              )]
 
 GENERATE_SEED = [
     (
-        """*seed*: `{}`\nПришли его друзьям, чтобы поделиться панорамой!\n\nЧтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""
+        """*seed*: `{}`\nОтправь его друзьям, чтобы поделиться панорамой!\n\nЧтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""
     ),
     (
         """*seed*: `{}`\nSend it to your friends to share the panorama!\n\nTo set panorama, send *seed* to bot while in the menu of the corresponding gamemode"""
