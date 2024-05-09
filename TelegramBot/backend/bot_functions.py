@@ -86,9 +86,9 @@ def gpt_request(cords, lang, mode):
         logger.error(f"In function: gpt_request: {e}")
     if not address:
         if lang == "en":
-            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
+            return f"Unable to come up with interesting fact"
         else:
-            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
+            return f"Не удалось найти интересный факт"
         
     url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     language = ''
@@ -112,9 +112,9 @@ def gpt_request(cords, lang, mode):
     except Exception as e:
         logger.error(f"In function: gpt_request: {e}")
         if lang == "en":
-            return f"Unable to come up with interesting fact on `{lat1}, {lon1}`"
+            return f"Unable to come up with interesting fact"
         else:
-            return f"Не удалось найти интересный факт в `{lat1}, {lon1}`"
+            return f"Не удалось найти интересный факт"
 
     return text
 
