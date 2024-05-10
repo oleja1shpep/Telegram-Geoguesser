@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 
 from datetime import date, timedelta
 from pymongo import MongoClient
@@ -153,10 +154,14 @@ class MongoDB:
 
     def get_last5_results(self, tele_id, mode):
         games = self.get_key(tele_id, "last_games_" + mode, [])
+        if (type(games) == str):
+            games = json.loads(games)
         return games
 
     def add_game_single(self, tele_id, score, metres, mode):
         games = self.get_last5_results(tele_id, mode)
+        if (type(games) == str):
+            games = json.loads(games)
 
         if (len(games) < 5):
             games.insert(0, (score, metres))
