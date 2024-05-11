@@ -1,8 +1,10 @@
 import random
+import time
 MODES = ['msk', 'spb', 'rus', 'usa', 'wrld']
 MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 3, 'usa': 3, 'wrld': 3}
 
 def generate_seed():
+    random.seed(time.time())
     seed = ''
     for i in range(6):
         symb = random.randint(0, 25)
