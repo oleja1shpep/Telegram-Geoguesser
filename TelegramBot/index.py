@@ -815,6 +815,13 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: connected to db and got track changes")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
+    try:
+        database.inc_game_counter(tele_id)
+        logger.info("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"database.inc_game_counter\"}")
+    except Exception as e:
+        logger.error("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"database.inc_game_counter\", \"Error\" : \"" + f"{e}" + "\"}")
+    
+
     if (track_changes):
         try:
             database.add_results_single(tele_id, score, mode)
@@ -842,7 +849,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: set track changes to true")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
-    
+
     if (DEBUG_MODE):
         database.show_database()
     
