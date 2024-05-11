@@ -77,23 +77,45 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
 
 
     if not(seed):
-        database.init_game(tele_id, mode)
-        seed = database.get_seed(tele_id, mode)
-    logger.debug(f" seed: {seed} | mode: {mode}")
+        try:
+            database.init_game(tele_id, mode)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.init_game\"}")
+        except Exception as e:
+            logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.init_game\", \"Error\" : \"" + f"{e}" + "\"}")
+        try:
+            seed = database.get_seed(tele_id, mode)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.get_seed\"}")
+        except Exception as e:
+            logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.get_seed\", \"Error\" : \"" + f"{e}" + "\"}")
+    logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Info\" : {" + f"\"seed\" : \"{seed}\", \"mode\" : \"{mode}\"" + "}}")
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
     allowed_to_play = False
-    print((date.today() - database.get_time_of_prev_request(tele_id)).days)
+    # print((date.today() - database.get_time_of_prev_request(tele_id)).days)
     if (date.today() - database.get_time_of_prev_request(tele_id)).days >= 1:
-        database.set_time_of_prev_request(tele_id)
-        database.set_game_counter(tele_id)
+        try:
+            database.set_time_of_prev_request(tele_id)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_time_of_prev_request\"}")
+        except Exception as e:
+            logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_time_of_prev_request\", \"Error\" : \"" + f"{e}" + "\"}")
+        try:
+            database.set_game_counter(tele_id)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_game_counter\"}")
+        except Exception as e:
+            logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_game_counter\", \"Error\" : \"" + f"{e}" + "\"}")
+        
         allowed_to_play = True
     else:
         if (database.get_game_counter(tele_id) < AVAILIBLE_GAMES):
             allowed_to_play = True
             
     if (allowed_to_play):
-        database.inc_game_counter(tele_id)
+        try:
+            database.inc_game_counter(tele_id)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.inc_game_counter\"}")
+        except Exception as e:
+            logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.inc_game_counter\", \"Error\" : \"" + f"{e}" + "\"}")
+
         builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '&' + '&'.join(map(str, coords)) + '&' + str(MODE_TO_RADIUS[mode])))
     else:
         builder.button(text = keyboard[0])
