@@ -122,9 +122,7 @@ async def process_name(message: Message) -> None:
     tele_id = message.from_user.id
     
     username = ""
-    if (message.from_user.first_name):
-        username = message.from_user.first_name
-    elif (message.from_user.username):
+    if (message.from_user.username):
         username = message.from_user.username
     else:
         username = "Anonimus " + str(message.from_user.id)
