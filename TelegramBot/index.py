@@ -31,7 +31,7 @@ database = MongoDB()
 
 load_dotenv()
 
-TOKEN_BOT = os.getenv("TOKEN")
+TOKEN_BOT = os.getenv("TOKEN_BOT")
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
