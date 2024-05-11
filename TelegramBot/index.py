@@ -764,7 +764,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
             parse_mode="Markdown",
             reply_markup=markup
         )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: sent answer: seed")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: sent answer: seed = {mode}_{seed}")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
     
