@@ -7,7 +7,7 @@ SA_ID=ajeb525m5vdpts9m5mv3
 DB_USER=mongo
 DB_HOST=rc1b-wup2eco8flkg4voi.mdb.yandexcloud.net:27018
 DB_NAME=users
-URL_SITE=https://test-geoguessr.website.yandexcloud.net
+URL_SITE=https://geoguessr-site.website.yandexcloud.net/
 NETWORK_ID=enp7bbt5mhb8gi39rtvs
 
 PYTHONVER=3.11
