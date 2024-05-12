@@ -80,4 +80,9 @@ async def test_check_key():
     res = await check_key('a_key', 'wrong_key')
     assert res == False
 
-
+@asyncio_run
+async def test_get_key():
+    await add_user('a_key', 'b_key')
+    await set_key('a_key', 'key', 'value')
+    res = await get_key('a_key', 'key', 'value')
+    assert res == 'value'
