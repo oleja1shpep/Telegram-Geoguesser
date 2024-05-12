@@ -1,6 +1,6 @@
 import numpy as np
 from geopy.distance import geodesic
-from database import add_user, find_user, set_language, get_language
+from database import add_user, find_user, set_language, get_language, set_key, check_key, get_key
 from backend.bot_functions import calculate_score_and_distance_moscow_spb, calculate_score_and_distance_russia, calculate_score_and_distance_world
 import asyncio
 import inspect
@@ -58,3 +58,26 @@ async def test_set_language():
     await set_language('a', 'rus')
     res = await get_language('a')
     assert res == 'rus'
+
+@asyncio_run
+async def test_set_key():
+    await add_user('a', 'b')
+    await set_key('a', 'rus')
+    res = await get_language('a')
+    assert res == 'rus'
+
+@asyncio_run
+async def test_set_key():
+    await add_user('a_key', 'b_key')
+    await set_key('a_key', 'key', 'value')
+    res = await check_key('a_key', 'key')
+    assert res == True
+
+@asyncio_run
+async def test_check_key():
+    await add_user('a_key', 'b_key')
+    await set_key('a_key', 'key', 'value')
+    res = await check_key('a_key', 'wrong_key')
+    assert res == False
+
+
