@@ -18,6 +18,17 @@ def generate_seed():
             seed += chr(65 + symb).upper()
     return seed
 
+def check_seed(string, right_mode):
+    unpacked = string.split('_')
+    if len(unpacked) != 2: 
+        return False
+    mode, seed = unpacked
+    if (mode != right_mode):
+        return False
+    if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
+        return True
+    return False
+
 def coordinates_from_seed(seed, mode):
     random.seed(seed)
     if mode == 'msk':
@@ -557,15 +568,3 @@ def coordinates_from_seed(seed, mode):
                 x2, y2 = -23.01238, 32.01988
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
     return lat, lng, x_center, y_center, zoom
-
-
-def check_seed(string, right_mode):
-    unpacked = string.split('_')
-    if len(unpacked) != 2: 
-        return False
-    mode, seed = unpacked
-    if (mode != right_mode):
-        return False
-    if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
-        return True
-    return False
