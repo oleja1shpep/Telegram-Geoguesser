@@ -80,7 +80,7 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
         except Exception as e:
             logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.init_game\", \"Error\" : \"" + f"{e}" + "\"}")
         try:
-            seed = database.get_seed(tele_id, mode)
+            seed = database.get_key(tele_id, "seed_" + mode, "")
             logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.get_seed\"}")
         except Exception as e:
             logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.get_seed\", \"Error\" : \"" + f"{e}" + "\"}")

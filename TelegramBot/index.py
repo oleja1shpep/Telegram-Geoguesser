@@ -793,7 +793,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
 
     try:
-        seed = database.get_seed(tele_id, mode)
+        seed = database.get_key(tele_id, "seed_" + mode, "")
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got seed from db")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")

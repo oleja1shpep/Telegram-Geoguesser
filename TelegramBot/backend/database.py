@@ -99,17 +99,10 @@ class MongoDB:
         for user in self.users.find():
             print(user)
 
-    def set_seed(self, tele_id, seed, mode):
-        self.set_key(tele_id, "seed_" + mode, seed)
-
-    def get_seed(self, tele_id, mode):
-        seed = self.get_key(tele_id, "seed_" + mode, "")
-        return seed
-
     def init_game(self, tele_id, mode):
         self.set_key(tele_id, "track_changes_" + mode, True)
         if not(self.get_key(tele_id, "is_active_session_" + mode, False)):
-            self.set_seed(tele_id, generate_seed(), mode)
+            self.set_key(tele_id, "seed_" + mode, generate_seed())
         self.set_key(tele_id, "is_active_session_" + mode, True)
 
     def end_game(self, tele_id, mode):
