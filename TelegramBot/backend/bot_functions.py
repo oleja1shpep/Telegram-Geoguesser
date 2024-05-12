@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic
 
 from backend.database import MongoDB
+from text.links import STATIC_MAPS_LIGHT, STATIC_MAPS_DARK
 
 database = MongoDB()
 
@@ -17,6 +18,7 @@ load_dotenv()
 TOKEN_STATIC = os.getenv("TOKEN_STATIC")
 YAGPT_APIKEY = os.getenv("YAGPT_APIKEY")
 GEOCODER_APIKEY = os.getenv("GEOCODER_APIKEY")
+STATIC_MAPS_APIKEY = os.getenv("STATIC_MAPS_APIKEY")
 FOLDER_ID = os.getenv("FOLDER_ID")
 
 with open('./backend/text/translations.json', 'r', encoding='utf-8') as file:
@@ -120,7 +122,7 @@ def gpt_request(cords, lang, mode):
 
 async def get_url(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
-    return f"https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{lat1},{lon1}|{lat2},{lon2}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{lat1},{lon1}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{lat2},{lon2}&size=600x600&key=AIzaSyB90M6YMN89duMBupapc6x7_K8gRNGw7sk"
+    return f"https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{lat1},{lon1}|{lat2},{lon2}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{lat1},{lon1}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{lat2},{lon2}&size=600x600&key={STATIC_MAPS_APIKEY}"
 
 async def calculate_score_and_distance(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
