@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from geopy.distance import geodesic
 
 from backend.database import MongoDB
-from text.links import STATIC_MAPS_LIGHT, STATIC_MAPS_DARK
+from backend.text.links import STATIC_MAPS_LIGHT_LINK, STATIC_MAPS_DARK_LINK, YAGPT_LINK, GEOCODE_LINK
 
 database = MongoDB()
 
@@ -51,8 +51,7 @@ def form_payload(request):
 
 def get_address(lat, lon, mode, lang):
     mode_to_result_type = {'msk': 'street_address|political', 'spb': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
-    url = f'https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lon}&result_type={mode_to_result_type[mode]}&language={lang}&key={GEOCODER_APIKEY}'
-    response = requests.get(url)
+    response = requests.get(GEOCODE_LINK.format(lat, lon, mode_to_result_type[mode], lang, GEOCODER_APIKEY))
     code = response.status_code
     if code != 200:
         logger.warning(f"In function: get_address: Coords request error. Status code: {code}")
@@ -92,7 +91,6 @@ def gpt_request(cords, lang, mode):
         else:
             return f"Не удалось найти интересный факт"
         
-    url_2 = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
     language = ''
     if lang == 'en':
         language = 'английском'
@@ -104,7 +102,7 @@ def gpt_request(cords, lang, mode):
         'Authorization': f'Api-Key {YAGPT_APIKEY}',
         'Content-Type': 'application/json'
     }
-    response = requests.request("POST", url_2, headers=headers, data=payload)
+    response = requests.request("POST", YAGPT_LINK, headers=headers, data=payload)
     logger.debug(f"In function: gpt_request: response = {response.text}")
     try:
         if lang == 'en':
@@ -120,9 +118,11 @@ def gpt_request(cords, lang, mode):
 
     return text
 
-async def get_url(cords):
+async def get_url(cords, colorScheme='light'):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
-    return f"https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{lat1},{lon1}|{lat2},{lon2}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{lat1},{lon1}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{lat2},{lon2}&size=600x600&key={STATIC_MAPS_APIKEY}"
+    if colorScheme == 'light':
+        return STATIC_MAPS_LIGHT_LINK.format(lat1, lon1, lat2, lon2, lat1, lon1, lat2, lon2, STATIC_MAPS_APIKEY)
+    return STATIC_MAPS_DARK_LINK.format(lat1, lon1, lat2, lon2, lat1, lon1, lat2, lon2, STATIC_MAPS_APIKEY)
 
 async def calculate_score_and_distance(cords):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
