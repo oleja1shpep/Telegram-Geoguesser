@@ -90,25 +90,28 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
     allowed_to_play = False
-    # print((date.today() - database.get_time_of_prev_request(tele_id)).days)
-    difference = (date.today() - database.get_time_of_prev_request(tele_id)).days
-    logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"Difference in date\", \"Info\" : " + f"{difference}" + "}")
-    game_count = database.get_game_counter(tele_id)
+
+    prev_date = date.fromisoformat(database.get_key(tele_id, "time_of_prev_request", (date.today()).strftime('%Y-%m-%d')))
+    difference = (date.today() - prev_date).days
+
+    logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"Difference in date\", \"Info\" : {" + f"\"today\" : {date.today()}, \"prev_date\" : {prev_date}" + "}}")
+    game_count = database.get_key(tele_id, "game_counter", 0)
+    logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"Game_count\", \"Info\" : " + f"{game_count}" + "}")
     if difference >= 1:
         try:
-            database.set_time_of_prev_request(tele_id)
+            database.set_key(tele_id, "time_of_prev_request", (date.today()).strftime("%Y-%m-%d"))
             logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_time_of_prev_request\"}")
         except Exception as e:
             logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_time_of_prev_request\", \"Error\" : \"" + f"{e}" + "\"}")
         try:
-            database.set_game_counter(tele_id)
-            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_game_counter\"}")
+            database.set_key(tele_id, "game_counter", 0)
+            logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_game_counter = 0\"}")
         except Exception as e:
             logger.error("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_game_counter\", \"Error\" : \"" + f"{e}" + "\"}")
         
         allowed_to_play = True
     else:
-        if (database.get_game_counter(tele_id) < AVAILIBLE_GAMES):
+        if (database.get_key(tele_id, "game_counter", 0) < AVAILIBLE_GAMES):
             allowed_to_play = True
             
     if (allowed_to_play):

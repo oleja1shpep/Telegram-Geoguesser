@@ -184,15 +184,6 @@ class MongoDB:
     def get_gpt(self, tele_id):
         return self.get_key(tele_id, "use_gpt", True)
 
-    def set_multiplayer_seed(self, tele_id, seed, mode):
-        self.set_key(tele_id, "mul_seed_" + mode, seed)
-
-    def get_multiplayer_seed(self, tele_id, mode):
-        return self.get_key(tele_id, "mul_seed_" + mode, "")
-
-    def set_state(self, tele_id, state):
-        self.set_key(tele_id, "state", state)
-
     def get_state(self, tele_id):
         if (self.find_user(tele_id)):
             state = self.get_key(tele_id, "state", "start")
@@ -200,30 +191,3 @@ class MongoDB:
             return state
         else:
             return "start"
-        
-    def set_state_data(self, tele_id, data):
-        self.set_key(tele_id, "state_data", data)
-
-    def get_state_data(self, tele_id):
-        return self.get_key(tele_id, "state_data", "")
-
-    def set_prev_message(self, tele_id, message_id):
-        self.set_key(tele_id, "prev_message", message_id)
-
-    def get_prev_message(self, tele_id):
-        return self.get_key(tele_id, "prev_message", 0)
-    
-    def set_game_counter(self, tele_id, value = 0):
-        self.set_key(tele_id, "game_counter", value)
-    
-    def inc_game_counter(self, tele_id):
-        self.inc_key(tele_id, "game_counter", 1, 0)
-    
-    def get_game_counter(self, tele_id):
-        return self.get_key(tele_id, "game_counter", 0)
-    
-    def get_time_of_prev_request(self, tele_id):
-        return date.fromisoformat(self.get_key(tele_id, "time_of_prev_request", (date.today()).strftime('%Y-%m-%d')))
-    
-    def set_time_of_prev_request(self, tele_id, value = date.today()):
-        self.set_key(tele_id, "time_of_prev_request", value.strftime('%Y-%m-%d'))
