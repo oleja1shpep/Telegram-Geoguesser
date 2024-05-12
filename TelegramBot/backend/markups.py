@@ -45,7 +45,6 @@ async def create_menu_markup(lang = "en"):
     markup.resize_keyboard = True
     return markup
 
-
 async def create_settings_menu_markup(lang, use_gpt):
     text_en = (lang == "en") * "✅" + translation["eng_language"][lang_code[lang]]
     text_ru = (lang == "ru") * "✅" + translation["rus_language"][lang_code[lang]]
@@ -59,7 +58,6 @@ async def create_settings_menu_markup(lang, use_gpt):
     markup = builder.as_markup()
     markup.resize_keyboard = True
     return markup
-
 
 async def create_gamemodes_markup(lang = "en"):
     builder = ReplyKeyboardBuilder()

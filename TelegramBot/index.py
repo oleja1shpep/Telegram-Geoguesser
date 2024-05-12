@@ -56,7 +56,6 @@ async def drop_db_table(message: Message) -> None:
     database.delete_user(679428900)
     await message.delete()
 
-
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: Recieved command /start")
@@ -96,7 +95,7 @@ async def command_start(message: Message) -> None:
                 reply_markup=await markups.create_start_markup(lang)
             )
         else:
-            lang = database.get_language(tele_id)
+            lang = database.get_key(tele_id, "language", 'en')
             msg = await message.answer(
                 (messages.GREETING[lang_code[lang]]).format(username),
                 reply_markup=await markups.create_start_markup(lang)
@@ -114,7 +113,7 @@ async def command_start(message: Message) -> None:
                 await chat.delete_message(prev_msg)
                 logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: deleted prev message")
             except Exception as e:
-                logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
+                logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
         database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
@@ -148,13 +147,13 @@ async def process_name(message: Message) -> None:
         if USE_DB and not(is_found):
             if (message.from_user.language_code):
                 lang = message.from_user.language_code
-            database.set_language(tele_id, lang)
+            database.set_key(tele_id, "language", lang)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: Set language")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
     
     try:
-        if USE_DB: lang = database.get_language(tele_id)
+        if USE_DB: lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: got lang")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: anable to get lang: {e}")
@@ -184,7 +183,7 @@ async def process_name(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
@@ -193,7 +192,7 @@ async def main_menu(message: Message) -> None:
     
     database.drop_duplicates()
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: got lang from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: {e}")
@@ -213,7 +212,7 @@ async def main_menu(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: {e}")
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: finished <main_menu>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
@@ -223,7 +222,7 @@ async def main_menu_donations(message: Message) -> None:
     
     database.drop_duplicates()
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: got lang from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
@@ -244,7 +243,7 @@ async def main_menu_donations(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: finished <main_menu_donations>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
@@ -256,8 +255,8 @@ async def settings_menu(message: Message) -> None:
         database.show_database()
     # await state.set_state(Form.language_menu)
     database.set_key(tele_id, "state", "language_menu")
-    lang = database.get_language(tele_id)
-    use_gpt = database.get_gpt(tele_id)
+    lang = database.get_key(tele_id, "language", 'en')
+    use_gpt = database.get_key(tele_id, "use_gpt", True)
     markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         msg = await message.answer(
@@ -273,19 +272,19 @@ async def settings_menu(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_menu: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_menu: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_menu: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message) -> None:
     tele_id = message.from_user.id
     try:
-        database.set_language(tele_id, 'ru')
+        database.set_key(tele_id, "language", 'ru')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: set language in db : ru")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: {e}")
 
-    use_gpt = database.get_gpt(tele_id)
+    use_gpt = database.get_key(tele_id, "use_gpt", True)
     markup = await markups.create_settings_menu_markup("ru", use_gpt)
     try:
         msg = await message.answer(
@@ -301,18 +300,18 @@ async def change_language_rus(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message) -> None:
     tele_id = message.from_user.id
     try:
-        database.set_language(tele_id, 'en')
+        database.set_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: set language in db : en")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: {e}")
-    use_gpt = database.get_gpt(tele_id)
+    use_gpt = database.get_key(tele_id, "use_gpt", True)
     markup = await markups.create_settings_menu_markup("en", use_gpt)
     try:
         msg = await message.answer(
@@ -328,20 +327,20 @@ async def change_language_eng(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
 async def switch_use_gpt(message: Message) -> None:
     tele_id = message.from_user.id
     try:
-        database.switch_gpt(tele_id)
+        database.set_key(tele_id, "use_gpt", not(database.get_key(tele_id, "use_gpt", False)))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: switched gpt use")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: {e}")
 
-    use_gpt = database.get_gpt(tele_id)
-    lang = database.get_language(tele_id)
+    use_gpt = database.get_key(tele_id, "use_gpt", True)
+    lang = database.get_key(tele_id, "language", 'en')
     markup = await markups.create_settings_menu_markup(lang, use_gpt)
     try:
         if (use_gpt):
@@ -363,7 +362,7 @@ async def switch_use_gpt(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
@@ -372,7 +371,7 @@ async def settings_back(message: Message) -> None:
     tele_id = message.from_user.id
     database.set_key(tele_id, "state", "menu")
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_back: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_back: {e}")
@@ -392,7 +391,7 @@ async def settings_back(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_back: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_back: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
@@ -402,7 +401,7 @@ async def gamemodes(message: Message) -> None:
     tele_id = message.from_user.id
     database.set_key(tele_id, "state", "gamemodes")
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes: {e}")
@@ -422,7 +421,7 @@ async def gamemodes(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
     
 
@@ -432,7 +431,7 @@ async def gamemodes_back(message: Message) -> None:
     tele_id = message.from_user.id
     database.set_key(tele_id, "state", "menu")
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: {e}")
@@ -452,7 +451,7 @@ async def gamemodes_back(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
@@ -461,7 +460,7 @@ async def single_game(message: Message) -> None:
     tele_id = message.from_user.id
     answer = message.text
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
@@ -535,7 +534,7 @@ async def single_game(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
@@ -546,7 +545,7 @@ async def single_game_menu_rules(message: Message) -> None:
     # mode = mode["gamemodes"]
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
@@ -607,7 +606,7 @@ async def single_game_menu_rules(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
@@ -618,7 +617,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
     # mode = mode["gamemodes"]
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
@@ -639,7 +638,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
@@ -650,7 +649,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
@@ -675,7 +674,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
@@ -686,7 +685,7 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
@@ -710,7 +709,7 @@ async def single_game_menu_last_5_games(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
@@ -720,7 +719,7 @@ async def single_game_menu_back(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: {e}")
@@ -743,7 +742,7 @@ async def single_game_menu_back(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
@@ -752,7 +751,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
     
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
@@ -776,7 +775,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
@@ -788,7 +787,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
 
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -813,7 +812,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
-        track_changes = database.get_track_changes(tele_id, mode)
+        track_changes = database.get_key(tele_id, "track_changes_" + mode, True)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: connected to db and got track changes")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -847,7 +846,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
 
     try:
-        database.set_track_changes(tele_id, mode, True)
+        database.set_key(tele_id, "track_changes_" + mode, True)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: set track changes to true")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -868,7 +867,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
 
-    if (database.get_gpt(tele_id)):
+    if (database.get_key(tele_id, "use_gpt", True)):
         msg_to_delete = await message.answer(
             translation['wait for gpt'][lang_code[lang]],
         )
@@ -885,7 +884,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
     # database.set_key(tele_id, "prev_message", msg.message_id)
 
 
@@ -898,7 +897,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
     mode = database.get_key(tele_id, "state_data", "")
 
     try:
-        lang = database.get_language(tele_id)
+        lang = database.get_key(tele_id, "language", 'en')
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: Got language from user")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
@@ -918,7 +917,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         await message.delete()
         return
     try:
-        database.set_track_changes(tele_id, mode, False)
+        database.set_key(tele_id, "track_changes_" + mode, False)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: sent answer: set track changes in db")
     except Exception as e:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
@@ -944,7 +943,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.text)
@@ -958,7 +957,7 @@ async def idk_bugs_or_smth(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: unable to connect to db: {e}")
     if is_found:
         try:
-            lang = database.get_language(tele_id)
+            lang = database.get_key(tele_id, "language", 'en')
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: Got language from user")
         except Exception as e:
             lang = "en"
@@ -980,7 +979,7 @@ async def idk_bugs_or_smth(message: Message) -> None:
             await chat.delete_message(prev_msg)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: deleted prev message")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 async def process_event(event, bot: Bot):

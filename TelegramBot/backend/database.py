@@ -106,14 +106,8 @@ class MongoDB:
         seed = self.get_key(tele_id, "seed_" + mode, "")
         return seed
 
-    def set_track_changes(self, tele_id, mode, value):
-        self.set_key(tele_id, "track_changes_" + mode, value)
-
-    def get_track_changes(self, tele_id, mode):
-        return self.get_key(tele_id, "track_changes_" + mode, True)
-
     def init_game(self, tele_id, mode):
-        self.set_track_changes(tele_id, mode, True)
+        self.set_key(tele_id, "track_changes_" + mode, True)
         if not(self.get_key(tele_id, "is_active_session_" + mode, False)):
             self.set_seed(tele_id, generate_seed(), mode)
         self.set_key(tele_id, "is_active_session_" + mode, True)
@@ -170,19 +164,6 @@ class MongoDB:
             games.insert(0, (score, metres))
 
         self.set_key(tele_id, "last_games_" + mode, games)
-
-    def set_language(self, tele_id, language):
-        self.set_key(tele_id, 'language', language)
-
-    def get_language(self, tele_id):
-        return self.get_key(tele_id, "language", 'en')
-
-    def switch_gpt(self, tele_id):
-        res = self.get_key(tele_id, "use_gpt", False)
-        self.set_key(tele_id, "use_gpt", not(res))
-
-    def get_gpt(self, tele_id):
-        return self.get_key(tele_id, "use_gpt", True)
 
     def get_state(self, tele_id):
         if (self.find_user(tele_id)):
