@@ -45,14 +45,14 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
-@form_router.message(F.chat.type == "private", F.text == "/dropdb", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    database.delete_database()
-    await message.delete()
-
 @form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
 async def drop_db_table(message: Message) -> None:
     database.set_time_of_prev_request(message.from_user.id, date.today() - timedelta(days=1))
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900))
+async def drop_db_table(message: Message) -> None:
+    database.delete_user(679428900)
     await message.delete()
 
 

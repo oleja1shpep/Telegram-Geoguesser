@@ -75,7 +75,6 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     builder = ReplyKeyboardBuilder()
     keyboard = translation["single game modes"][lang_code[lang]]
 
-
     if not(seed):
         try:
             database.init_game(tele_id, mode)
@@ -92,7 +91,10 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     coords = coordinates_from_seed(seed, mode)
     allowed_to_play = False
     # print((date.today() - database.get_time_of_prev_request(tele_id)).days)
-    if (date.today() - database.get_time_of_prev_request(tele_id)).days >= 1:
+    difference = (date.today() - database.get_time_of_prev_request(tele_id)).days
+    logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"Difference in date\", \"Info\" : " + f"{difference}" + "}")
+    game_count = database.get_game_counter(tele_id)
+    if difference >= 1:
         try:
             database.set_time_of_prev_request(tele_id)
             logger.info("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"database.set_time_of_prev_request\"}")
