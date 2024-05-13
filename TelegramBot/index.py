@@ -56,6 +56,13 @@ async def drop_db_table(message: Message) -> None:
     database.delete_user(679428900)
     await message.delete()
 
+@form_router.message(F.chat.type == "private", F.text == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
+async def drop_db_table(message: Message) -> None:
+    tele_id = message.from_user.id
+    database.set_key(tele_id, "availible_games", 10000)
+    database.set_key(database.get_user("govzman")["tele_id"], "availible_games", 10000)
+    await message.delete()
+
 @form_router.message(CommandStart(), F.chat.type == "private")
 async def command_start(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: Recieved command /start")
@@ -808,7 +815,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     elif (mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
     
-    photo_url = await bot_functions.get_url(cords=cords)
+    photo_url = await bot_functions.get_static_map_image(cords=cords)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:

@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 database = MongoDB()
 
-AVAILIBLE_GAMES = 20
+DEFAULT_AVAILIBLE_GAMES = 20
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
@@ -109,7 +109,11 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
         
         allowed_to_play = True
     else:
-        if (database.get_key(tele_id, "game_counter", 0) < AVAILIBLE_GAMES):
+        current_game_count = database.get_key(tele_id, "game_counter", 0)
+        availible_games_count = database.get_key(tele_id, "availible_games", DEFAULT_AVAILIBLE_GAMES)
+        logger.debug("{\"File\" : \"markups.py\", \"Function\" : \"create_single_game_menu_markup\", \"Action\" : \"Compare\", \"Info\" : {" + f"\"current_game_count\" : {current_game_count}, \"availible_games_count\" : {availible_games_count}" + "}}")
+
+        if (current_game_count < availible_games_count):
             allowed_to_play = True
             
     if (allowed_to_play):

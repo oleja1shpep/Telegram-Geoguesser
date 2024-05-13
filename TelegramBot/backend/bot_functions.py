@@ -118,7 +118,7 @@ def gpt_request(cords, lang, mode):
 
     return text
 
-async def get_url(cords, colorScheme='light'):
+async def get_static_map_image(cords, colorScheme='light'):
     lat1, lon1, lat2, lon2 = map(float, cords.split())
     if colorScheme == 'light':
         return STATIC_MAPS_LIGHT_LINK.format(lat1, lon1, lat2, lon2, lat1, lon1, lat2, lon2, STATIC_MAPS_APIKEY)
