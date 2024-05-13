@@ -24,7 +24,8 @@ def check_seed(string, right_mode):
         return False
     mode, seed = unpacked
     if (mode != right_mode):
-        return False
+        pass
+        # return False
     if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
         return True
     return False

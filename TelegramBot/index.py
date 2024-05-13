@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
+from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, Update
 from dotenv import load_dotenv
 
@@ -806,7 +807,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
     seed = mode + "_" + seed
 
-    cords = message.web_app_data.data
+    cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
 
     if (mode == "spb" or mode == "msk"):
         score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
@@ -815,7 +816,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     elif (mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
     
-    photo_url = await bot_functions.get_static_map_image(cords=cords)
+    photo_url = await bot_functions.get_static_map_image(cords)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
@@ -846,8 +847,8 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     else:
         try:
             markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
-            seed = database.get_key(tele_id, "mul_seed_" + mode, "")
-            seed = mode + "_" + seed
+            seed = database.get_key(tele_id, "mul_seed_" + returned_mode, "")
+            seed = returned_mode + "_" + seed
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got multuplayer seed")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -878,7 +879,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         msg_to_delete = await message.answer(
             translation['wait for gpt'][lang_code[lang]],
         )
-        fact = bot_functions.gpt_request(cords, lang, mode)
+        fact = bot_functions.gpt_request(cords, lang, returned_mode)
         await msg_to_delete.delete()
         await message.answer(
             fact,
@@ -930,10 +931,10 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
 
 
-    seed = string.split('_')[1]
-    markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
+    seed_mode, seed = string.split('_')
+    markup = await markups.create_single_game_menu_markup(seed_mode, lang, tele_id, seed)
     try:
-        database.set_key(tele_id, "mul_seed_" + mode, seed)
+        database.set_key(tele_id, "mul_seed_" + seed_mode, seed)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: set multiplayer seed")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
@@ -1001,12 +1002,12 @@ async def process_event(event, bot: Bot):
 async def handler(event, context):
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: handler: recieved event")
     logger.debug(event)
-    bot = Bot(token=TOKEN_BOT)
+    bot = Bot(token=TOKEN_BOT, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     await process_event(event, bot)
     return {'statusCode': 200, 'body': 'ok',}
 
 async def main():
-    bot = Bot(token=TOKEN_BOT, parse_mode=ParseMode.HTML)
+    bot = Bot(token=TOKEN_BOT, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
