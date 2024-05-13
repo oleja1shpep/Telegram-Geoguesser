@@ -97,8 +97,9 @@
             bottom: 14%;
         }
     </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=[YOUR_API_KEY]&callback=get_panorama&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=get_panorama&v=weekly"
         defer></script>
     <script src="app.js"></script>
 </head>
@@ -111,7 +112,6 @@
     <button id="submit"></button>
     <button id="map_toggler"></button>
     <button id="home_pano"></button>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
         let submit = document.getElementById("submit");
@@ -124,7 +124,7 @@
         tg.enableClosingConfirmation()
 
         submit.addEventListener("click", () => {
-            tg.sendData(GetPanoramaCords())
+            tg.sendData(CreateBotResponce())
             tg.close()
         });
 
