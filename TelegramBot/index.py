@@ -816,7 +816,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     elif (mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
     
-    photo_url = await bot_functions.get_static_map_image(cords)
+    photo_url = await bot_functions.get_static_map_image(cords, color_scheme)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
