@@ -100,7 +100,7 @@ class MongoDB:
             print(user)
 
     def init_game(self, tele_id, mode):
-        self.set_key(tele_id, "track_changes_" + mode, True)
+        self.set_key(tele_id, "track_changes", True)
         if not(self.get_key(tele_id, "is_active_session_" + mode, False)):
             self.set_key(tele_id, "seed_" + mode, generate_seed())
         self.set_key(tele_id, "is_active_session_" + mode, True)

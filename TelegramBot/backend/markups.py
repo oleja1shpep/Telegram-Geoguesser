@@ -88,7 +88,7 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
     # new seed generation
     coords = coordinates_from_seed(seed, mode)
     allowed_to_play = False
-
+    
     prev_date = date.fromisoformat(database.get_key(tele_id, "time_of_prev_request", (date.today()).strftime('%Y-%m-%d')))
     difference = (date.today() - prev_date).days
 

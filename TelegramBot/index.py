@@ -809,18 +809,18 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
 
     cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
 
-    if (mode == "spb" or mode == "msk"):
+    if (returned_mode == "spb" or returned_mode == "msk"):
         score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-    elif (mode == "rus" or mode == "usa" or mode == "wrld"):
+    elif (returned_mode == "rus" or returned_mode == "usa"):
         score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
-    elif (mode == "wrld"):
+    elif (returned_mode == "wrld"):
         score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
     
     photo_url = await bot_functions.get_static_map_image(cords, color_scheme)
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
-        track_changes = database.get_key(tele_id, "track_changes_" + mode, True)
+        track_changes = database.get_key(tele_id, "track_changes", True)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: connected to db and got track changes")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -846,15 +846,14 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     else:
         try:
-            markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed)
-            seed = database.get_key(tele_id, "mul_seed_" + returned_mode, "")
-            seed = returned_mode + "_" + seed
+            markup = await markups.create_single_game_menu_markup(mode, lang, tele_id, seed.split("_")[1])
+            seed = database.get_key(tele_id, "mul_seed", "")
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got multuplayer seed")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
 
     try:
-        database.set_key(tele_id, "track_changes_" + mode, True)
+        database.set_key(tele_id, "track_changes", True)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: set track changes to true")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
@@ -925,7 +924,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         await message.delete()
         return
     try:
-        database.set_key(tele_id, "track_changes_" + mode, False)
+        database.set_key(tele_id, "track_changes", False)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: sent answer: set track changes in db")
     except Exception as e:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
@@ -934,7 +933,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
     seed_mode, seed = string.split('_')
     markup = await markups.create_single_game_menu_markup(seed_mode, lang, tele_id, seed)
     try:
-        database.set_key(tele_id, "mul_seed_" + seed_mode, seed)
+        database.set_key(tele_id, "mul_seed", string)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: set multiplayer seed")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
