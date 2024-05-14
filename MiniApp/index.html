@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <title>Geoguessr</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #cont {
+            /* border: 3px solid red; */
+            height: 100%;
+        }
+
+        #pano {
+            height: 100%;
+            text-align: center;
+            z-index: 0;
+            position: fixed;
+        }
+
+        #map {
+            position: fixed;
+            top: -55%;
+            height: 55%;
+            text-align: center;
+            z-index: 100;
+            width: 100%;
+            /* border: 5px solid green; */
+            /* background: white; */
+            /* Другие стили для map */
+        }
+
+        body {
+            color: black;
+            background: var(--tg-theme-secondary-bg-color);
+        }
+
+        button {
+            position: absolute;
+            border: 10px;
+            border-radius: 100%;
+            bottom: 2%;
+            /* margin-bottom: 5%; */
+            height: 10%;
+            aspect-ratio: 1;
+
+            font-size: large;
+            /* font-weight: 500; */
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 150ms ease;
+            color: var(--tg-theme-button-text-color);
+            background: var(--tg-theme-button-color);
+            z-index: 101;
+        }
+
+        button:hover {
+            opacity: 1;
+        }
+
+        button:active {
+            opacity: 1;
+        }
+
+        #submit {
+            background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
+            background-size: 50%;
+            background-position: center;
+            right: 10px;
+        }
+
+        #map_toggler {
+            background: var(--tg-theme-button-color) url("icons/map-icon.svg") no-repeat;
+            background-position: center;
+            background-size: 50%;
+            left: 2%;
+            bottom: 2%;
+        }
+
+        #home_pano {
+            background: var(--tg-theme-button-color) url("icons/home.svg") no-repeat;
+            background-position: center;
+            background-size: 50%;
+            left: 2%;
+            bottom: 14%;
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=get_panorama&v=weekly"
+        defer></script>
+    <script src="app.js"></script>
+</head>
+
+<body>
+    <div id="cont">
+        <div id="pano" class="player"></div>
+        <div id="map" class="player"></div>
+    </div>
+    <button id="submit"></button>
+    <button id="map_toggler"></button>
+    <button id="home_pano"></button>
+    <script>
+        let tg = window.Telegram.WebApp;
+        let submit = document.getElementById("submit");
+        let map_open = document.getElementById("map_toggler");
+        let home_pano = document.getElementById("home_pano");
+        let map_for_answer = document.getElementById("map");
+        map_for_answer.hidden = true;
+        submit.hidden = true;
+        tg.expand();
+        tg.enableClosingConfirmation()
+
+        submit.addEventListener("click", () => {
+            tg.sendData(CreateBotResponce())
+            tg.close()
+        });
+
+        home_pano.addEventListener("click", () => {
+            toHomePano();
+        });
+
+        map_open.addEventListener("click", () => {
+            map_for_answer.hidden = !map_for_answer.hidden;
+            submit.hidden = !submit.hidden;
+            home_pano.hidden = !home_pano.hidden;
+        });
+    </script>
+</body>
+
+</html>
