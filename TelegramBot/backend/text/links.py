@@ -1,0 +1,4 @@
+STATIC_MAPS_DARK_LINK = "https://maps.googleapis.com/maps/api/staticmap?path=color:0xff000080|weight:5|{},{}|{},{}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{},{}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{},{}&size=600x600&key={}&map_id=a1fab6396e39532c"
+STATIC_MAPS_LIGHT_LINK = "https://maps.googleapis.com/maps/api/staticmap?path=color:0x0000ff80|weight:5|{},{}|{},{}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/correct_marker.png|{},{}&markers=icon:https://storage.yandexcloud.net/test-geoguessr/marker.png|{},{}&size=600x600&key={}&map_id=1c0801ac534a9806"
+YAGPT_LINK = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
+GEOCODE_LINK = "https://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&result_type={}&language={}&key={}"

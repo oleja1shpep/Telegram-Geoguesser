@@ -13,4 +13,5 @@ test_bot.py
 test_req.txt
 backend.py
 .vscode
-
+.pytest*
+scheme*
