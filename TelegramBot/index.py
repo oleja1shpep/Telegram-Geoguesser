@@ -58,11 +58,10 @@ async def drop_db_table(message: Message) -> None:
     database.delete_user(679428900)
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.text == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.text[:9] == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
 async def drop_db_table(message: Message) -> None:
-    tele_id = message.from_user.id
-    database.set_key(tele_id, "availible_games", 10000)
-    database.set_key(database.get_user("govzman")["tele_id"], "availible_games", 10000)
+    username = message.text.split()[1]
+    database.set_key(database.get_user(username)["tele_id"], "availible_games", 10000)
     await message.delete()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
