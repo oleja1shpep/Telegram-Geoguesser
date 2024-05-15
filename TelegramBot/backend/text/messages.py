@@ -1,28 +1,28 @@
 RULES = [("""
-**Основное:**
+*Основное:*
 Дается неограниченное количество времени на ответ
 Можно перемещаться по улицам в любых направлениях
 
-**Мультиплеер:**
+*Мультиплеер:*
 Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации                          
 Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
 Чтобы установить панораму, отправьте *seed* боту в соответствующем меню режима
 
-**Лимиты:**                               
+*Лимиты:*                               
 В день выдаётся 20 игр на все режимы 
 Хотите убрать лимит? Поддержите авторов любой суммой больше 49₽ и отправьте подтверждение @govzman
 Сделать это можно в главном меню!"""),
                               ("""
-**Basic:**
+*Basic:*
 An unlimited amount of time is given to respond
 You can move through the streets in any direction
 
-**Multiplayer:**
+*Multiplayer:*
 Click the *Generate Panorama* button to get a random generation key
 Send it to your friends so that you can guess the same places!
 To set the panorama, send *seed* to the bot in the corresponding mode menu
 
-**Limits:**
+*Limits:*
 There are 20 games per day for all modes
 Want to remove the limit? Support the authors with any amount over 49₽ and send a confirmation to @govzman
 You can do this in the main menu!""")]
