@@ -52,22 +52,12 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
-@form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    tele_id = message.from_user.id
-    database.set_key(tele_id, "time_of_prev_request", (date.today() - timedelta(days=1)).strftime("%Y-%m-%d"))
-    await message.delete()
-
-@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    database.delete_user(679428900)
-    await message.delete()
-
-@form_router.message(F.chat.type == "private", F.text[:9] == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    username = message.text.split()[1]
-    amount = int(message.text.split()[2])
-    database.set_key(database.get_user(username)["tele_id"], "availible_games", amount)
+@form_router.message(F.chat.type == "private", F.text == "/showid")
+async def show_user_id(message: Message) -> None:
+    await message.answer(
+        f"`{message.from_user.id}`",
+        parse_mode="Markdown"
+        )
     await message.delete()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
@@ -917,7 +907,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.text)
+@form_router.message(F.text, F.func(lambda F: F.from_user.id != 679428900))
 async def idk_bugs_or_smth(message: Message) -> None:
     is_found = False
     tele_id = message.from_user.id
@@ -952,6 +942,48 @@ async def idk_bugs_or_smth(message: Message) -> None:
     except Exception as e:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
+
+@form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
+async def set_date(message: Message) -> None:
+    tele_id = message.from_user.id
+    database.set_key(tele_id, "time_of_prev_request", (date.today() - timedelta(days=1)).strftime("%Y-%m-%d"))
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900))
+async def delete_me_from_db(message: Message) -> None:
+    database.delete_user(679428900)
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgames") , F.func(lambda F: F.from_user.id == 679428900))
+async def set_games_for_user(message: Message) -> None:
+    username = message.text.split()[1]
+    amount = 10000
+    if (database.find_user_search_username(username)):
+        database.set_key(database.get_user(username)["tele_id"], "availible_games", amount)
+        await message.answer("success")
+    else:
+        await message.answer("no such user")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgamesid") , F.func(lambda F: F.from_user.id == 679428900))
+async def set_games_for_user(message: Message) -> None:
+    tele_id = int(message.text.split()[1])
+    amount = 10000
+    if (database.find_user(tele_id)):
+        database.set_key(tele_id, "availible_games", amount)
+        await message.answer("success")
+    else:
+        await message.answer("no such user")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900))
+async def set_fotall_users_default(message: Message) -> None:
+    try:
+        database.set_key_forall_users("availible_games", 20)
+        logger.info("SUCCESS")
+    except Exception as e:
+        logger.error("BAD" + f"{e}")
+    await message.delete()
 
 async def process_event(event, bot: Bot):
     try:

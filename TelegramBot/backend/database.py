@@ -64,13 +64,16 @@ class MongoDB:
 
     def check_key(self, tele_id, key):
         user = self.users.find_one({"tele_id" : tele_id})
-
         if key in user:
             return True
         return False
 
     def set_key(self, tele_id, key, value):
         self.users.update_one({"tele_id" : tele_id}, {"$set" : {key : value}})
+
+    def set_key_forall_users(self, key, value):
+        for user in self.users.find():
+            self.set_key(user["tele_id"], key, value)
 
     def inc_key(self, tele_id, key, value, default = 0):
         if not(self.check_key(tele_id, key)):
@@ -87,6 +90,13 @@ class MongoDB:
         
     def find_user(self, tele_id):
         find_user = self.users.find_one({"tele_id" : tele_id})
+
+        if find_user:
+            return True
+        return False
+    
+    def find_user_search_username(self, username):
+        find_user = self.users.find_one({"username" : username})
 
         if find_user:
             return True

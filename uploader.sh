@@ -32,6 +32,6 @@ yc serverless function version create \
 yc serverless function set-scaling-policy \
     --id=$FUNCTION_ID \
     --tag=\$latest \
-    --zone-instances-limit=10 \
-    --zone-requests-limit=100 \
+    --zone-instances-limit=100 \
+    --zone-requests-limit=200 \
     --provisioned-instances-count=1
