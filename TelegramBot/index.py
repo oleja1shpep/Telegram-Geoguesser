@@ -21,6 +21,7 @@ from backend.seed_processor import generate_seed, check_seed
 
 USE_DB = True
 DEBUG_MODE = False
+DEFAULT_AVAILIBLE_GAMES = markups.DEFAULT_AVAILIBLE_GAMES
 
 INSTANCE_ID = random.randint(10000, 99999)
 
@@ -873,6 +874,15 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: sent photo answer")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
+    current_game_count = database.get_key(tele_id, "game_counter", 0)
+    availible_games_count = database.get_key(tele_id, "availible_games", DEFAULT_AVAILIBLE_GAMES)
+    try:
+        msg = await message.answer(
+            (translation['games left'][lang_code[lang]]).format(availible_games_count - current_game_count, availible_games_count)
+        )
+        logger.info("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"send message - games left\"}")
+    except Exception as e:
+        logger.error("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"send message - games left\", \"Error\" : \"" + f"{e}" + "\"}")
 
     if (database.get_key(tele_id, "use_gpt", True)):
         msg_to_delete = await message.answer(
@@ -892,7 +902,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: deleted prev message")
     except Exception as e:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
-    # database.set_key(tele_id, "prev_message", msg.message_id)
+    database.set_key(tele_id, "prev_message", msg.message_id)
 
 
 @form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)

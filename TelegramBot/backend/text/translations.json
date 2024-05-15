@@ -58,7 +58,9 @@
     "single usa": ["Выбран режим по США", "The \"USA\" mode is selected"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
-    "no games left" : ["Вы исчерпали лимит игр, подождите начала следующего дня", "You have reached the limit of games for today, wait till the start of next day"],
+    "no games left" : 
+    ["Вы исчерпали лимит игр, подождите начала следующего дня\n\nХотите убрать лимит? Поддержите авторов любой суммой больше 49₽ и отправьте подтверждение @govzman\nСделать это можно в главном меню!",
+    "You have reached the limit of games for today, wait till the start of next day\n\nWant to remove the limit? Support the authors with any amount over 49₽ and send a confirmation to @govzman\nYou can do this in main menu!"],
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
     "not using gpt" : ["Вы больше не будете получать интересные факты про сгенерированные места", "You will no longer receive interesting facts about the generated places"],
     "set seed": ["Вы установили панораму: `{}`\nЧтобы запустить установленную панораму, нажмите *Играть!*", "You had set seed: `{}`\nTo start the given panorama, click *Play!*"],
@@ -74,6 +76,7 @@
     "last 5 res metres": ["{}. {} очков | {} м\n", "{}. {} points | {} m\n"],
     "last 5 res km" : ["{}. {} очков | {} км\n", "{}. {} points | {} km\n"],
     "wait for gpt" : ["Пожалуйста, подождите интересный факт...", "Please, wait for interesting fact..."],
+    "games left" : ["Осталось {}/{} игр на сегодня", "{}/{} games left for today"],
     "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"]},
 "lang_code": {"ru": 0, "en": 1}}
 

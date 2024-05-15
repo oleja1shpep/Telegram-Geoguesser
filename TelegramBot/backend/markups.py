@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 database = MongoDB()
 
-DEFAULT_AVAILIBLE_GAMES = 20
+DEFAULT_AVAILIBLE_GAMES = 2
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('GEOGESSER')
