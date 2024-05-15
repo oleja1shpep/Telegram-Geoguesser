@@ -561,7 +561,7 @@ async def single_game_menu_rules(message: Message) -> None:
     if (mode == "msk"):
         try:
             msg = await message.answer(
-                messages.MOSCOW_SINGLE_PLAYER_RULES[lang_code[lang]],
+                messages.RULES[lang_code[lang]],
                 parse_mode="Markdown",
                 reply_markup=markup
             )
@@ -571,7 +571,7 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "spb"):
         try:
             msg = await message.answer(
-                messages.SPB_SINGLE_PLAYER_RULES[lang_code[lang]],
+                messages.RULES[lang_code[lang]],
                 parse_mode="Markdown",
                 reply_markup=markup
             )
@@ -581,7 +581,7 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "rus"):
         try:
             msg = await message.answer(
-                messages.RUSSIA_SINGLE_PLAYER_RULES[lang_code[lang]],
+                messages.RULES[lang_code[lang]],
                 parse_mode="Markdown",
                 reply_markup=markup
             )
@@ -591,7 +591,7 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "usa"):
         try:
             msg = await message.answer(
-                messages.USA_SINGLE_PLAYER_RULES[lang_code[lang]],
+                messages.RULES[lang_code[lang]],
                 parse_mode="Markdown",
                 reply_markup=markup
             )
@@ -601,7 +601,7 @@ async def single_game_menu_rules(message: Message) -> None:
     elif (mode == "wrld"):
         try:
             msg = await message.answer(
-                messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]],
+                messages.RULES[lang_code[lang]],
                 parse_mode="Markdown",
                 reply_markup=markup
             )
