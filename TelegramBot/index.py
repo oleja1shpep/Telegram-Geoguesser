@@ -66,7 +66,8 @@ async def drop_db_table(message: Message) -> None:
 @form_router.message(F.chat.type == "private", F.text[:9] == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
 async def drop_db_table(message: Message) -> None:
     username = message.text.split()[1]
-    database.set_key(database.get_user(username)["tele_id"], "availible_games", 10000)
+    amount = int(message.text.split()[2])
+    database.set_key(database.get_user(username)["tele_id"], "availible_games", amount)
     await message.delete()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
@@ -622,9 +623,9 @@ async def single_game_menu_top_10_players(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{top_10_text}',
+            f'<b>{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}</b>\n{top_10_text}',
             reply_markup=markup,
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: sent top 10 players in single " + mode)
     except Exception as e:
@@ -831,7 +832,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     availible_games_count = database.get_key(tele_id, "availible_games", DEFAULT_AVAILIBLE_GAMES)
     try:
         msg = await message.answer(
-            (translation['games left'][lang_code[lang]]).format(availible_games_count - current_game_count, availible_games_count)
+            (translation['games left'][lang_code[lang]]).format(max(0, availible_games_count - current_game_count), availible_games_count)
         )
         logger.info("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"send message - games left\"}")
     except Exception as e:
