@@ -623,7 +623,8 @@ async def single_game_menu_top_10_players(message: Message) -> None:
     try:
         msg = await message.answer(
             f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{top_10_text}',
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode="Markdown"
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: sent top 10 players in single " + mode)
     except Exception as e:
@@ -658,7 +659,8 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     try:
         msg = await message.answer(
             f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{last_5_games}',
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode="Markdown"
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent last 5 games in single " + mode)
     except Exception as e:
@@ -813,12 +815,12 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     if (DEBUG_MODE):
         database.show_database()
     
-    txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
+    txt = await bot_functions.create_result_text(score=score, metres=metres, lang=lang, seed=seed)
 
     try:
         await message.answer_photo(
             photo_url,
-            caption=f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{txt}',
+            caption=f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[returned_mode][lang_code[lang]]}*\n{txt}',
             reply_markup=markup,
             parse_mode="Markdown"
             )
