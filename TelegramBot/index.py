@@ -22,6 +22,11 @@ from backend.seed_processor import generate_seed, check_seed
 USE_DB = True
 DEBUG_MODE = False
 DEFAULT_AVAILIBLE_GAMES = markups.DEFAULT_AVAILIBLE_GAMES
+MODE_NAMES = {'msk': ['Москва', 'Moscow'], 
+              'spb': ['Санкт-Петербург', 'St. Petersburg'],
+              'rus': ['Россия', 'Russia'],
+              'usa': ['США', 'USA'],
+              'wrld': ['Весь мир', 'World']}
 
 INSTANCE_ID = random.randint(10000, 99999)
 
@@ -548,7 +553,7 @@ async def single_game_menu_rules(message: Message) -> None:
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{messages.RULES[lang_code[lang]]}',
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{messages.RULES[lang_code[lang]]}',
             parse_mode="Markdown",
             reply_markup=markup
         )
