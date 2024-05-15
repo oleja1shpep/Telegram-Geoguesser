@@ -585,7 +585,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
     
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{translation["no games left"][lang_code[lang]]}',
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["no games left"][lang_code[lang]]}',
             reply_markup=markup
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: sentno games left message")
@@ -622,7 +622,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{top_10_text}',
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{top_10_text}',
             reply_markup=markup
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: sent top 10 players in single " + mode)
@@ -657,7 +657,7 @@ async def single_game_menu_last_5_games(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{last_5_games}',
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{last_5_games}',
             reply_markup=markup
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent last 5 games in single " + mode)
@@ -721,7 +721,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
     
     try:
         msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{(messages.GENERATE_SEED[lang_code[lang]]).format(mode + "_" + seed)}',
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{(messages.GENERATE_SEED[lang_code[lang]]).format(mode + "_" + seed)}',
             parse_mode="Markdown",
             reply_markup=markup
         )
@@ -818,7 +818,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     try:
         await message.answer_photo(
             photo_url,
-            caption=f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{txt}',
+            caption=f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{txt}',
             reply_markup=markup,
             parse_mode="Markdown"
             )
@@ -876,7 +876,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
     if not(check_seed(string, mode)):
         try:
             await message.answer(
-                f'*{translation["mode_display"][lang_code[lang]]}{mode}*\n{translation["not a seed"][lang_code[lang]]}'
+                f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["not a seed"][lang_code[lang]]}'
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: sent answer: not a seed")
         except Exception as e:
@@ -900,7 +900,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
         
     msg = await message.answer(
-        f'*{translation["mode_display"][lang_code[lang]]}{seed_mode}*\n{(translation["set seed"][lang_code[lang]]).format(string)}',
+        f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[seed_mode][lang_code[lang]]}*\n{(translation["set seed"][lang_code[lang]]).format(string)}',
         parse_mode="Markdown",
         reply_markup=markup
     )
