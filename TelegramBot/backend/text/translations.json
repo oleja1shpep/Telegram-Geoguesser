@@ -58,7 +58,7 @@
     "single_usa": ["Выбран режим по США", "The \"USA\" mode is selected"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
-    "mode_display": ["*Режим: ", "*Mode: "],
+    "mode_display": ["Режим: ", "Mode: "],
     "no games left" : 
     ["Вы исчерпали лимит игр, подождите начала следующего дня\n\nХотите убрать лимит? Поддержите авторов любой суммой больше 49₽ и отправьте подтверждение @govzman\nСделать это можно в главном меню!",
     "You have reached the limit of games for today, wait till the start of next day\n\nWant to remove the limit? Support the authors with any amount over 49₽ and send a confirmation to @govzman\nYou can do this in main menu!"],
