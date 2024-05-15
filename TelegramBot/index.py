@@ -607,7 +607,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     top_10_text = ''
     try:
-        top_10_text = await bot_functions.get_top10_single(mode=mode, lang=lang)
+        top_10_text = await bot_functions.get_top10_single(tele_id, mode, lang)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: got top 10 players in single " + mode)
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")

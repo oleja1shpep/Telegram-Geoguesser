@@ -173,7 +173,7 @@ async def create_result_text(score, metres, seed, lang = 'en'):
     txt += f"\nSeed: `{seed}`"
     return txt
 
-async def get_top10_single(mode, lang = 'en'):
+async def get_top10_single(tele_id, mode, lang = 'en'):
     try:
         top_10_users = database.get_top10_single(mode)
         logger.info("connected to db. got top 10 players in signle " + mode)
@@ -187,6 +187,10 @@ async def get_top10_single(mode, lang = 'en'):
         txt += (translation['top 10'][lang_code[lang]]).format(i + 1, top_10_users[i]["username"], top_10_users[i][mode.lower() +"_single_mean_score"],
                                                               top_10_users[i][mode.lower() +"_single_game_counter"])
     # print(top_10_users)
+    find_user = database.users.find_one({"tele_id" : tele_id})
+    txt += '\n........................................................................................\n'
+    txt += (translation['top 10'][lang_code[lang]]).format('#', find_user["username"], find_user[mode.lower() +"_single_mean_score"],
+                                                              find_user[mode.lower() +"_single_game_counter"])
     return txt
 
 async def get_last5_results_single(tele_id, mode, lang = 'en'):
