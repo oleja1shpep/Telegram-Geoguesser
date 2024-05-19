@@ -1,5 +1,8 @@
 ## Проект “Telegram Geoguessr”
 
+Ссылка на бота в Telegram: https://t.me/GeoguessrGameBot
+
+
 **Участники:**
 
 1. Говзман Илья [tg](t.me/govzman)
