@@ -40,7 +40,8 @@ async def create_menu_markup(lang = "en"):
     builder.button(text=translation["how to play"][lang_code[lang]])
     builder.button(text=translation["settings"][lang_code[lang]])
     builder.button(text=translation["donations"][lang_code[lang]])
-    builder.adjust(1,2,1)
+    builder.button(text=translation["credits"][lang_code[lang]])
+    builder.adjust(1,2,2)
     markup = builder.as_markup()
     markup.resize_keyboard = True
     return markup
