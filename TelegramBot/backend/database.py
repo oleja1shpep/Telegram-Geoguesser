@@ -106,14 +106,11 @@ class MongoDB:
         self.users.delete_many({})
 
     def show_database(self):
-        txt = ""
-        counter = 1
+        lst = []
         for user in self.users.find():
             username = user["username"]
-            txt += f"{counter}. {username}\n"
-            counter += 1
-        txt = f"Количество: {counter - 1}\n" + txt
-        return txt
+            lst.append(username)
+        return lst
 
     def init_game(self, tele_id, mode):
         self.set_key(tele_id, "track_changes", True)

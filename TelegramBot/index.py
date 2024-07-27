@@ -919,7 +919,8 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.chat.type == "private", F.text, F.func(lambda F: F.from_user.id != 679428900))
+@form_router.message(F.chat.type == "private", F.text, F.func(lambda F: F.from_user.id != 679428900 and F.from_user.id != 
+663532936))
 async def idk_bugs_or_smth(message: Message) -> None:
     is_found = False
     tele_id = message.from_user.id
@@ -957,10 +958,10 @@ async def idk_bugs_or_smth(message: Message) -> None:
 
 @form_router.message(F.chat.type == "private", F.text == "/help", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def list_of_comands(message: Message) -> None:
-    await message.answer("bebra")
     try:
         await message.answer(
             """admin:
+/help - присылает это сообщение
 /setdate [tele_id] - устанавливает дату на 1 день раньше
 /deleteme - удаляет oleja_shpep из бд
 /setgames [username] - устанавливает количество игр по юзернейму
@@ -978,8 +979,21 @@ users:
 
 @form_router.message(F.chat.type == "private", F.text == "/list", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def list_of_users(message: Message) -> None:
-    txt = database.show_database()
-    await message.answer(txt)
+    lst = database.show_database()
+    await message.answer(f"Количество: {len(lst)}")
+    length = len(lst)
+    counter = 0
+    while length > 0:
+        txt = ""
+        for i in range(counter * 50, counter * 50 + 50):
+            if i >= len(lst):
+                break
+            username = lst[i]
+            txt += f"{i + 1}. {username}\n"
+        await message.answer(txt)
+        length -= 50
+        counter += 1
+    await message.answer(f"Количество: {len(lst)}")
     await message.delete()
 
 @form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setdate"), F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
