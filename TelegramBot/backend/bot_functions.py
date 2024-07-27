@@ -34,7 +34,7 @@ logger.setLevel(logging.DEBUG)
 def form_payload(request):
     logger.debug(FOLDER_ID)
     payload = json.dumps({
-    "modelUri": f"gpt://{FOLDER_ID}/yandexgpt",
+    "modelUri": f"gpt://{FOLDER_ID}/yandexgpt-lite/latest",
     "completionOptions": {
         "stream": False,
         "temperature": 0.2,
@@ -42,8 +42,12 @@ def form_payload(request):
     },
     "messages": [
         {
-        "role": "user",
-        "text": request
+            "role": "system",
+            "text": "Ты - экскурсовод, который отлично знает историю и географию. Текст не длиннее 50 слов."
+        },
+        {
+            "role": "user",
+            "text": request
         }
     ]
     })
@@ -96,7 +100,7 @@ def gpt_request(cords, lang, mode):
         language = 'английском'
     else:
         language = "русском"
-    request = f"Дай мне интересный факт длиной не больше 50 слов на {language} языке об адресе: {address}. Не упоминай сам адрес при ответе"
+    request = f"Напиши интересный факт на {language} языке об: {address}. Не упоминай сам адрес при ответе"
     payload = form_payload(request)
     headers = {
         'Authorization': f'Api-Key {YAGPT_APIKEY}',
