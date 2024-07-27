@@ -120,7 +120,7 @@ async def command_start(message: Message) -> None:
                 logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
         database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
 async def process_name(message: Message) -> None:
     # await state.set_state(Form.menu)
 
@@ -190,7 +190,7 @@ async def process_name(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
 async def main_menu(message: Message) -> None:
     tele_id = message.from_user.id
     
@@ -220,7 +220,7 @@ async def main_menu(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: finished <main_menu>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["donations"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["donations"]))
 async def main_menu_donations(message: Message) -> None:
     tele_id = message.from_user.id
     
@@ -251,7 +251,7 @@ async def main_menu_donations(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: finished <main_menu_donations>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
 async def settings_menu(message: Message) -> None:
     database.drop_duplicates()
     tele_id = message.from_user.id
@@ -279,7 +279,7 @@ async def settings_menu(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_menu: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -307,7 +307,7 @@ async def change_language_rus(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -334,7 +334,7 @@ async def change_language_eng(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
 async def switch_use_gpt(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -369,7 +369,7 @@ async def switch_use_gpt(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
 async def settings_back(message: Message) -> None:
     # await state.set_state(Form.menu)
     tele_id = message.from_user.id
@@ -398,7 +398,7 @@ async def settings_back(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
 async def gamemodes(message: Message) -> None:
     database.drop_duplicates()
     # await state.set_state(Form.gamemodes)
@@ -429,7 +429,7 @@ async def gamemodes(message: Message) -> None:
     database.set_key(tele_id, "prev_message", msg.message_id)
     
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.in_(translation["back"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.in_(translation["back"]))
 async def gamemodes_back(message: Message) -> None:
     # await state.set_state(Form.menu)
     tele_id = message.from_user.id
@@ -467,7 +467,7 @@ async def create_single_game_answer(message: Message, lang: str, markup, mode: s
             )
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: (F.text in translation["gamemodes"][0]) or (F.text in translation["gamemodes"][1])))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: (F.text in translation["gamemodes"][0]) or (F.text in translation["gamemodes"][1])))
 async def single_game(message: Message) -> None:
     tele_id = message.from_user.id
     answer = message.text
@@ -529,7 +529,7 @@ async def single_game(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
 async def single_game_menu_rules(message: Message) -> None:
     # mode = await state.get_data()
     tele_id = message.from_user.id
@@ -560,7 +560,7 @@ async def single_game_menu_rules(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
 async def single_game_menu_not_allowed_to_play(message: Message) -> None:
     # mode = await state.get_data()
     tele_id = message.from_user.id
@@ -592,7 +592,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
 async def single_game_menu_top_10_players(message: Message) -> None:
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
@@ -629,7 +629,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
 async def single_game_menu_last_5_games(message: Message) -> None:
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
@@ -666,7 +666,7 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['back']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['back']))
 async def single_game_menu_back(message: Message) -> None:
     tele_id = message.from_user.id
     mode = database.get_key(tele_id, "state_data", "")
@@ -698,7 +698,7 @@ async def single_game_menu_back(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
 async def single_game_menu_generate_seed(message: Message) -> None:
     tele_id = message.from_user.id
     mode = database.get_key(tele_id, "state_data", "")
@@ -731,7 +731,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message) -> None:
     tele_id = message.from_user.id
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: Got answer from " + str(tele_id))
@@ -750,18 +750,30 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got seed from db")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
-    seed = mode + "_" + seed
+    try:
+        seed = mode + "_" + seed
+    except Exception as e:
+        logger.warning(f"seed: {seed}, type: {type(seed)} | mode: {mode}, type: {type(mode)}")
 
-    cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+    try:
+        cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+    except Exception as e:
+        logger.warning(f"BROKE, type: {type(message.web_app_data.data)}, excepton: {e}")
 
-    if (returned_mode == "spb" or returned_mode == "msk"):
-        score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-    elif (returned_mode == "rus" or returned_mode == "usa"):
-        score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
-    elif (returned_mode == "wrld"):
-        score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
-    
+    logger.debug(message.web_app_data.data.split("|"))
+
+    try:
+        if (returned_mode == "spb" or returned_mode == "msk"):
+            score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
+        elif (returned_mode == "rus" or returned_mode == "usa"):
+            score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
+        elif (returned_mode == "wrld"):
+            score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
+    except Exception as e:
+        logger.warning(f"calc score metres, excepton: {e}, cords: [{cords}] type: {type(cords)}")
+
     photo_url = await bot_functions.get_static_map_image(cords, color_scheme)
+
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
@@ -849,7 +861,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)
 async def single_game_menu_set_seed(message: Message) -> None:
 
     # mode = await state.get_data()
@@ -907,7 +919,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.text, F.func(lambda F: F.from_user.id != 679428900))
+@form_router.message(F.chat.type == "private", F.text, F.func(lambda F: F.from_user.id != 679428900))
 async def idk_bugs_or_smth(message: Message) -> None:
     is_found = False
     tele_id = message.from_user.id
@@ -943,18 +955,49 @@ async def idk_bugs_or_smth(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.text == "/help", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_comands(message: Message) -> None:
+    await message.answer("bebra")
+    try:
+        await message.answer(
+            """admin:
+/setdate [tele_id] - устанавливает дату на 1 день раньше
+/deleteme - удаляет oleja_shpep из бд
+/setgames [username] - устанавливает количество игр по юзернейму
+/setgamesid [tele_id] - устанавливает количество игр по id
+/setforall - устанавливает для всех количество игр 20
+/list - присылает список всех игроков
+
+users:
+/showid - присылает юзеру его id
+"""
+        )
+    except Exception as e:
+        logger.error(f"bug: {e}")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/list", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_users(message: Message) -> None:
+    txt = database.show_database()
+    await message.answer(txt)
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setdate"), F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def set_date(message: Message) -> None:
-    tele_id = message.from_user.id
+    try:
+        tele_id = message.text.split()[1]
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: set_date: {e}")
+        await message.answer("broke")
     database.set_key(tele_id, "time_of_prev_request", (date.today() - timedelta(days=1)).strftime("%Y-%m-%d"))
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def delete_me_from_db(message: Message) -> None:
     database.delete_user(679428900)
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgames") , F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgames") , F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def set_games_for_user(message: Message) -> None:
     username = message.text.split()[1]
     amount = 10000
@@ -965,7 +1008,7 @@ async def set_games_for_user(message: Message) -> None:
         await message.answer("no such user")
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgamesid") , F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgamesid") , F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def set_games_for_user(message: Message) -> None:
     tele_id = int(message.text.split()[1])
     amount = 10000
@@ -976,7 +1019,7 @@ async def set_games_for_user(message: Message) -> None:
         await message.answer("no such user")
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900))
+@form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def set_fotall_users_default(message: Message) -> None:
     try:
         database.set_key_forall_users("availible_games", 20)
