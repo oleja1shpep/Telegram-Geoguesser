@@ -99,7 +99,7 @@
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=get_panorama&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=[API_KRY]&callback=get_panorama&v=weekly"
         defer></script>
     <script src="app.js"></script>
 </head>
@@ -122,6 +122,8 @@
         submit.hidden = true;
         tg.expand();
         tg.enableClosingConfirmation()
+        tg.disableVerticalSwipes()
+        // tg.ClosingConfirmation()
 
         submit.addEventListener("click", () => {
             tg.sendData(CreateBotResponce())

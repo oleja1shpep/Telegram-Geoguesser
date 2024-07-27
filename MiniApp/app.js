@@ -106,7 +106,7 @@ async function initMap() {
 
 function CreateBotResponce() {
     try {
-        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.Gg} ${marker.position.Hg}|${mode}|${window.Telegram.WebApp.colorScheme}`
+        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.lat} ${marker.position.lng}|${mode}|${window.Telegram.WebApp.colorScheme}`
     } 
     catch (error) {
         console.log('error:', error)
