@@ -26,7 +26,8 @@ MODE_NAMES = {'msk': ['Москва', 'Moscow'],
               'spb': ['Санкт-Петербург', 'St. Petersburg'],
               'rus': ['Россия', 'Russia'],
               'usa': ['США', 'USA'],
-              'wrld': ['Весь мир', 'World']}
+              'wrld': ['Весь мир', 'World'],
+              'easy': ['Известные места', 'Famous places']}
 
 INSTANCE_ID = random.randint(10000, 99999)
 

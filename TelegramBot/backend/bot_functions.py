@@ -54,7 +54,13 @@ def form_payload(request):
     return payload
 
 def get_address(lat, lon, mode, lang):
-    mode_to_result_type = {'msk': 'street_address|political', 'spb': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
+    mode_to_result_type = {
+        'msk': 'street_address|political',
+        'spb': 'street_address|political',
+        'rus': 'political', 'usa': 'political',
+        'wrld': 'administrative_area_level_1|country',
+        'easy': 'point_of_interest'
+    }
     response = requests.get(GEOCODE_LINK.format(lat, lon, mode_to_result_type[mode], lang, GEOCODER_APIKEY))
     code = response.status_code
     if code != 200:
@@ -100,7 +106,10 @@ def gpt_request(cords, lang, mode):
         language = 'английском'
     else:
         language = "русском"
-    request = f"Напиши интересный факт на {language} языке об: {address}. Не упоминай сам адрес при ответе"
+    if mode != 'easy':
+        request = f"Напиши интересный факт на {language} языке об: {address}. Не упоминай сам адрес при ответе"
+    else:
+        request = f"Расскажи подробно о {address} на {language} языке"
     payload = form_payload(request)
     headers = {
         'Authorization': f'Api-Key {YAGPT_APIKEY}',

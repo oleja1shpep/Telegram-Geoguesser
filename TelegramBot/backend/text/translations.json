@@ -11,6 +11,7 @@
     "gamemodes": [
       [
         "Весь мир",
+        "Известные места",
         "Москва",
         "Санкт-Петербург",
         "Россия",
@@ -19,6 +20,7 @@
       ],
       [
         "World",
+        "Famous places",
         "Moscow",
         "St. Petersburg",
         "Russia",
@@ -56,6 +58,7 @@
     "single_spb": ["Выбран режим по Санкт-Петербургу", "The \"St. Petersburg\" mode is selected"],
     "single_rus": ["Выбран режим по России", "The \"Russia\" mode is selected"],
     "single_usa": ["Выбран режим по США", "The \"USA\" mode is selected"],
+    "single_easy": ["Выбран режим по известным местам", "The \"Famous places\" mode is selected"],
     "main menu": ["Главное меню", "Main menu"],
     "settings menu": ["Настройки", "Settings"],
     "credits" : ["Разработчики", "Credits"],

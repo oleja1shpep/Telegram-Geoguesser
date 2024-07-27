@@ -1,7 +1,7 @@
 import random
 import time
-MODES = ['msk', 'spb', 'rus', 'usa', 'wrld']
-MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 3, 'usa': 3, 'wrld': 3}
+MODES = ['msk', 'spb', 'rus', 'usa', 'wrld', 'easy']
+MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 3, 'usa': 3, 'wrld': 3, 'easy': 3}
 
 def generate_seed():
     random.seed(time.time())
@@ -165,6 +165,22 @@ def coordinates_from_seed(seed, mode):
         elif rand_case <= 95201645:
                 x, y = 18.645801, -160.28621
                 x2, y2 = 22.341667, -154.597792
+    elif mode == 'easy':
+        x, y = 55.75328811203646, 37.62171737034887
+        x_center, y_center = 0, 0
+        zoom = 1
+        rand_case = random.randint(1, 5)
+        if rand_case == 1:
+            x, y = 55.75328811203646, 37.62171737034887 # Красная площадь
+        elif rand_case == 2: 
+            x, y = 59.93964231076877, 30.314978057774795 # Эрмитаж, Питер
+        elif rand_case == 3:
+            x, y = 52.516315047332554, 13.37824097597171 # Бранденбургские ворота, Берлин
+        elif rand_case == 4:
+            x, y = 51.17880833229536, -1.8262426807912109 # Стоунхендж
+        elif rand_case == 5:
+            x, y = 51.500946021994025, -0.12390675575505097 # Big Ben
+        x2, y2 = x, y
     else: # World mode
         x, y = -90, -180
         x2, y2 = 90, 180
