@@ -3,10 +3,12 @@
     "modes": ["Игровые режимы", "Gamemodes"],
     "how to play": ["Как играть", "How to play"],
     "settings": ["Настройки", "Settings"],
-    "donations" : ["Поддержать авторов", "Support developers"],
     "eng_language": ["Английский", "English", "✅Английский", "✅English"],
     "rus_language": ["Русский", "Russian", "✅Русский", "✅Russian"],
     "use_gpt" : ["Факты про места", "Facts about places", "✅Факты про места", "✅Facts about places", "🚫Факты про места", "🚫Facts about places"],
+    "main menu": ["Главное меню", "Main menu"],
+    "settings menu": ["Настройки", "Settings"],
+    "credits" : ["Разработчики", "Credits"],
     "back": ["Назад", "Back"],
     "gamemodes": [
       [
@@ -59,9 +61,6 @@
     "single_rus": ["Выбран режим по России", "The \"Russia\" mode is selected"],
     "single_usa": ["Выбран режим по США", "The \"USA\" mode is selected"],
     "single_easy": ["Выбран режим по известным местам", "The \"Famous places\" mode is selected"],
-    "main menu": ["Главное меню", "Main menu"],
-    "settings menu": ["Настройки", "Settings"],
-    "credits" : ["Разработчики", "Credits"],
     "mode_display": ["Режим: ", "Mode: "],
     "no games left" : 
     ["Вы исчерпали лимит игр, подождите начала следующего дня\n\nХотите убрать лимит? Поддержите авторов любой суммой больше 49₽ и отправьте подтверждение @govzman\nСделать это можно в главном меню!",
@@ -69,10 +68,9 @@
     "using gpt": ["Теперь вы будете получать интересные факты про сгенерированные места!", "Now you will learn different facts about random places!"],
     "not using gpt" : ["Вы больше не будете получать интересные факты про сгенерированные места", "You will no longer receive interesting facts about the generated places"],
     "set seed": ["Вы установили панораму: `{}`\nЧтобы запустить установленную панораму, нажмите *Играть!*", "You had set seed: `{}`\nTo start the given panorama, click *Play!*"],
-    "support authors" : [
-    "Если понравилась наша игра, можете нас поддержать 🙂\nТинькофф: `2200701089775990`",
-    "If you enjoy playing our game, you can support us 🙂\nTinkoff bank: `2200701089775990`"],
-    "developers": ["Создатели бота:\n@govzman\n@oleja_shpep\n@adelyagaraeva", "Creators:\n@govzman\n@oleja_shpep\n@adelyagaraeva"],
+    "developers" : [
+    "Создатели бота:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nКанал с обновлениями: @GeoguessrBotChannel\n\nЕсли понравилась наша игра, можете нас поддержать 🙂\nТ-банк: `2200701089775990`",
+    "Creators:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nChannel with info about updates: @GeoguessrBotChannel\n\nIf you enjoy playing our game, you can support us 🙂\nT-bank: `2200701089775990`"],
     "not a seed": ["Неверный seed или команда\nЕсли что-то не работает пришлите /start", "Incorrect seed or command\nIf something doesn't work send /start"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
