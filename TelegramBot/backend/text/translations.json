@@ -48,6 +48,22 @@
         "Back"
       ]
     ],
+    "landmarks": [
+      [
+        "Красная площадь, Москва",
+        "Эрмитаж, Зимний дворец, Санкт-Петербург",
+        "Бранденбургские ворота, Берлин",
+        "Стоунхендж",
+        "Биг Бэн"
+      ],
+      [
+        "Red Square, Moscow",
+        "Hermitage, Winter Palace, Saint-Petersburg", 
+        "Brandenburg gates, Berlin",
+        "Stonehange",
+        "Big Ban"
+      ]
+    ],
     "single": ["Одиночный",  "Single"],
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],

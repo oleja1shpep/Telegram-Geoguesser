@@ -32,20 +32,21 @@ def check_seed(string, right_mode):
 
 def coordinates_and_landmark_from_seed_easy_mode(seed):
     random.seed(seed)
-    x, y, landmark = 55.75328811203646, 37.62171737034887, 'Красная площадь'
+    x, y, landmark_id = 55.75328811203646, 37.62171737034887, 0
     rand_case = random.randint(1, 5)
+    landmark_id = rand_case - 1
     match rand_case:
         case 1:
-            x, y, landmark = 55.75328811203646, 37.62171737034887, 'Красная площадь'
+            x, y = 55.75328811203646, 37.62171737034887
         case 2: 
-            x, y, landmark = 59.93964231076877, 30.314978057774795, 'Эрмитаж, Зимний дворец'
+            x, y = 59.93964231076877, 30.314978057774795
         case 3:
-            x, y, landmark = 52.516315047332554, 13.37824097597171, 'Бранденбургские ворота'
+            x, y = 52.516315047332554, 13.37824097597171
         case 4:
-            x, y, landmark = 51.17880833229536, -1.8262426807912109, 'Стоутнхендж'
+            x, y = 51.17880833229536, -1.8262426807912109
         case 5:
-            x, y, landmark = 51.500946021994025, -0.12390675575505097, 'Биг Бэн'
-    return x, y, landmark
+            x, y = 51.500946021994025, -0.12390675575505097
+    return x, y, landmark_id
 
 def coordinates_from_seed(seed, mode):
     random.seed(seed)
