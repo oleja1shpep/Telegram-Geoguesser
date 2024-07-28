@@ -10,6 +10,7 @@ from geopy.distance import geodesic
 
 from backend.database import MongoDB
 from backend.text.links import STATIC_MAPS_LIGHT_LINK, STATIC_MAPS_DARK_LINK, YAGPT_LINK, GEOCODE_LINK
+from backend.seed_processor import coordinates_and_landmark_from_seed_easy_mode
 
 MODE_TO_GEOCODER_ARGS = {
     'msk': 'street_address|political',
@@ -88,21 +89,22 @@ def get_address(lat, lon, mode, lang):
     return address
         
 
-def gpt_request(cords, lang, mode):
+def gpt_request(cords, seed, lang, mode):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
-    # if mode == 'easy':
     address = ''
-    try:
-        address = get_address(lat1, lon1, mode, lang)
-    except Exception as e:
-        logger.error(f"In function: gpt_request: {e}")
-    if not address:
-        if lang == "en":
-            return f"Unable to come up with interesting fact"
-        else:
-            return f"Не удалось найти интересный факт"
-        
+    if mode == 'easy':
+        x, y, address = coordinates_and_landmark_from_seed_easy_mode(seed)
+    else:
+        try:
+            address = get_address(lat1, lon1, mode, lang)
+        except Exception as e:
+            logger.error(f"In function: gpt_request: {e}")
+        if not address:
+            if lang == "en":
+                return f"Unable to come up with interesting fact"
+            else:
+                return f"Не удалось найти интересный факт"
     language = ''
     if lang == 'en':
         language = 'английском'
