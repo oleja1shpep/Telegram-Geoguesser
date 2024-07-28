@@ -116,7 +116,7 @@ async def create_single_game_menu_markup(mode, lang, tele_id, seed = ''):
         if (current_game_count < availible_games_count):
             allowed_to_play = True
             
-    if (allowed_to_play):
+    if allowed_to_play:
         builder.button(text = keyboard[0], web_app= WebAppInfo(url=URL_SITE + "#" + mode + '&' + '&'.join(map(str, coords)) + '&' + str(MODE_TO_RADIUS[mode])))
     else:
         builder.button(text = keyboard[0])

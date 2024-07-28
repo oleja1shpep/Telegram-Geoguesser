@@ -8,11 +8,11 @@ def generate_seed():
     seed = ''
     for i in range(6):
         symb = random.randint(0, 25)
-        if (symb == 8):
+        if symb == 8:
             seed += 'i'
-        elif (symb == 11):
+        elif symb == 11:
             seed += 'L'
-        elif (random.randint(0, 1)):
+        elif random.randint(0, 1):
             seed += chr(65 + symb).lower()
         else:
             seed += chr(65 + symb).upper()
@@ -23,12 +23,29 @@ def check_seed(string, right_mode):
     if len(unpacked) != 2: 
         return False
     mode, seed = unpacked
-    if (mode != right_mode):
+    if mode != right_mode:
         pass
         # return False
-    if (len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES):
+    if len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES:
         return True
     return False
+
+def coordinates_and_landmark_from_seed_easy_mode(seed):
+    random.seed(seed)
+    x, y, landmark = 55.75328811203646, 37.62171737034887, 'Красная площадь'
+    rand_case = random.randint(1, 5)
+    match rand_case:
+        case 1:
+            x, y, landmark = 55.75328811203646, 37.62171737034887, 'Красная площадь'
+        case 2: 
+            x, y, landmark = 59.93964231076877, 30.314978057774795, 'Эрмитаж, Зимний дворец'
+        case 3:
+            x, y, landmark = 52.516315047332554, 13.37824097597171, 'Бранденбургские ворота'
+        case 4:
+            x, y, landmark = 51.17880833229536, -1.8262426807912109, 'Стоутнхендж'
+        case 5:
+            x, y, landmark = 51.500946021994025, -0.12390675575505097, 'Биг Бэн'
+    return x, y, landmark
 
 def coordinates_from_seed(seed, mode):
     random.seed(seed)
@@ -165,22 +182,6 @@ def coordinates_from_seed(seed, mode):
         elif rand_case <= 95201645:
                 x, y = 18.645801, -160.28621
                 x2, y2 = 22.341667, -154.597792
-    elif mode == 'easy':
-        x, y = 55.75328811203646, 37.62171737034887
-        x_center, y_center = 0, 0
-        zoom = 1
-        rand_case = random.randint(1, 5)
-        if rand_case == 1:
-            x, y = 55.75328811203646, 37.62171737034887 # Красная площадь
-        elif rand_case == 2: 
-            x, y = 59.93964231076877, 30.314978057774795 # Эрмитаж, Питер
-        elif rand_case == 3:
-            x, y = 52.516315047332554, 13.37824097597171 # Бранденбургские ворота, Берлин
-        elif rand_case == 4:
-            x, y = 51.17880833229536, -1.8262426807912109 # Стоунхендж
-        elif rand_case == 5:
-            x, y = 51.500946021994025, -0.12390675575505097 # Big Ben
-        x2, y2 = x, y
     else: # World mode
         x, y = -90, -180
         x2, y2 = 90, 180

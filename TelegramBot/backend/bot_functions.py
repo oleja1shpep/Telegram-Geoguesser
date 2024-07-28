@@ -11,6 +11,15 @@ from geopy.distance import geodesic
 from backend.database import MongoDB
 from backend.text.links import STATIC_MAPS_LIGHT_LINK, STATIC_MAPS_DARK_LINK, YAGPT_LINK, GEOCODE_LINK
 
+MODE_TO_GEOCODER_ARGS = {
+    'msk': 'street_address|political',
+    'spb': 'street_address|political',
+    'rus': 'political', 
+    'usa': 'political',
+    'wrld': 'administrative_area_level_1|country',
+    'easy': 'point_of_interest'
+}
+
 database = MongoDB()
 
 load_dotenv()
@@ -54,14 +63,7 @@ def form_payload(request):
     return payload
 
 def get_address(lat, lon, mode, lang):
-    mode_to_result_type = {
-        'msk': 'street_address|political',
-        'spb': 'street_address|political',
-        'rus': 'political', 'usa': 'political',
-        'wrld': 'administrative_area_level_1|country',
-        'easy': 'point_of_interest'
-    }
-    response = requests.get(GEOCODE_LINK.format(lat, lon, mode_to_result_type[mode], lang, GEOCODER_APIKEY))
+    response = requests.get(GEOCODE_LINK.format(lat, lon, MODE_TO_GEOCODER_ARGS[mode], lang, GEOCODER_APIKEY))
     code = response.status_code
     if code != 200:
         logger.warning(f"In function: get_address: Coords request error. Status code: {code}")
@@ -89,7 +91,7 @@ def get_address(lat, lon, mode, lang):
 def gpt_request(cords, lang, mode):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
-    
+    # if mode == 'easy':
     address = ''
     try:
         address = get_address(lat1, lon1, mode, lang)
