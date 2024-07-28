@@ -517,6 +517,14 @@ async def single_game(message: Message) -> None:
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][1]):
+        mode = "easy"
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+        try:
+            msg = await create_single_game_answer(message, lang, markup, mode)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по достопримечательностям")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
+    elif (answer == translation["gamemodes"][lang_code[lang]][2]):
         mode = "msk"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -524,7 +532,7 @@ async def single_game(message: Message) -> None:
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по москве")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][2]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][3]):
         mode = "spb"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -532,7 +540,7 @@ async def single_game(message: Message) -> None:
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][3]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][4]):
         mode = "rus"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -540,7 +548,7 @@ async def single_game(message: Message) -> None:
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по России")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
-    elif (answer == translation["gamemodes"][lang_code[lang]][4]):
+    elif (answer == translation["gamemodes"][lang_code[lang]][5]):
         mode = "usa"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
@@ -796,7 +804,7 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     try:
         if (returned_mode == "spb" or returned_mode == "msk"):
             score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-        elif (returned_mode == "rus" or returned_mode == "usa"):
+        elif (returned_mode == "rus" or returned_mode == "usa" or returned_mode == "easy"):
             score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
         elif (returned_mode == "wrld"):
             score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
