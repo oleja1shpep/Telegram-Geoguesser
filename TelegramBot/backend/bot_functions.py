@@ -95,7 +95,7 @@ def gpt_request(cords, seed, lang, mode):
     address = ''
     if mode == 'easy':
         x, y, landmark_id = coordinates_and_landmark_from_seed_easy_mode(seed)
-        address = translation["landmarks"][lang_code][landmark_id]
+        address = translation["landmarks"][lang_code[lang]][landmark_id]
     else:
         try:
             address = get_address(lat1, lon1, mode, lang)
