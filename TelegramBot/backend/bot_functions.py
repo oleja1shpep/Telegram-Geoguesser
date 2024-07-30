@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 import requests
+import matplotlib.pyplot as plt
 
 from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
@@ -234,3 +235,26 @@ async def get_last5_results_single(tele_id, mode, lang = 'en'):
     if len(games) == 0:
         txt = (translation['no games'][lang_code[lang]])
     return txt
+
+
+async def form_statistics_graph(tele_id, mode, lang = 'en'):
+    try:
+        games = database.get_last_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in single " + mode)
+    except Exception as e:
+        logger.error(e)
+    length = len(games)
+    mean_scores = []
+    for i in range(length):
+        total_score = 0
+        counter = 0
+        for j in range(max(0, i - 19), i + 1):
+            counter += 1
+            total_score += games[j][0]
+        mean_scores.append(total_score / counter)
+    plt.plot(np.arange(1, len(mean_scores) + 1), mean_scores)
+    plt.savefig(f"./tmp/{tele_id}.png")
+    plt.clf()
+
+if __name__ == "__main__":
+    form_statistics_graph(679428900, "msk")

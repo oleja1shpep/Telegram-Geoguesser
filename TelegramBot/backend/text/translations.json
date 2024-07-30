@@ -35,7 +35,7 @@
         "Играть!",
         "Правила",
         "Топ игроков",
-        "Прошлые 5 игр",
+        "Статистика",
         "Сгенерировать панораму",
         "Назад"
       ],
@@ -43,7 +43,7 @@
         "Play!",
         "Rules",
         "Top players",
-        "Last 5 games",
+        "Statistics",
         "Generate panorama",
         "Back"
       ]
@@ -149,7 +149,7 @@
     "single": ["Одиночный",  "Single"],
     "rules": ["Правила", "Rules"],
     "top players": ["Топ игроков", "Top players"],
-    "last 5 games" : ["Прошлые 5 игр", "Last 5 games"],
+    "last 5 games" : ["Статистика", "Statistics"],
     "generate seed": ["Сгенерировать панораму", "Generate panorama"], 
     "error": ["Если что-то не работает: /start", "If something doesn't work : /start"],
     "available modes": ["Выберите один из доступных режимов", "Select one of the available modes"],

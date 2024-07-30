@@ -10,7 +10,7 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.client.default import DefaultBotProperties
-from aiogram.types import Message, Update
+from aiogram.types import Message, Update, FSInputFile
 from dotenv import load_dotenv
 
 from backend import markups, bot_functions
@@ -656,15 +656,23 @@ async def single_game_menu_last_5_games(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: got last 5 games in single " + mode)
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+
+    await bot_functions.form_statistics_graph(tele_id, mode, lang)
+    # file = InputFile("./tmp/{tele_id}.png")
+
     try:
-        msg = await message.answer(
-            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{last_5_games}',
-            reply_markup=markup,
+        msg = await message.answer_photo(
+            FSInputFile(f"./tmp/{tele_id}.png"),
+            caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{last_5_games}',
+            reply_markup = markup,
             parse_mode="Markdown"
-        )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent last 5 games in single " + mode)
+            )
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent photo answer")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+
+    
+
     await message.delete()
     chat = msg.chat
     try:

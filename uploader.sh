@@ -14,7 +14,7 @@ PYTHONVER=3.11
 
 zip function.zip requirements.txt
 cd ./TelegramBot
-zip -r ../function.zip index.py backend
+zip -r ../function.zip index.py backend tmp
 cd ..
 
 yc serverless function version create \
