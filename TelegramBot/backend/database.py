@@ -130,45 +130,49 @@ class MongoDB:
                 self.set_key(user["tele_id"], mode +"_single_total_score", 0)
         logger.info("updated db. added column with single " + mode)
 
+        match = {
+            "$match" : {
+                mode + "_single_game_counter": {"$gte": 5}
+            }
+        }
+
         sort = {"$sort":
                 {mode.lower() +"_single_mean_score" : -1}
                 }
         limit = {"$limit":10}
 
-        res = list(self.users.aggregate([sort, limit]))
+        res = list(self.users.aggregate([match, sort, limit]))
+
         return res
-
-    def add_results_single(self, tele_id, score, mode):
-        self.inc_key(tele_id, mode + "_single_total_score", score)
-        self.inc_key(tele_id, mode + "_single_game_counter", 1)
-        
-        try:
-            mean_score = round(self.get_key(tele_id, mode + "_single_total_score", 0) / self.get_key(tele_id, mode + "_single_game_counter", 0) ,2)
-        except:
-            mean_score = 0
-
-        self.set_key(tele_id, mode +"_single_mean_score", mean_score)
         
     def drop_duplicates(self):
         pass
 
-    def get_last5_results(self, tele_id, mode):
+    def get_last_results(self, tele_id, mode):
         games = self.get_key(tele_id, "last_games_" + mode, [])
         if (type(games) == str):
             games = json.loads(games)
         return games
 
-    def add_game_single(self, tele_id, score, metres, mode):
-        games = self.get_last5_results(tele_id, mode)
+    def add_results(self, tele_id, score, metres, mode):
+        games = self.get_last_results(tele_id, mode)
         if (type(games) == str):
             games = json.loads(games)
 
-        if (len(games) < 5):
-            games.insert(0, (score, metres))
-        else:
-            games.pop(-1)
-            games.insert(0, (score, metres))
+        games.append((score, metres))
 
+        # if (len(games) < 5):
+        #     games.insert(0, (score, metres))
+        # else:
+        #     games.pop(-1)
+        #     games.insert(0, (score, metres))
+        score_sum = 0
+        for i in range(len(games) - 1, max(-1, len(games) - 21), -1):
+            score_sum += games[i][0]
+        mean_score = round(score_sum / min(20, len(games)), 2)
+
+        self.set_key(tele_id, mode + "_single_game_counter", len(games))
+        self.set_key(tele_id, mode +"_single_mean_score", mean_score)
         self.set_key(tele_id, "last_games_" + mode, games)
 
     def get_state(self, tele_id):

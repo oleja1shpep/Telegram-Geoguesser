@@ -209,17 +209,20 @@ async def get_top10_single(tele_id, mode, lang = 'en'):
     txt += '\n...............................................\n'
     txt += (translation['top 10'][lang_code[lang]]).format('#', find_user["username"], find_user[mode.lower() +"_single_mean_score"],
                                                               find_user[mode.lower() +"_single_game_counter"])
+    
+    if (find_user[mode.lower() +"_single_game_counter"] < 5):
+        txt += "\n" + translation["less than 5 games"][lang_code[lang]]
     return txt
 
 async def get_last5_results_single(tele_id, mode, lang = 'en'):
     try:
-        games = database.get_last5_results(tele_id, mode)
-        logger.info("connected to db. got last 5 games in signle " + mode)
+        games = database.get_last_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in single " + mode)
     except Exception as e:
         logger.error(e)
 
     txt = ''
-    for i in range(len(games)):
+    for i in range(len(games) - 1, max(-1, len(games) - 6), -1):
         metres = games[i][1]
         if metres < 10000:
             txt += (translation['last 5 res metres'][lang_code[lang]]).format(i + 1, games[i][0], metres)

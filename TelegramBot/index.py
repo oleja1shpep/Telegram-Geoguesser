@@ -798,13 +798,13 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     
 
     if (track_changes):
+        # try:
+        #     database.add_results_single(tele_id, score, mode)
+        #     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, id = {tele_id}")
+        # except Exception as e:
+        #     logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add results: {e}")
         try:
-            database.add_results_single(tele_id, score, mode)
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, id = {tele_id}")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add results: {e}")
-        try:
-            database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
+            database.add_results(tele_id, score=score, metres=metres, mode=mode)
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added game to single: {mode}, score = {score}, metres = {metres}, id = {tele_id}")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add game: {e}")

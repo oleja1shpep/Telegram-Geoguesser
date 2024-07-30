@@ -177,6 +177,7 @@
     "top 10": ["{}. {} - среднее : {} | матчей : {}\n", "{}. {} - average : {} | matches : {}\n"],
     "last 5 res metres": ["{}. {} очков | {} м\n", "{}. {} points | {} m\n"],
     "last 5 res km" : ["{}. {} очков | {} км\n", "{}. {} points | {} km\n"],
+    "less than 5 games" : ["Чтобы попасть в топ, сыграйте 5 или более игр", "To appear in the ranking, finish 5 or more games"],
     "wait for gpt" : ["Пожалуйста, подождите интересный факт...", "Please, wait for interesting fact..."],
     "games left" : ["Осталось {}/{} игр на сегодня", "{}/{} games left for today"],
     "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"]},
