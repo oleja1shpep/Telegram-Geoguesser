@@ -1004,8 +1004,8 @@ async def list_of_comands(message: Message) -> None:
 /deleteme - удаляет oleja_shpep из бд
 /setgames [username] - устанавливает количество игр по юзернейму
 /setgamesid [tele_id] - устанавливает количество игр по id
-/setforall - устанавливает для всех количество игр 20
 /list - присылает список всех игроков
+/count - присылает количество игроков
 
 users:
 /showid - присылает юзеру его id
@@ -1031,6 +1031,12 @@ async def list_of_users(message: Message) -> None:
         await message.answer(txt)
         length -= 50
         counter += 1
+    await message.answer(f"Количество: {len(lst)}")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/count", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_users(message: Message) -> None:
+    lst = database.show_database()
     await message.answer(f"Количество: {len(lst)}")
     await message.delete()
 
@@ -1071,14 +1077,14 @@ async def set_games_for_user(message: Message) -> None:
         await message.answer("no such user")
     await message.delete()
 
-@form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
-async def set_fotall_users_default(message: Message) -> None:
-    try:
-        database.set_key_forall_users("availible_games", 20)
-        logger.info("SUCCESS")
-    except Exception as e:
-        logger.error("BAD" + f"{e}")
-    await message.delete()
+# @form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+# async def set_fotall_users_default(message: Message) -> None:
+#     try:
+#         database.set_key_forall_users("availible_games", 20)
+#         logger.info("SUCCESS")
+#     except Exception as e:
+#         logger.error("BAD" + f"{e}")
+#     await message.delete()
 
 async def process_event(event, bot: Bot):
     try:
