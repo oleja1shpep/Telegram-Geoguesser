@@ -180,6 +180,11 @@
     "less than 5 games" : ["Чтобы попасть в топ, сыграйте 5 или более игр", "To appear in the ranking, finish 5 or more games"],
     "wait for gpt" : ["Пожалуйста, подождите интересный факт...", "Please, wait for interesting fact..."],
     "games left" : ["Осталось {}/{} игр на сегодня", "{}/{} games left for today"],
-    "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"]},
+    "no games": ["Вы ещё не сыграли ни одну игру", "You haven't played a single game yet"],
+    "x axis" : ["Игры", "Games"],
+    "y axis" : ["Очки", "Points"],
+    "graph title" : ["Статистика {} в режиме \"{}\"", "{} statistics in \"{}\" gamemode"],
+    "legend mean" : ["Среднее", "Mean"],
+    "legend games" : ["Игры", "Games"]},
 "lang_code": {"ru": 0, "en": 1}}
 

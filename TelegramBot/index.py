@@ -657,21 +657,40 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
 
-    await bot_functions.form_statistics_graph(tele_id, mode, lang)
+    flag = await bot_functions.form_statistics_graph(tele_id, mode, lang)
     # file = InputFile("./tmp/{tele_id}.png")
-
-    try:
-        msg = await message.answer_photo(
-            FSInputFile(f"./tmp/{tele_id}.png"),
-            caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{last_5_games}',
-            reply_markup = markup,
-            parse_mode="Markdown"
+    if flag:
+        try:
+            msg = await message.answer_photo(
+                FSInputFile(f"./tmp/{tele_id}.png"),
+                caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*',
+                reply_markup = markup,
+                parse_mode="Markdown"
             )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent photo answer")
-    except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent photo answer")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        try:
+            os.remove(f"./tmp/{tele_id}.png")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted file")
+        except Exception as e:
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+    else:
+        try:
+            msg = await message.answer(
+                f"*{translation['mode_display'][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation['no games'][lang_code[lang]]}",
+                reply_markup = markup,
+                parse_mode="Markdown"
+            )
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent no games answer")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
 
-    
+        try:
+            os.remove(f"./tmp/{tele_id}.png")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted file")
+        except Exception as e:
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
 
     await message.delete()
     chat = msg.chat
@@ -898,7 +917,8 @@ async def single_game_menu_set_seed(message: Message) -> None:
     if not(check_seed(string, mode)):
         try:
             await message.answer(
-                f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["not a seed"][lang_code[lang]]}'
+                f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["not a seed"][lang_code[lang]]}',
+                parse_mode="Markdown",
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: sent answer: not a seed")
         except Exception as e:
@@ -957,7 +977,8 @@ async def idk_bugs_or_smth(message: Message) -> None:
         lang = "en"
     try:
         msg = await message.answer(
-            translation['error'][lang_code[lang]]
+            translation['error'][lang_code[lang]],
+            parse_mode="Markdown",
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: someting broke or bot was restarted")
     except Exception as e:

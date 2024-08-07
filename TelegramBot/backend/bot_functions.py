@@ -244,17 +244,55 @@ async def form_statistics_graph(tele_id, mode, lang = 'en'):
     except Exception as e:
         logger.error(e)
     length = len(games)
+    if length == 0:
+        return False
     mean_scores = []
+    scores = []
     for i in range(length):
         total_score = 0
         counter = 0
+        scores.append(games[i][0])
         for j in range(max(0, i - 19), i + 1):
             counter += 1
             total_score += games[j][0]
         mean_scores.append(total_score / counter)
-    plt.plot(np.arange(1, len(mean_scores) + 1), mean_scores)
+
+    gamemode = ""
+    if mode == "wrld":
+        gamemode = translation["gamemodes"][lang_code[lang]][0]
+    elif mode == "easy":
+        gamemode = translation["gamemodes"][lang_code[lang]][1]
+    elif mode == "msk":
+        gamemode = translation["gamemodes"][lang_code[lang]][2]
+    elif mode == "spb":
+        gamemode = translation["gamemodes"][lang_code[lang]][3]
+    elif mode == "rus":
+        gamemode = translation["gamemodes"][lang_code[lang]][4]
+    elif mode == "usa":
+        gamemode = translation["gamemodes"][lang_code[lang]][5]
+
+    username = database.get_key(tele_id, "username", "")
+    
+    plt.plot(np.arange(1, len(mean_scores) + 1), mean_scores, color="black", label = translation["legend mean"][lang_code[lang]])
+    plt.scatter(np.arange(1, len(mean_scores) + 1), scores, c="red", label = translation["legend games"][lang_code[lang]])
+
+    step = 1
+    if length <= 10:
+        step = 1
+    else:
+        step = (length // 10)
+
+    plt.xticks(np.arange(1, len(mean_scores) + 1, step))
+
+    plt.yticks([0, 1000, 2000, 3000, 4000, 5000])
+    plt.ylim((0,5300))
+    plt.xlabel(translation["x axis"][lang_code[lang]])
+    plt.ylabel(translation["y axis"][lang_code[lang]])
+    plt.legend()
+    plt.title((translation["graph title"][lang_code[lang]]).format(username, gamemode))
     plt.savefig(f"./tmp/{tele_id}.png")
     plt.clf()
+    return True
 
 if __name__ == "__main__":
     form_statistics_graph(679428900, "msk")
