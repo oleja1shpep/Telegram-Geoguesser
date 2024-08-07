@@ -1,6 +1,10 @@
-let map, panorama, marker, loc;
+let map, panorama, marker, loc, answer_map;
 let mode, x, y, x_center, y_center, zoom;
 let radius_index = 0;
+
+const markerImg = document.createElement("img");
+markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
+
 
 let hash = window.location.hash.split('?')[0].split('&')
 
@@ -30,7 +34,9 @@ function get_panorama() {
         },
         addressControl: false,
         fullscreenControl: false,
-        showRoadLabels: false
+        showRoadLabels: false,
+        zoomControl: false,
+        // motionTrackingControl: false
       }
     );
     sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: radiuses[radius_index], source: "outdoor"}, processSVData);
@@ -88,15 +94,12 @@ async function initMap() {
         mapId: mapId
     });
 
-    const markerImg = document.createElement("img");
-    markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
-
     marker = new AdvancedMarkerElement({
         map: map,
         gmpDraggable: true,
         position: {lat: x_center, lng: y_center},
         content: markerImg,
-        title: "Answer",
+        title: "Your answer",
     });
 
     map.addListener("click", (mapsMouseEvent) => {
@@ -123,3 +126,65 @@ function toHomePano() {
       pitch: 0,
     });
 }
+
+async function initAnswerMap() {  
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+    const abs_distance = Math.max(Math.abs(marker.position.lat - loc.latLng.lat()), Math.abs(marker.position.lng - loc.latLng.lng()));
+
+    answer_zoom = 8.7558 - 1.4056 * Math.log(abs_distance)
+    console.log(Math.max(Math.abs(marker.position.lat - loc.latLng.lat()), Math.abs(marker.position.lng - loc.latLng.lng())))
+    console.log(answer_zoom)
+    answer_x_center = (marker.position.lat + loc.latLng.lat()) / 2;
+    answer_y_center = (marker.position.lng + loc.latLng.lng()) / 2;
+
+    answer_map = new Map(document.getElementById("answer_map"), {
+        controls: {},
+        clickableIcons: false,
+        disableDefaultUI: true,
+        zoom: answer_zoom,
+        minZoom: 1, 
+        center: {lat: answer_x_center, lng: answer_y_center},
+        restriction: {
+            latLngBounds: {
+              north: 80,
+              south: -80,
+              east: 180,
+              west: -180,
+            },
+        },
+        mapId: mapId
+    });
+  
+    const player_answer_marker = new AdvancedMarkerElement({
+        map: answer_map,
+        position: {lat: marker.position.lat, lng: marker.position.lng},
+        content: markerImg,
+        title: "Your answer",
+    });
+
+    const correct_answer_markerImg = document.createElement("img");
+    correct_answer_markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/correct_marker.png";
+
+    const correct_answer_marker = new AdvancedMarkerElement({
+        map: answer_map,
+        position: {lat: loc.latLng.lat(), lng: loc.latLng.lng()},
+        content: correct_answer_markerImg,
+        title: "Correct answer",
+    });
+
+    const answerPath_coordinates = [
+        { lat: loc.latLng.lat(), lng: loc.latLng.lng() },
+        { lat: marker.position.lat, lng: marker.position.lng },
+    ];
+
+    const answerPath = new google.maps.Polyline({
+        path: answerPath_coordinates,
+        geodesic: true,
+        strokeColor: "#0000FF",
+        strokeOpacity: 0.5,
+        strokeWeight: 5,
+    });
+    answerPath.setMap(answer_map);
+  }

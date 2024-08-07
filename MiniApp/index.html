@@ -13,8 +13,19 @@
             box-sizing: border-box;
         }
 
+        .hidden {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+
         html,
         body {
+            height: 100%;
+        }
+        
+        .page {
             height: 100%;
         }
 
@@ -34,6 +45,30 @@
             position: fixed;
             top: -55%;
             height: 55%;
+            text-align: center;
+            z-index: 100;
+            width: 100%;
+            /* border: 5px solid green; */
+            /* background: white; */
+            /* Другие стили для map */
+        }
+        
+        #answer_title {
+            position: fixed;
+            top: 0%;
+            height: 7%;
+            text-align: center;
+            z-index: 100;
+            width: 100%;
+            /* border: 5px solid green; */
+            background: var(--tg-theme-secondary-bg-color);
+            /* Другие стили для map */
+        }
+
+        #answer_map {
+            position: fixed;
+            top: 0%;
+            height: 100%;
             text-align: center;
             z-index: 100;
             width: 100%;
@@ -81,6 +116,13 @@
             right: 10px;
         }
 
+        #submit_page2 {
+            background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
+            background-size: 50%;
+            background-position: center;
+            right: 10px;
+        }
+
         #map_toggler {
             background: var(--tg-theme-button-color) url("icons/map-icon.svg") no-repeat;
             background-position: center;
@@ -99,19 +141,29 @@
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=[API_KRY]&callback=get_panorama&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=get_panorama&v=weekly"
         defer></script>
     <script src="app.js"></script>
 </head>
 
 <body>
-    <div id="cont">
-        <div id="pano" class="player"></div>
-        <div id="map" class="player"></div>
+    <!-- Страница 1 -->
+    <div id="page1" class="visible page">
+        <div id="cont"> 
+            <div id="pano" class="player"></div>
+            <div id="map" class="player"></div>
+        </div>
+        <button id="submit"></button>
+        <button id="map_toggler"></button>
+        <button id="home_pano"></button>
     </div>
-    <button id="submit"></button>
-    <button id="map_toggler"></button>
-    <button id="home_pano"></button>
+    <!-- Страница 2 -->
+    <div id="page2" class="hidden page">
+        <!-- <h1 id="answer_title">Правильный ответ</h1> -->
+        <div id="answer_map"></div>
+        <button id="submit_page2" onclick="tg.close()"></button>
+    </div>
+    
     <script>
         let tg = window.Telegram.WebApp;
         let submit = document.getElementById("submit");
@@ -123,11 +175,11 @@
         tg.expand();
         tg.enableClosingConfirmation()
         tg.disableVerticalSwipes()
-        // tg.ClosingConfirmation()
 
         submit.addEventListener("click", () => {
             tg.sendData(CreateBotResponce())
-            tg.close()
+            showPage('page2')
+            initAnswerMap();
         });
 
         home_pano.addEventListener("click", () => {
@@ -139,6 +191,18 @@
             submit.hidden = !submit.hidden;
             home_pano.hidden = !home_pano.hidden;
         });
+
+        function showPage(pageId) {
+            // Скрываем все страницы
+            document.querySelectorAll('div[id^="page"]').forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('visible');
+            });
+
+            // Показываем выбранную страницу
+            document.getElementById(pageId).classList.add('visible');
+            document.getElementById(pageId).classList.remove('hidden');
+        }
     </script>
 </body>
 
