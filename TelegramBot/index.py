@@ -639,7 +639,7 @@ async def single_game_menu_top_10_players(message: Message) -> None:
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 @form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
-async def single_game_menu_last_5_games(message: Message) -> None:
+async def single_game_menu_statistics(message: Message) -> None:
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
     tele_id = message.from_user.id
@@ -647,15 +647,15 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     
     try:
         lang = database.get_key(tele_id, "language", 'en')
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: Got language from user")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: Got language from user")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     try:
         last_5_games = await bot_functions.get_last5_results_single(tele_id, mode, lang)
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: got last 5 games in single " + mode)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: got last 5 games in single " + mode)
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
 
     flag = await bot_functions.form_statistics_graph(tele_id, mode, lang)
     # file = InputFile("./tmp/{tele_id}.png")
@@ -667,14 +667,14 @@ async def single_game_menu_last_5_games(message: Message) -> None:
                 reply_markup = markup,
                 parse_mode="Markdown"
             )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent photo answer")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: sent photo answer")
         except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
         try:
             os.remove(f"./tmp/{tele_id}.png")
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted file")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
         except Exception as e:
-            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
     else:
         try:
             msg = await message.answer(
@@ -682,23 +682,23 @@ async def single_game_menu_last_5_games(message: Message) -> None:
                 reply_markup = markup,
                 parse_mode="Markdown"
             )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent no games answer")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: sent no games answer")
         except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
 
         try:
             os.remove(f"./tmp/{tele_id}.png")
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted file")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
         except Exception as e:
-            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
 
     await message.delete()
     chat = msg.chat
     try:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted prev message")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted prev message")
     except Exception as e:
-        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
