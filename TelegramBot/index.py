@@ -657,13 +657,13 @@ async def single_game_menu_statistics(message: Message) -> None:
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
 
-    flag = await bot_functions.form_statistics_graph(tele_id, mode, lang)
-    # file = InputFile("./tmp/{tele_id}.png")
-    if flag:
+    games_count, moving_avg = await bot_functions.form_statistics_graph(tele_id, mode, lang)
+    # file = InputFile("/tmp/{tele_id}.png")
+    if games_count != 0:
         try:
             msg = await message.answer_photo(
-                FSInputFile(f"./tmp/{tele_id}.png"),
-                caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*',
+                FSInputFile(f"/tmp/{tele_id}.png"),
+                caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*' + "\n\n" + translation["games played"][lang_code[lang]].format(games_count) + "\n" +  translation["last 20 games avg"][lang_code[lang]].format(round(moving_avg, 2)),
                 reply_markup = markup,
                 parse_mode="Markdown"
             )
@@ -671,7 +671,7 @@ async def single_game_menu_statistics(message: Message) -> None:
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
         try:
-            os.remove(f"./tmp/{tele_id}.png")
+            os.remove(f"/tmp/{tele_id}.png")
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
         except Exception as e:
             logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
@@ -687,7 +687,7 @@ async def single_game_menu_statistics(message: Message) -> None:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
 
         try:
-            os.remove(f"./tmp/{tele_id}.png")
+            os.remove(f"/tmp/{tele_id}.png")
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
         except Exception as e:
             logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")

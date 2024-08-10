@@ -174,7 +174,7 @@
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
     "score and meters": ["Вы набрали {} очков\nРасстояние {} м", "You scored {} points\nDistance {} m"],
     "score and kilometers": ["Вы набрали {} очков\nРасстояние {} км", "You scored {} points\nDistance {} km"],
-    "top 10": ["{}. {} - среднее : {} | матчей : {}\n", "{}. {} - average : {} | matches : {}\n"],
+    "top 10": ["{}. {} - среднее : {} | игр : {}\n", "{}. {} - average : {} | games : {}\n"],
     "last 5 res metres": ["{}. {} очков | {} м\n", "{}. {} points | {} m\n"],
     "last 5 res km" : ["{}. {} очков | {} км\n", "{}. {} points | {} km\n"],
     "less than 5 games" : ["Чтобы попасть в топ, сыграйте 5 или более игр", "To appear in the ranking, finish 5 or more games"],
@@ -184,7 +184,9 @@
     "x axis" : ["Игры", "Games"],
     "y axis" : ["Очки", "Points"],
     "graph title" : ["Статистика {} в режиме \"{}\"", "{} statistics in \"{}\" gamemode"],
-    "legend mean" : ["Среднее", "Mean"],
-    "legend games" : ["Игры", "Games"]},
+    "legend mean" : ["Скользящее среднее", "Moving average"],
+    "legend games" : ["Игры", "Games"],
+    "games played" : ["Сыграно игр: {}", "Games played: {}"],
+    "last 20 games avg" : ["Среднее за последние 20 игр: {}", "Average for the last 20 games: {}"]},
 "lang_code": {"ru": 0, "en": 1}}
 

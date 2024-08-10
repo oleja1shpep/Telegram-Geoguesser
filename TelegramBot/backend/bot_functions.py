@@ -245,7 +245,7 @@ async def form_statistics_graph(tele_id, mode, lang = 'en'):
         logger.error(e)
     length = len(games)
     if length == 0:
-        return False
+        return 0, 0
     mean_scores = []
     scores = []
     for i in range(length):
@@ -290,9 +290,9 @@ async def form_statistics_graph(tele_id, mode, lang = 'en'):
     plt.ylabel(translation["y axis"][lang_code[lang]])
     plt.legend()
     plt.title((translation["graph title"][lang_code[lang]]).format(username, gamemode))
-    plt.savefig(f"./tmp/{tele_id}.png")
+    plt.savefig(f"/tmp/{tele_id}.png")
     plt.clf()
-    return True
+    return length, mean_scores[-1]
 
 if __name__ == "__main__":
     form_statistics_graph(679428900, "msk")
