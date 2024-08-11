@@ -956,44 +956,6 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.chat.type == "private", F.text, F.func(lambda F: F.from_user.id != 679428900 and F.from_user.id != 
-663532936))
-async def idk_bugs_or_smth(message: Message) -> None:
-    is_found = False
-    tele_id = message.from_user.id
-    try:
-        is_found = database.find_user(tele_id)
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: successfully connected to db")
-    except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: unable to connect to db: {e}")
-    if is_found:
-        try:
-            lang = database.get_key(tele_id, "language", 'en')
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: Got language from user")
-        except Exception as e:
-            lang = "en"
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: unable to get lang: {e}")
-    else:
-        lang = "en"
-    try:
-        msg = await message.answer(
-            translation['error'][lang_code[lang]],
-            parse_mode="Markdown",
-        )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: someting broke or bot was restarted")
-    except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: {e}")
-    await message.delete()
-    chat = msg.chat
-    try:
-        prev_msg = database.get_key(tele_id, "prev_message", 0)
-        if (prev_msg != 0):
-            await chat.delete_message(prev_msg)
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: deleted prev message")
-    except Exception as e:
-        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
-    database.set_key(tele_id, "prev_message", msg.message_id)
-
 @form_router.message(F.chat.type == "private", F.text == "/help", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
 async def list_of_comands(message: Message) -> None:
     try:
@@ -1085,6 +1047,43 @@ async def set_games_for_user(message: Message) -> None:
 #     except Exception as e:
 #         logger.error("BAD" + f"{e}")
 #     await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text)
+async def idk_bugs_or_smth(message: Message) -> None:
+    is_found = False
+    tele_id = message.from_user.id
+    try:
+        is_found = database.find_user(tele_id)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: successfully connected to db")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: unable to connect to db: {e}")
+    if is_found:
+        try:
+            lang = database.get_key(tele_id, "language", 'en')
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: Got language from user")
+        except Exception as e:
+            lang = "en"
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: unable to get lang: {e}")
+    else:
+        lang = "en"
+    try:
+        msg = await message.answer(
+            translation['error'][lang_code[lang]],
+            parse_mode="Markdown",
+        )
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: someting broke or bot was restarted")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: {e}")
+    await message.delete()
+    chat = msg.chat
+    try:
+        prev_msg = database.get_key(tele_id, "prev_message", 0)
+        if (prev_msg != 0):
+            await chat.delete_message(prev_msg)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: deleted prev message")
+    except Exception as e:
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
+    database.set_key(tele_id, "prev_message", msg.message_id)
 
 async def process_event(event, bot: Bot):
     try:
