@@ -6,6 +6,32 @@ const markerImg = document.createElement("img");
 markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
 
 
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+    "method": "get",
+    "key": "TEST1"
+});
+
+console.log(raw)
+
+var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+};
+
+fetch("https://functions.yandexcloud.net/d4e3l97hmqij0jekpe3t", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => {
+        console.log('error', error);
+        console.log(response.text());
+    }
+    );
+
 let hash = window.location.hash.split('?')[0].split('&')
 
 async function get_cords() {
