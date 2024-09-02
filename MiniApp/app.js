@@ -1,5 +1,5 @@
 let map, panorama, marker, loc, answer_map;
-let mode, x, y, x_center, y_center, zoom;
+let mode, x, y, x_center, y_center, zoom, seed, tele_id;
 let radius_index = 0;
 
 const markerImg = document.createElement("img");
@@ -9,28 +9,20 @@ markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-var raw = JSON.stringify({
-    "method": "get",
-    "key": "TEST1"
-});
+function getDictFromHash() {
+    const hash = window.location.hash.split('?')[0].substring(1);
+    const pairs = hash.split('&');
+    const dict = {};
+    pairs.forEach(pair => {
+        const [key, value] = pair.split('=');
+        const decodedKey = decodeURIComponent(key);
+        const decodedValue = decodeURIComponent(value);
+        dict[decodedKey] = decodedValue;
+    });
+    return dict;
+}
 
-console.log(raw)
-
-var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
-};
-
-fetch("https://functions.yandexcloud.net/d4e3l97hmqij0jekpe3t", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => {
-        console.log('error', error);
-        console.log(response.text());
-    }
-    );
+// console.log(getDictFromHash())
 
 let hash = window.location.hash.split('?')[0].split('&')
 
@@ -42,6 +34,8 @@ async function get_cords() {
     y_center = parseFloat(hash[4])
     zoom = parseFloat(hash[5])
     radius_index = parseInt(hash[6])
+    seed = hash[7]
+    tele_id = hash[8]
 }
 
 const radiuses = [500, 2500, 12500, 50000, 100000, 300000, 600000, 50000000]
@@ -52,20 +46,20 @@ function get_panorama() {
     console.log(x, y, x_center, y_center, zoom)
     const sv = new google.maps.StreetViewService();
     panorama = new google.maps.StreetViewPanorama(
-      document.getElementById("pano"),
-      {
-        pov: {
-          heading: 34,
-          pitch: 10,
-        },
-        addressControl: false,
-        fullscreenControl: false,
-        showRoadLabels: false,
-        zoomControl: false,
-        // motionTrackingControl: false
-      }
+        document.getElementById("pano"),
+        {
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
+            addressControl: false,
+            fullscreenControl: false,
+            showRoadLabels: false,
+            zoomControl: false,
+            // motionTrackingControl: false
+        }
     );
-    sv.getPanorama({ location: {lat: x, lng: y}, preference: "nearest", radius: radiuses[radius_index], source: "outdoor"}, processSVData);
+    sv.getPanorama({ location: { lat: x, lng: y }, preference: "nearest", radius: radiuses[radius_index], source: "outdoor" }, processSVData);
 };
 
 function processSVData(data, status) {
@@ -87,8 +81,8 @@ function processSVData(data, status) {
 
     panorama.setPano(loc.pano);
     panorama.setPov({
-      heading: 270,
-      pitch: 0,
+        heading: 270,
+        pitch: 0,
     });
     panorama.setVisible(true);
 }
@@ -107,14 +101,14 @@ async function initMap() {
         clickableIcons: false,
         disableDefaultUI: true,
         zoom: zoom,
-        minZoom: 1, 
-        center: {lat: x_center, lng: y_center},
+        minZoom: 1,
+        center: { lat: x_center, lng: y_center },
         restriction: {
             latLngBounds: {
-              north: 80,
-              south: -80,
-              east: 180,
-              west: -180,
+                north: 80,
+                south: -80,
+                east: 180,
+                west: -180,
             },
         },
         mapId: mapId
@@ -123,7 +117,7 @@ async function initMap() {
     marker = new AdvancedMarkerElement({
         map: map,
         gmpDraggable: true,
-        position: {lat: x_center, lng: y_center},
+        position: { lat: x_center, lng: y_center },
         content: markerImg,
         title: "Your answer",
     });
@@ -134,13 +128,36 @@ async function initMap() {
 }
 
 function CreateBotResponce() {
-    try {
-        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.lat} ${marker.position.lng}|${mode}|${window.Telegram.WebApp.colorScheme}`
-    } 
-    catch (error) {
-        console.log('error:', error)
-        var res = `${loc.latLng.lat()} ${loc.latLng.lng()} 0 0|${mode}|${window.Telegram.WebApp.colorScheme}`
-    }
+    var raw = JSON.stringify({
+        "method": "end_solo_game",
+        "tele_id": tele_id,
+        "seed": seed,
+        "mode": mode,
+        "fields": {
+            "x_correct": loc.latLng.lat(),
+            "y_correct": loc.latLng.lng(),
+            "x_player": marker.position.lat,
+            "y_player": marker.position.lat,
+            "color_scheme": window.Telegram.WebApp.colorScheme
+        }
+    });
+
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+
+    fetch("https://functions.yandexcloud.net/d4e3l97hmqij0jekpe3t", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => {
+            console.log('error', error);
+        }
+        );
+
+    var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.lat} ${marker.position.lng}|${mode}|${window.Telegram.WebApp.colorScheme}`
     console.log(res);
     return res;
 }
@@ -148,12 +165,12 @@ function CreateBotResponce() {
 function toHomePano() {
     panorama.setPano(loc.pano);
     panorama.setPov({
-      heading: 270,
-      pitch: 0,
+        heading: 270,
+        pitch: 0,
     });
 }
 
-async function initAnswerMap() {  
+async function initAnswerMap() {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
@@ -170,22 +187,22 @@ async function initAnswerMap() {
         clickableIcons: false,
         disableDefaultUI: true,
         zoom: answer_zoom,
-        minZoom: 1, 
-        center: {lat: answer_x_center, lng: answer_y_center},
+        minZoom: 1,
+        center: { lat: answer_x_center, lng: answer_y_center },
         restriction: {
             latLngBounds: {
-              north: 80,
-              south: -80,
-              east: 180,
-              west: -180,
+                north: 80,
+                south: -80,
+                east: 180,
+                west: -180,
             },
         },
         mapId: mapId
     });
-  
+
     const player_answer_marker = new AdvancedMarkerElement({
         map: answer_map,
-        position: {lat: marker.position.lat, lng: marker.position.lng},
+        position: { lat: marker.position.lat, lng: marker.position.lng },
         content: markerImg,
         title: "Your answer",
     });
@@ -195,7 +212,7 @@ async function initAnswerMap() {
 
     const correct_answer_marker = new AdvancedMarkerElement({
         map: answer_map,
-        position: {lat: loc.latLng.lat(), lng: loc.latLng.lng()},
+        position: { lat: loc.latLng.lat(), lng: loc.latLng.lng() },
         content: correct_answer_markerImg,
         title: "Correct answer",
     });
@@ -213,4 +230,4 @@ async function initAnswerMap() {
         strokeWeight: 5,
     });
     answerPath.setMap(answer_map);
-  }
+}
