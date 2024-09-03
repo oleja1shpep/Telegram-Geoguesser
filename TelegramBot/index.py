@@ -10,7 +10,7 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.client.default import DefaultBotProperties
-from aiogram.types import Message, Update
+from aiogram.types import Message, Update, FSInputFile
 from dotenv import load_dotenv
 
 from backend import markups, bot_functions
@@ -21,6 +21,13 @@ from backend.seed_processor import generate_seed, check_seed
 
 USE_DB = True
 DEBUG_MODE = False
+DEFAULT_AVAILIBLE_GAMES = markups.DEFAULT_AVAILIBLE_GAMES
+MODE_NAMES = {'msk': ['Москва', 'Moscow'], 
+              'spb': ['Санкт-Петербург', 'St. Petersburg'],
+              'rus': ['Россия', 'Russia'],
+              'usa': ['США', 'USA'],
+              'wrld': ['Весь мир', 'World'],
+              'easy': ['Известные места', 'Famous places']}
 
 INSTANCE_ID = random.randint(10000, 99999)
 
@@ -46,22 +53,12 @@ form_router = Router()
 dp = Dispatcher()
 dp.include_router(form_router)
 
-@form_router.message(F.chat.type == "private", F.text == "/setdate", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    tele_id = message.from_user.id
-    database.set_key(tele_id, "time_of_prev_request", (date.today() - timedelta(days=1)).strftime("%Y-%m-%d"))
-    await message.delete()
-
-@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    database.delete_user(679428900)
-    await message.delete()
-
-@form_router.message(F.chat.type == "private", F.text == "/setgames", F.func(lambda F: F.from_user.id == 679428900))
-async def drop_db_table(message: Message) -> None:
-    tele_id = message.from_user.id
-    database.set_key(tele_id, "availible_games", 10000)
-    database.set_key(database.get_user("govzman")["tele_id"], "availible_games", 10000)
+@form_router.message(F.chat.type == "private", F.text == "/showid")
+async def show_user_id(message: Message) -> None:
+    await message.answer(
+        f"`{message.from_user.id}`",
+        parse_mode="Markdown"
+        )
     await message.delete()
 
 @form_router.message(CommandStart(), F.chat.type == "private")
@@ -124,7 +121,7 @@ async def command_start(message: Message) -> None:
                 logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: {e}")
         database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "start"), F.text.in_(translation['play']))
 async def process_name(message: Message) -> None:
     # await state.set_state(Form.menu)
 
@@ -194,7 +191,7 @@ async def process_name(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: process_name: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["how to play"]))
 async def main_menu(message: Message) -> None:
     tele_id = message.from_user.id
     
@@ -224,38 +221,38 @@ async def main_menu(message: Message) -> None:
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu: finished <main_menu>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["donations"]))
-async def main_menu_donations(message: Message) -> None:
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["credits"]))
+async def main_menu_credits(message: Message) -> None:
     tele_id = message.from_user.id
     
     database.drop_duplicates()
     try:
         lang = database.get_key(tele_id, "language", 'en')
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: got lang from user")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: got lang from user")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: {e}")
     markup = await markups.create_menu_markup(lang)
     try: 
         msg = await message.answer(
-            text = translation["support authors"][lang_code[lang]],
+            text =  translation["developers"][lang_code[lang]],
             reply_markup=markup,
             parse_mode="Markdown"
         )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: sent answer: donations")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: sent answer: credits")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: {e}")
     
     await message.delete()
     chat = msg.chat
     try:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: deleted prev message")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: deleted prev message")
     except Exception as e:
-        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: {e}")
-    logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_donations: finished <main_menu_donations>")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: {e}")
+    logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: main_menu_credits: finished <main_menu_credits>")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["settings"]))
 async def settings_menu(message: Message) -> None:
     database.drop_duplicates()
     tele_id = message.from_user.id
@@ -283,7 +280,7 @@ async def settings_menu(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: settings_menu: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["rus_language"]))
 async def change_language_rus(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -311,7 +308,7 @@ async def change_language_rus(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_rus: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["eng_language"]))
 async def change_language_eng(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -338,7 +335,7 @@ async def change_language_eng(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_eng: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["use_gpt"]))
 async def switch_use_gpt(message: Message) -> None:
     tele_id = message.from_user.id
     try:
@@ -373,7 +370,7 @@ async def switch_use_gpt(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: switch_use_gpt: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "language_menu"), F.text.in_(translation["back"]))
 async def settings_back(message: Message) -> None:
     # await state.set_state(Form.menu)
     tele_id = message.from_user.id
@@ -402,7 +399,7 @@ async def settings_back(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: change_language_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "menu"), F.text.in_(translation["modes"]))
 async def gamemodes(message: Message) -> None:
     database.drop_duplicates()
     # await state.set_state(Form.gamemodes)
@@ -433,7 +430,7 @@ async def gamemodes(message: Message) -> None:
     database.set_key(tele_id, "prev_message", msg.message_id)
     
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.in_(translation["back"]))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.text.in_(translation["back"]))
 async def gamemodes_back(message: Message) -> None:
     # await state.set_state(Form.menu)
     tele_id = message.from_user.id
@@ -462,8 +459,16 @@ async def gamemodes_back(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: gamemodes_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
+async def create_single_game_answer(message: Message, lang: str, markup, mode: str) -> Message:
+    answer = message.text
+    return await message.answer(
+                f'*{translation["mode_display"][lang_code[lang]]}{answer}*\n{messages.MULTIPLAYER_INFORMATION[lang_code[lang]]}',
+                reply_markup = markup,
+                parse_mode="Markdown"
+            )
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: (F.text in translation["gamemodes"][0]) or (F.text in translation["gamemodes"][1])))
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "gamemodes"), F.func(lambda F: (F.text in translation["gamemodes"][0]) or (F.text in translation["gamemodes"][1])))
 async def single_game(message: Message) -> None:
     tele_id = message.from_user.id
     answer = message.text
@@ -477,59 +482,47 @@ async def single_game(message: Message) -> None:
         mode = "wrld"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
-            msg = await message.answer(
-                translation['single wrld'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
-                reply_markup = markup,
-                parse_mode="Markdown"
-            )
+            msg = await create_single_game_answer(message, lang, markup, mode)
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по миру")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][1]):
-        mode = "msk"
+        mode = "easy"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
-            msg = await message.answer(
-                translation['single msk'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
-                reply_markup = markup,
-                parse_mode="Markdown"
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по москве")
+            msg = await create_single_game_answer(message, lang, markup, mode)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по достопримечательностям")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][2]):
-        mode = "spb"
+        mode = "msk"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
-            msg = await message.answer(
-                translation['single spb'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
-                reply_markup = markup,
-                parse_mode="Markdown"
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Санкт-Петербургу")
+            msg = await create_single_game_answer(message, lang, markup, mode)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по москве")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][3]):
-        mode = "rus"
+        mode = "spb"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
-            msg = await message.answer(
-                translation['single rus'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
-                reply_markup = markup,
-                parse_mode="Markdown"
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по России")
+            msg = await create_single_game_answer(message, lang, markup, mode)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Санкт-Петербургу")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     elif (answer == translation["gamemodes"][lang_code[lang]][4]):
+        mode = "rus"
+        markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
+        try:
+            msg = await create_single_game_answer(message, lang, markup, mode)
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по России")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
+    elif (answer == translation["gamemodes"][lang_code[lang]][5]):
         mode = "usa"
         markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
         try:
-            msg = await message.answer(
-                translation['single usa'][lang_code[lang]] + messages.MULTIPLAYER_INFORMATION[lang_code[lang]],
-                reply_markup = markup,
-                parse_mode="Markdown"
-            )
+            msg = await create_single_game_answer(message, lang, markup, mode)
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: sent answer: Одиночный по Беларуси")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
@@ -545,7 +538,7 @@ async def single_game(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['rules']))
 async def single_game_menu_rules(message: Message) -> None:
     # mode = await state.get_data()
     tele_id = message.from_user.id
@@ -558,56 +551,15 @@ async def single_game_menu_rules(message: Message) -> None:
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
-    if (mode == "msk"):
-        try:
-            msg = await message.answer(
-                messages.MOSCOW_SINGLE_PLAYER_RULES[lang_code[lang]],
-                parse_mode="Markdown",
-                reply_markup=markup
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules moscow")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
-    elif (mode == "spb"):
-        try:
-            msg = await message.answer(
-                messages.SPB_SINGLE_PLAYER_RULES[lang_code[lang]],
-                parse_mode="Markdown",
-                reply_markup=markup
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules spb")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
-    elif (mode == "rus"):
-        try:
-            msg = await message.answer(
-                messages.RUSSIA_SINGLE_PLAYER_RULES[lang_code[lang]],
-                parse_mode="Markdown",
-                reply_markup=markup
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules russia")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
-    elif (mode == "usa"):
-        try:
-            msg = await message.answer(
-                messages.USA_SINGLE_PLAYER_RULES[lang_code[lang]],
-                parse_mode="Markdown",
-                reply_markup=markup
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules USA")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
-    elif (mode == "wrld"):
-        try:
-            msg = await message.answer(
-                messages.WORLD_SINGLE_PLAYER_RULES[lang_code[lang]],
-                parse_mode="Markdown",
-                reply_markup=markup
-            )
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules world")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
+    try:
+        msg = await message.answer(
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{messages.RULES[lang_code[lang]]}',
+            parse_mode="Markdown",
+            reply_markup=markup
+        )
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: sent rules {mode}")
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
     await message.delete()
     chat = msg.chat
     try:
@@ -617,7 +569,7 @@ async def single_game_menu_rules(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_rules: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['play']))
 async def single_game_menu_not_allowed_to_play(message: Message) -> None:
     # mode = await state.get_data()
     tele_id = message.from_user.id
@@ -633,7 +585,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
     
     try:
         msg = await message.answer(
-            translation["no games left"][lang_code[lang]],
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["no games left"][lang_code[lang]]}',
             reply_markup=markup
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: sentno games left message")
@@ -649,7 +601,7 @@ async def single_game_menu_not_allowed_to_play(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_not_allowed_to_play: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['top players']))
 async def single_game_menu_top_10_players(message: Message) -> None:
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
@@ -664,14 +616,15 @@ async def single_game_menu_top_10_players(message: Message) -> None:
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     top_10_text = ''
     try:
-        top_10_text = await bot_functions.get_top10_single(mode=mode, lang=lang)
+        top_10_text = await bot_functions.get_top10_single(tele_id, mode, lang)
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: got top 10 players in single " + mode)
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     try:
         msg = await message.answer(
-            top_10_text,
-            reply_markup=markup
+            f'<b>{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}</b>\n{top_10_text}',
+            reply_markup=markup,
+            parse_mode="HTML"
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: sent top 10 players in single " + mode)
     except Exception as e:
@@ -685,8 +638,8 @@ async def single_game_menu_top_10_players(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_top_10_players: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
-async def single_game_menu_last_5_games(message: Message) -> None:
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['last 5 games']))
+async def single_game_menu_statistics(message: Message) -> None:
     # mode = await state.get_data()
     # mode = mode["gamemodes"]
     tele_id = message.from_user.id
@@ -694,34 +647,62 @@ async def single_game_menu_last_5_games(message: Message) -> None:
     
     try:
         lang = database.get_key(tele_id, "language", 'en')
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: Got language from user")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: Got language from user")
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
     markup = await markups.create_single_game_menu_markup(mode, lang, tele_id)
     try:
         last_5_games = await bot_functions.get_last5_results_single(tele_id, mode, lang)
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: got last 5 games in single " + mode)
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: got last 5 games in single " + mode)
     except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
-    try:
-        msg = await message.answer(
-            last_5_games,
-            reply_markup=markup
-        )
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: sent last 5 games in single " + mode)
-    except Exception as e:
-        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
+
+    games_count, moving_avg = await bot_functions.form_statistics_graph(tele_id, mode, lang)
+    # file = InputFile("/tmp/{tele_id}.png")
+    if games_count != 0:
+        try:
+            msg = await message.answer_photo(
+                FSInputFile(f"/tmp/{tele_id}.png"),
+                caption = f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*' + "\n\n" + translation["games played"][lang_code[lang]].format(games_count) + "\n" +  translation["last 20 games avg"][lang_code[lang]].format(round(moving_avg, 2)),
+                reply_markup = markup,
+                parse_mode="Markdown"
+            )
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: sent photo answer")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
+        try:
+            os.remove(f"/tmp/{tele_id}.png")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
+        except Exception as e:
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
+    else:
+        try:
+            msg = await message.answer(
+                f"*{translation['mode_display'][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation['no games'][lang_code[lang]]}",
+                reply_markup = markup,
+                parse_mode="Markdown"
+            )
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: sent no games answer")
+        except Exception as e:
+            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
+
+        try:
+            os.remove(f"/tmp/{tele_id}.png")
+            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted file")
+        except Exception as e:
+            logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
+
     await message.delete()
     chat = msg.chat
     try:
         await chat.delete_message(database.get_key(tele_id, "prev_message", 0))
-        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: deleted prev message")
+        logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: deleted prev message")
     except Exception as e:
-        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_last_5_games: {e}")
+        logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_statistics: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['back']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['back']))
 async def single_game_menu_back(message: Message) -> None:
     tele_id = message.from_user.id
     mode = database.get_key(tele_id, "state_data", "")
@@ -753,7 +734,7 @@ async def single_game_menu_back(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_back: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text.in_(translation['generate seed']))
 async def single_game_menu_generate_seed(message: Message) -> None:
     tele_id = message.from_user.id
     mode = database.get_key(tele_id, "state_data", "")
@@ -769,7 +750,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
     
     try:
         msg = await message.answer(
-            (messages.GENERATE_SEED[lang_code[lang]]).format(mode + "_" + seed),
+            f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{(messages.GENERATE_SEED[lang_code[lang]]).format(mode + "_" + seed)}',
             parse_mode="Markdown",
             reply_markup=markup
         )
@@ -786,7 +767,7 @@ async def single_game_menu_generate_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_generate_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.func(lambda F: hasattr(F, "web_app_data") and hasattr(F.web_app_data, "data") and F.web_app_data.data))
 async def single_game_menu_recieve_answer(message: Message) -> None:
     tele_id = message.from_user.id
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: Got answer from " + str(tele_id))
@@ -805,18 +786,30 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got seed from db")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
-    seed = mode + "_" + seed
+    try:
+        seed = mode + "_" + seed
+    except Exception as e:
+        logger.warning(f"seed: {seed}, type: {type(seed)} | mode: {mode}, type: {type(mode)}")
 
-    cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+    try:
+        cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+    except Exception as e:
+        logger.warning(f"BROKE, type: {type(message.web_app_data.data)}, excepton: {e}")
 
-    if (returned_mode == "spb" or returned_mode == "msk"):
-        score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
-    elif (returned_mode == "rus" or returned_mode == "usa"):
-        score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
-    elif (returned_mode == "wrld"):
-        score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
-    
+    logger.debug(message.web_app_data.data.split("|"))
+
+    try:
+        if (returned_mode == "spb" or returned_mode == "msk"):
+            score, metres = await bot_functions.calculate_score_and_distance_moscow_spb(cords=cords)
+        elif (returned_mode == "rus" or returned_mode == "usa" or returned_mode == "easy"):
+            score, metres = await bot_functions.calculate_score_and_distance_russia(cords=cords)
+        elif (returned_mode == "wrld"):
+            score, metres = await bot_functions.calculate_score_and_distance_world(cords=cords)
+    except Exception as e:
+        logger.warning(f"calc score metres, excepton: {e}, cords: [{cords}] type: {type(cords)}")
+
     photo_url = await bot_functions.get_static_map_image(cords, color_scheme)
+
     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: got photo url")
 
     try:
@@ -832,13 +825,13 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     
 
     if (track_changes):
+        # try:
+        #     database.add_results_single(tele_id, score, mode)
+        #     logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, id = {tele_id}")
+        # except Exception as e:
+        #     logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add results: {e}")
         try:
-            database.add_results_single(tele_id, score, mode)
-            logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added results to single: {mode}, score = {score}, id = {tele_id}")
-        except Exception as e:
-            logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add results: {e}")
-        try:
-            database.add_game_single(tele_id, score=score, metres=metres, mode=mode)
+            database.add_results(tele_id, score=score, metres=metres, mode=mode)
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: added game to single: {mode}, score = {score}, metres = {metres}, id = {tele_id}")
         except Exception as e:
             logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: unable to add game: {e}")
@@ -861,24 +854,33 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
     if (DEBUG_MODE):
         database.show_database()
     
-    txt = await bot_functions.create_result_text(score=score, metres=metres, lang = lang, seed=seed)
+    txt = await bot_functions.create_result_text(score=score, metres=metres, lang=lang, seed=seed)
 
     try:
         await message.answer_photo(
             photo_url,
-            caption=txt,
+            caption=f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[returned_mode][lang_code[lang]]}*\n{txt}',
             reply_markup=markup,
             parse_mode="Markdown"
             )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: sent photo answer")
     except Exception as e:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
+    current_game_count = database.get_key(tele_id, "game_counter", 0)
+    availible_games_count = database.get_key(tele_id, "availible_games", DEFAULT_AVAILIBLE_GAMES)
+    try:
+        msg = await message.answer(
+            (translation['games left'][lang_code[lang]]).format(max(0, availible_games_count - current_game_count), availible_games_count)
+        )
+        logger.info("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"send message - games left\"}")
+    except Exception as e:
+        logger.error("{\"File\" : \"index.py\", \"Function\" : \"single_game_menu_recieve_answer\", \"Action\" : \"send message - games left\", \"Error\" : \"" + f"{e}" + "\"}")
 
     if (database.get_key(tele_id, "use_gpt", True)):
         msg_to_delete = await message.answer(
             translation['wait for gpt'][lang_code[lang]],
         )
-        fact = bot_functions.gpt_request(cords, lang, returned_mode)
+        fact = bot_functions.gpt_request(cords, seed.split("_")[1], lang, returned_mode)
         await msg_to_delete.delete()
         await message.answer(
             fact,
@@ -892,10 +894,10 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: deleted prev message")
     except Exception as e:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_recieve_answer: {e}")
-    # database.set_key(tele_id, "prev_message", msg.message_id)
+    database.set_key(tele_id, "prev_message", msg.message_id)
 
 
-@form_router.message(F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)
+@form_router.message(F.chat.type == "private", F.func(lambda F: database.get_state(F.from_user.id)== "single_game_menu"), F.text)
 async def single_game_menu_set_seed(message: Message) -> None:
 
     # mode = await state.get_data()
@@ -915,7 +917,8 @@ async def single_game_menu_set_seed(message: Message) -> None:
     if not(check_seed(string, mode)):
         try:
             await message.answer(
-                translation["not a seed"][lang_code[lang]]
+                f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[mode][lang_code[lang]]}*\n{translation["not a seed"][lang_code[lang]]}',
+                parse_mode="Markdown",
             )
             logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: sent answer: not a seed")
         except Exception as e:
@@ -939,7 +942,7 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
         
     msg = await message.answer(
-        (translation["set seed"][lang_code[lang]]).format(string),
+        f'*{translation["mode_display"][lang_code[lang]]}{MODE_NAMES[seed_mode][lang_code[lang]]}*\n{(translation["set seed"][lang_code[lang]]).format(string)}',
         parse_mode="Markdown",
         reply_markup=markup
     )
@@ -953,7 +956,99 @@ async def single_game_menu_set_seed(message: Message) -> None:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
 
-@form_router.message(F.text)
+@form_router.message(F.chat.type == "private", F.text == "/help", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_comands(message: Message) -> None:
+    try:
+        await message.answer(
+            """admin:
+/help - присылает это сообщение
+/setdate [tele_id] - устанавливает дату на 1 день раньше
+/deleteme - удаляет oleja_shpep из бд
+/setgames [username] - устанавливает количество игр по юзернейму
+/setgamesid [tele_id] - устанавливает количество игр по id
+/list - присылает список всех игроков
+/count - присылает количество игроков
+
+users:
+/showid - присылает юзеру его id
+"""
+        )
+    except Exception as e:
+        logger.error(f"bug: {e}")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/list", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_users(message: Message) -> None:
+    lst = database.show_database()
+    await message.answer(f"Количество: {len(lst)}")
+    length = len(lst)
+    counter = 0
+    while length > 0:
+        txt = ""
+        for i in range(counter * 50, counter * 50 + 50):
+            if i >= len(lst):
+                break
+            username = lst[i]
+            txt += f"{i + 1}. {username}\n"
+        await message.answer(txt)
+        length -= 50
+        counter += 1
+    await message.answer(f"Количество: {len(lst)}")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/count", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def list_of_users(message: Message) -> None:
+    lst = database.show_database()
+    await message.answer(f"Количество: {len(lst)}")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setdate"), F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def set_date(message: Message) -> None:
+    try:
+        tele_id = message.text.split()[1]
+    except Exception as e:
+        logger.error(f"INSTANCE_ID = {INSTANCE_ID}, In function: set_date: {e}")
+        await message.answer("broke")
+    database.set_key(tele_id, "time_of_prev_request", (date.today() - timedelta(days=1)).strftime("%Y-%m-%d"))
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text == "/deleteme", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def delete_me_from_db(message: Message) -> None:
+    database.delete_user(679428900)
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgames") , F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def set_games_for_user(message: Message) -> None:
+    username = message.text.split()[1]
+    amount = 10000
+    if (database.find_user_search_username(username)):
+        database.set_key(database.get_user(username)["tele_id"], "availible_games", amount)
+        await message.answer("success")
+    else:
+        await message.answer("no such user")
+    await message.delete()
+
+@form_router.message(F.chat.type == "private", F.func(lambda F: F.text.split()[0] == "/setgamesid") , F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+async def set_games_for_user(message: Message) -> None:
+    tele_id = int(message.text.split()[1])
+    amount = 10000
+    if (database.find_user(tele_id)):
+        database.set_key(tele_id, "availible_games", amount)
+        await message.answer("success")
+    else:
+        await message.answer("no such user")
+    await message.delete()
+
+# @form_router.message(F.chat.type == "private", F.text == "/setforall", F.func(lambda F: F.from_user.id == 679428900 or F.from_user.id == 663532936))
+# async def set_fotall_users_default(message: Message) -> None:
+#     try:
+#         database.set_key_forall_users("availible_games", 20)
+#         logger.info("SUCCESS")
+#     except Exception as e:
+#         logger.error("BAD" + f"{e}")
+#     await message.delete()
+
+@form_router.message(F.chat.type == "private", F.text)
 async def idk_bugs_or_smth(message: Message) -> None:
     is_found = False
     tele_id = message.from_user.id
@@ -973,7 +1068,8 @@ async def idk_bugs_or_smth(message: Message) -> None:
         lang = "en"
     try:
         msg = await message.answer(
-            translation['error'][lang_code[lang]]
+            translation['error'][lang_code[lang]],
+            parse_mode="Markdown",
         )
         logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: idk_bugs_or_smth: someting broke or bot was restarted")
     except Exception as e:

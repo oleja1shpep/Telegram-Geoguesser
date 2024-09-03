@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 import requests
+import matplotlib.pyplot as plt
 
 from math import cos, sin, asin, sqrt, radians, log
 from dotenv import load_dotenv
@@ -10,6 +11,16 @@ from geopy.distance import geodesic
 
 from backend.database import MongoDB
 from backend.text.links import STATIC_MAPS_LIGHT_LINK, STATIC_MAPS_DARK_LINK, YAGPT_LINK, GEOCODE_LINK
+from backend.seed_processor import coordinates_and_landmark_from_seed_easy_mode
+
+MODE_TO_GEOCODER_ARGS = {
+    'msk': 'street_address|political',
+    'spb': 'street_address|political',
+    'rus': 'political', 
+    'usa': 'political',
+    'wrld': 'administrative_area_level_1|country',
+    'easy': 'point_of_interest'
+}
 
 database = MongoDB()
 
@@ -34,7 +45,7 @@ logger.setLevel(logging.DEBUG)
 def form_payload(request):
     logger.debug(FOLDER_ID)
     payload = json.dumps({
-    "modelUri": f"gpt://{FOLDER_ID}/yandexgpt",
+    "modelUri": f"gpt://{FOLDER_ID}/yandexgpt-lite/latest",
     "completionOptions": {
         "stream": False,
         "temperature": 0.2,
@@ -42,16 +53,19 @@ def form_payload(request):
     },
     "messages": [
         {
-        "role": "user",
-        "text": request
+            "role": "system",
+            "text": "Ты - экскурсовод, который отлично знает историю и географию. Текст не длиннее 50 слов."
+        },
+        {
+            "role": "user",
+            "text": request
         }
     ]
     })
     return payload
 
 def get_address(lat, lon, mode, lang):
-    mode_to_result_type = {'msk': 'street_address|political', 'spb': 'street_address|political', 'rus': 'political', 'usa': 'political', 'wrld': 'administrative_area_level_1|country'}
-    response = requests.get(GEOCODE_LINK.format(lat, lon, mode_to_result_type[mode], lang, GEOCODER_APIKEY))
+    response = requests.get(GEOCODE_LINK.format(lat, lon, MODE_TO_GEOCODER_ARGS[mode], lang, GEOCODER_APIKEY))
     code = response.status_code
     if code != 200:
         logger.warning(f"In function: get_address: Coords request error. Status code: {code}")
@@ -76,27 +90,32 @@ def get_address(lat, lon, mode, lang):
     return address
         
 
-def gpt_request(cords, lang, mode):
+def gpt_request(cords, seed, lang, mode):
     lat1, lon1, lat2, lon2 = map(str, cords.split())
     logger.debug(f"lat: {lat1}, lon: {lon1}")
-    
     address = ''
-    try:
-        address = get_address(lat1, lon1, mode, lang)
-    except Exception as e:
-        logger.error(f"In function: gpt_request: {e}")
-    if not address:
-        if lang == "en":
-            return f"Unable to come up with interesting fact"
-        else:
-            return f"Не удалось найти интересный факт"
-        
+    if mode == 'easy':
+        x, y, landmark_id = coordinates_and_landmark_from_seed_easy_mode(seed)
+        address = translation["landmarks"][lang_code[lang]][landmark_id]
+    else:
+        try:
+            address = get_address(lat1, lon1, mode, lang)
+        except Exception as e:
+            logger.error(f"In function: gpt_request: {e}")
+        if not address:
+            if lang == "en":
+                return f"Unable to come up with interesting fact"
+            else:
+                return f"Не удалось найти интересный факт"
     language = ''
     if lang == 'en':
         language = 'английском'
     else:
         language = "русском"
-    request = f"Дай мне интересный факт длиной не больше 50 слов на {language} языке об адресе: {address}. Не упоминай сам адрес при ответе"
+    if mode != 'easy':
+        request = f"Напиши интересный факт на {language} языке об: {address}. Не упоминай сам адрес при ответе"
+    else:
+        request = f"Расскажи подробно о {address} на {language} языке"
     payload = form_payload(request)
     headers = {
         'Authorization': f'Api-Key {YAGPT_APIKEY}',
@@ -173,7 +192,7 @@ async def create_result_text(score, metres, seed, lang = 'en'):
     txt += f"\nSeed: `{seed}`"
     return txt
 
-async def get_top10_single(mode, lang = 'en'):
+async def get_top10_single(tele_id, mode, lang = 'en'):
     try:
         top_10_users = database.get_top10_single(mode)
         logger.info("connected to db. got top 10 players in signle " + mode)
@@ -187,17 +206,24 @@ async def get_top10_single(mode, lang = 'en'):
         txt += (translation['top 10'][lang_code[lang]]).format(i + 1, top_10_users[i]["username"], top_10_users[i][mode.lower() +"_single_mean_score"],
                                                               top_10_users[i][mode.lower() +"_single_game_counter"])
     # print(top_10_users)
+    find_user = database.users.find_one({"tele_id" : tele_id})
+    txt += '\n...............................................\n'
+    txt += (translation['top 10'][lang_code[lang]]).format('#', find_user["username"], find_user[mode.lower() +"_single_mean_score"],
+                                                              find_user[mode.lower() +"_single_game_counter"])
+    
+    if (find_user[mode.lower() +"_single_game_counter"] < 5):
+        txt += "\n" + translation["less than 5 games"][lang_code[lang]]
     return txt
 
 async def get_last5_results_single(tele_id, mode, lang = 'en'):
     try:
-        games = database.get_last5_results(tele_id, mode)
-        logger.info("connected to db. got last 5 games in signle " + mode)
+        games = database.get_last_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in single " + mode)
     except Exception as e:
         logger.error(e)
 
     txt = ''
-    for i in range(len(games)):
+    for i in range(len(games) - 1, max(-1, len(games) - 6), -1):
         metres = games[i][1]
         if metres < 10000:
             txt += (translation['last 5 res metres'][lang_code[lang]]).format(i + 1, games[i][0], metres)
@@ -209,3 +235,64 @@ async def get_last5_results_single(tele_id, mode, lang = 'en'):
     if len(games) == 0:
         txt = (translation['no games'][lang_code[lang]])
     return txt
+
+
+async def form_statistics_graph(tele_id, mode, lang = 'en'):
+    try:
+        games = database.get_last_results(tele_id, mode)
+        logger.info("connected to db. got last 5 games in single " + mode)
+    except Exception as e:
+        logger.error(e)
+    length = len(games)
+    if length == 0:
+        return 0, 0
+    mean_scores = []
+    scores = []
+    for i in range(length):
+        total_score = 0
+        counter = 0
+        scores.append(games[i][0])
+        for j in range(max(0, i - 19), i + 1):
+            counter += 1
+            total_score += games[j][0]
+        mean_scores.append(total_score / counter)
+
+    gamemode = ""
+    if mode == "wrld":
+        gamemode = translation["gamemodes"][lang_code[lang]][0]
+    elif mode == "easy":
+        gamemode = translation["gamemodes"][lang_code[lang]][1]
+    elif mode == "msk":
+        gamemode = translation["gamemodes"][lang_code[lang]][2]
+    elif mode == "spb":
+        gamemode = translation["gamemodes"][lang_code[lang]][3]
+    elif mode == "rus":
+        gamemode = translation["gamemodes"][lang_code[lang]][4]
+    elif mode == "usa":
+        gamemode = translation["gamemodes"][lang_code[lang]][5]
+
+    username = database.get_key(tele_id, "username", "")
+    
+    plt.plot(np.arange(1, len(mean_scores) + 1), mean_scores, color="black", label = translation["legend mean"][lang_code[lang]])
+    plt.scatter(np.arange(1, len(mean_scores) + 1), scores, c="red", label = translation["legend games"][lang_code[lang]])
+
+    step = 1
+    if length <= 10:
+        step = 1
+    else:
+        step = (length // 10)
+
+    plt.xticks(np.arange(1, len(mean_scores) + 1, step))
+
+    plt.yticks([0, 1000, 2000, 3000, 4000, 5000])
+    plt.ylim((0,5300))
+    plt.xlabel(translation["x axis"][lang_code[lang]])
+    plt.ylabel(translation["y axis"][lang_code[lang]])
+    plt.legend()
+    plt.title((translation["graph title"][lang_code[lang]]).format(username, gamemode))
+    plt.savefig(f"/tmp/{tele_id}.png")
+    plt.clf()
+    return length, mean_scores[-1]
+
+if __name__ == "__main__":
+    form_statistics_graph(679428900, "msk")

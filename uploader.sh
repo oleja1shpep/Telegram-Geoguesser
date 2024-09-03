@@ -27,4 +27,11 @@ yc serverless function version create \
     --execution-timeout 10m \
     --source-path function.zip \
     --service-account-id $SA_ID \
-    --network-id $NETWORK_ID
+    --network-id $NETWORK_ID \
+
+yc serverless function set-scaling-policy \
+    --id=$FUNCTION_ID \
+    --tag=\$latest \
+    --zone-instances-limit=100 \
+    --zone-requests-limit=200 \
+    --provisioned-instances-count=1

@@ -1,129 +1,31 @@
-MOSCOW_SINGLE_PLAYER_RULES = [("""
-Проверь своё знание Москвы!
-
+RULES = [("""
+*Основное:*
 Дается неограниченное количество времени на ответ
 Можно перемещаться по улицам в любых направлениях
 
-Мультиплеер:
-Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации
-                               
+*Мультиплеер:*
+Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации                          
 Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
-                               
-Чтобы установить панораму, отправьте *seed* боту в соответствующем меню режима"""),
-                              ("""Check your knowledge of Moscow!
+Чтобы установить панораму, отправьте *seed* боту в соответствующем меню режима
 
-You are given an unlimited amount of time to answer
-You can move through the streets in any direction
- 
-Multuplayer:
-Press the button *Generate panorama* to get random generation key
-
-Send it to your friends, so you'll guess same places
-
-To set panorama send *seed* to bot in the corresponding gamemode menu
-""")]
-
-RUSSIA_SINGLE_PLAYER_RULES = [("""
-Как хорошо ты знаешь Россию?
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях
-
-Мультиплеер:
-Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации
-                               
-Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
-                               
-Чтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""),
+*Лимиты:*                               
+В день выдаётся 20 игр на все режимы 
+Хотите убрать лимит? Поддержите авторов любой суммой больше 49₽ и отправьте подтверждение @govzman
+Сделать это можно в главном меню!"""),
                               ("""
-Check your knowledge of Russia!
-
-You are given an unlimited amount of time to answer
+*Basic:*
+An unlimited amount of time is given to respond
 You can move through the streets in any direction
- 
-Multuplayer:
-Press the button *Generate panorama* to get random generation key
 
-Send it to your friends, so you'll guess same places
+*Multiplayer:*
+Click the *Generate Panorama* button to get a random generation key
+Send it to your friends so that you can guess the same places!
+To set the panorama, send *seed* to the bot in the corresponding mode menu
 
-To set panorama send *seed* to bot in the corresponding gamemode menu""")]
-
-SPB_SINGLE_PLAYER_RULES = [("""
-Проверь своё знание Санкт-Петербурга!
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях
-
-Мультиплеер:
-Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации
-                               
-Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
-                               
-Чтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""),
-                           ("""
-Check your knowledge of St. Petersburg!
-
-You are given an unlimited amount of time to answer
-You can move through the streets in any direction
- 
-Multuplayer:
-Press the button *Generate panorama* to get random generation key
-
-Send it to your friends, so you'll guess same places
-
-To set panorama send *seed* to bot in the corresponding gamemode menu""")]
-
-
-USA_SINGLE_PLAYER_RULES = [("""
-Как хорошо ты знаешь США?
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях
-                 
-Мультиплеер:
-Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации
-                               
-Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
-                               
-Чтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""),
-                           ("""
-How well do you know USA?
-
-You are given an unlimited amount of time to answer
-You can move through the streets in any direction
- 
-Multuplayer:
-Press the button *Generate panorama* to get random generation key
-
-Send it to your friends, so you'll guess same places
-
-To set panorama send *seed* to bot in the corresponding gamemode menu""")]
-
-WORLD_SINGLE_PLAYER_RULES = [("""
-Как хорошо ты знаешь земной шар?
-
-Дается неограниченное количество времени на ответ
-Можно перемещаться по улицам в любых направлениях
-                              
-Мультиплеер:
-Нажми кнопку *Сгенерировать панораму*, чтобы получить случайный ключ генерации
-                               
-Пришли его друзьям, чтобы вы смогли отгадывать одинаковые места!
-                               
-Чтобы установить панораму, отправьте *seed* боту, находясь в меню соответствующего режима"""),
-                             ("""
-How well do you know Earth?
-
-You are given an unlimited amount of time to answer
-You can move through the streets in any direction
- 
-Multuplayer:
-Press the button *Generate panorama* to get random generation key
-
-Send it to your friends, so you'll guess same places
-
-To set panorama send *seed* to bot in the corresponding gamemode menu""")]
-
+*Limits:*
+There are 20 games per day for all modes
+Want to remove the limit? Support the authors with any amount over 49₽ and send a confirmation to @govzman
+You can do this in the main menu!""")]
 
 MULTIPLAYER_INFORMATION = [("""                    
 Чтобы сыграть с друзьями, сгенерируйте панораму, используя соответствующую кнопку
