@@ -5,12 +5,26 @@ import os
 import json
 import random
 
+from secrets import token_hex
 from datetime import date, timedelta
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.client.default import DefaultBotProperties
-from aiogram.types import Message, Update, FSInputFile
+from aiogram.types import (
+    Message,
+    Update,
+    FSInputFile,
+    InlineQuery,
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+    ChosenInlineResult,
+    LinkPreviewOptions,
+    WebAppInfo,
+)
+from aiogram.types.inline_keyboard_button import InlineKeyboardButton
+
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 
 from backend import markups, bot_functions
@@ -1084,6 +1098,38 @@ async def idk_bugs_or_smth(message: Message) -> None:
     except Exception as e:
         logger.warning(f"INSTANCE_ID = {INSTANCE_ID}, In function: single_game_menu_set_seed: {e}")
     database.set_key(tele_id, "prev_message", msg.message_id)
+
+@form_router.inline_query()
+async def inline_query_handler(inline_query: InlineQuery):
+    data, username = inline_query.query, ""
+    random_id = token_hex(2)
+    
+    if data.startswith("@"):
+        username = data.split(maxsplit=1)[0]
+
+    button = InlineKeyboardButton(text = "Дуэль!", callback_data = f"{random_id}", web_app = WebAppInfo(url = "https://www.geoguessr.com/"))
+    builder = InlineKeyboardBuilder()
+    builder.button(text = "Дуэль!", callback_data = f"{random_id}", web_app = WebAppInfo(url = "https://www.geoguessr.com/"))
+    markup = builder.as_markup()
+    
+    
+    await inline_query.answer(
+        [
+            InlineQueryResultArticle(
+                id = random_id,
+                title = f"Запрос на дуэль {'' if not(username) else 'игроку ' + username}",
+                description = "Соревнуйтесь с оппонентом!",
+                input_message_content = InputTextMessageContent(
+                    message_text = "Дуэль" if not(username) else f"Дуэль с {username}",
+                    link_preview_options = LinkPreviewOptions(is_disabled=True),
+                    disable_web_page_preview = True
+                ),
+                reply_markup = markup
+            )
+        ],
+        cache_time = 1,
+        is_personal = False
+    )
 
 async def process_event(event, bot: Bot):
     try:
