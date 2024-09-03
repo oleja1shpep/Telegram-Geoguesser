@@ -792,7 +792,17 @@ async def single_game_menu_recieve_answer(message: Message) -> None:
         logger.warning(f"seed: {seed}, type: {type(seed)} | mode: {mode}, type: {type(mode)}")
 
     try:
-        cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+        returned_mode = message.web_app_data.data
+        # cords, returned_mode, color_scheme = message.web_app_data.data.split("|")
+        
+        lat1 = database.get_key(tele_id, returned_mode + "_" + "x_correct", 0)
+        lon1 = database.get_key(tele_id, returned_mode + "_" + "y_correct", 0)
+        lat2 = database.get_key(tele_id, returned_mode + "_" + "x_player", 0)
+        lon2 = database.get_key(tele_id, returned_mode + "_" + "y_player", 0)
+
+        cords = f"{lat1} {lon1} {lat2} {lon2}"
+        color_scheme = database.get_key(tele_id, "color_scheme", "light")
+
     except Exception as e:
         logger.warning(f"BROKE, type: {type(message.web_app_data.data)}, excepton: {e}")
 
