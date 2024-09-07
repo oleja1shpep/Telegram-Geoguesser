@@ -22,7 +22,7 @@ def handler(event, context):
                 "Allow": "GET, POST, OPTIONS, PUT, DELETE",
                 "Content-Length": "0",
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "null",
+                "Access-Control-Allow-Origin": "https://geoguessr-site.website.yandexcloud.net",
                 "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization"
             },
@@ -58,8 +58,8 @@ def handler(event, context):
             }
         if data['mode'] not in MODES:
             response_data = {"status": False, "message": f"Wrong mode: {data['mode']} doesn't exist"}
-        elif database.get_current_seed(data['tele_id'], data['mode']) != data['seed']:
-            response_data = {"status": False, "message": f"Wrong seed or user does not exists. Current seed: {database.get_current_seed(data['tele_id'], data['mode'])} and yours is {data['seed']}"}
+        elif not database.is_active_session(data['tele_id'], data['mode']):
+            response_data = {"status": False, "message": f"Game finished or user does not exists."}
         else:
             database.end_solo_game(data)
             # database.start_solo_game(data['tele_id'], data['mode'])
@@ -68,7 +68,7 @@ def handler(event, context):
         get_data = database.get_test(data['tele_id'])
         response_data = {"message": "ok_get", "out": json.dumps(get_data)}
     elif data['method'] == 'set_test':
-        database.set_test(data['tele_id'], data['mode'], data['seed_msk'])
+        database.set_test(data['tele_id'], data['mode'], data['seed_msk'], data['track_changes'])
         response_data = {"message": "ok_set", "input": data}
     
     return {

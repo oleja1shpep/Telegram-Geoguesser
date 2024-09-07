@@ -35,7 +35,7 @@ async function get_cords() {
     zoom = parseFloat(hash[5])
     radius_index = parseInt(hash[6])
     seed = hash[7]
-    tele_id = hash[8]
+    tele_id = parseInt(hash[8])
 }
 
 const radiuses = [500, 2500, 12500, 50000, 100000, 300000, 600000, 50000000]
@@ -127,7 +127,7 @@ async function initMap() {
     })
 }
 
-function CreateBotResponce() {
+function EndGame() {
     var raw = JSON.stringify({
         "method": "end_solo_game",
         "tele_id": tele_id,
@@ -137,10 +137,12 @@ function CreateBotResponce() {
             "x_correct": loc.latLng.lat(),
             "y_correct": loc.latLng.lng(),
             "x_player": marker.position.lat,
-            "y_player": marker.position.lat,
+            "y_player": marker.position.lng,
             "color_scheme": window.Telegram.WebApp.colorScheme
         }
     });
+
+    console.log(raw)
 
     var requestOptions = {
         method: 'POST',
@@ -155,11 +157,13 @@ function CreateBotResponce() {
         .catch(error => {
             console.log('error', error);
         }
-        );
+    );
+}
 
-    var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.lat} ${marker.position.lng}|${mode}|${window.Telegram.WebApp.colorScheme}`
-    console.log(res);
-    return res;
+function CreateBotResponce() {
+    // var res = `${loc.latLng.lat()} ${loc.latLng.lng()} ${marker.position.lat} ${marker.position.lng}|${mode}|${window.Telegram.WebApp.colorScheme}`
+    console.log(mode);
+    return mode;
 }
 
 function toHomePano() {

@@ -161,7 +161,7 @@
     <div id="page2" class="hidden page">
         <!-- <h1 id="answer_title">Правильный ответ</h1> -->
         <div id="answer_map"></div>
-        <button id="submit_page2" onclick="tg.close()"></button>
+        <button id="submit_page2" onclick="tg.sendData(CreateBotResponce())"></button>
     </div>
     
     <script>
@@ -177,7 +177,7 @@
         tg.disableVerticalSwipes()
 
         submit.addEventListener("click", () => {
-            tg.sendData(CreateBotResponce())
+            EndGame()
             showPage('page2')
             initAnswerMap();
         });

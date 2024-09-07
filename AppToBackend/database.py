@@ -26,17 +26,16 @@ class MongoDB:
     def close(self):
         self.conn.close()
 
-    def get_current_seed(self, tele_id, mode):
+    def is_active_session(self, tele_id, mode):
         user = self.users.find_one({"tele_id" : tele_id})
-        
-        if not user or f"seed_{mode}" not in user:
-            return None
-        return user[f"seed_{mode}"]       
+        return user and f"is_active_session_{mode}" in user and user[f"is_active_session_{mode}"]
     
     def end_solo_game(self, data):
+        user = self.users.find_one({"tele_id": data['tele_id']})
         self.users.update_one({"tele_id": data['tele_id']}, 
                                 {"$set": {
-                                    f'seed_{data['mode']}': 'NULL_SEED' 
+                                    f'is_active_session_{data['mode']}': not user["track_changes"],
+                                    f'color_scheme': data['fields']['color_scheme']
                                   } |
                                   {f'{data['mode']}_{key}': value for key, value in data['fields'].items()}
                                 })    
@@ -48,5 +47,5 @@ class MongoDB:
         del user["_id"]
         return user
     
-    def set_test(self, tele_id, mode, seed_msk):
-        self.users.insert_one({"tele_id": tele_id, "mode": mode, "seed_msk": seed_msk})
+    def set_test(self, tele_id, mode, seed_msk, track_changes):
+        self.users.insert_one({"tele_id": tele_id, "mode": mode, "seed_msk": seed_msk, "track_changes": track_changes})
