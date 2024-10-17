@@ -3,7 +3,9 @@ let mode, x, y, x_center, y_center, zoom, seed, tele_id;
 let radius_index = 0;
 
 const markerImg = document.createElement("img");
-markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker.png";
+markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/marker_new.png";
+markerImg.style.height = '50px';
+markerImg.style.width = 'auto';
 
 
 var myHeaders = new Headers();
@@ -212,7 +214,9 @@ async function initAnswerMap() {
     });
 
     const correct_answer_markerImg = document.createElement("img");
-    correct_answer_markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/correct_marker.png";
+    correct_answer_markerImg.src = "https://storage.yandexcloud.net/test-geoguessr/correct_marker_new.png";
+    correct_answer_markerImg.style.height = '50px';
+    correct_answer_markerImg.style.width = 'auto';
 
     const correct_answer_marker = new AdvancedMarkerElement({
         map: answer_map,
@@ -228,7 +232,7 @@ async function initAnswerMap() {
 
     const answerPath = new google.maps.Polyline({
         path: answerPath_coordinates,
-        geodesic: true,
+        geodesic: false,
         strokeColor: "#0000FF",
         strokeOpacity: 0.5,
         strokeWeight: 5,
