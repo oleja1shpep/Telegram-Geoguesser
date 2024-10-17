@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-FUNCTION_ID=d4etua5b0mijijqgq8gs
+# FUNCTION_ID=d4etua5b0mijijqgq8gs # old function_id
+FUNCTION_ID=d4eqkib32rp8hk29t6k6
 FOLDER_ID=b1glcpkpn3f5vds58u09
 SA_ID=ajeb525m5vdpts9m5mv3
 DB_USER=mongo

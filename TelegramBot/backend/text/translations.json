@@ -167,8 +167,8 @@
     "not using gpt" : ["Вы больше не будете получать интересные факты про сгенерированные места", "You will no longer receive interesting facts about the generated places"],
     "set seed": ["Вы установили панораму: `{}`\nЧтобы запустить установленную панораму, нажмите *Играть!*", "You had set seed: `{}`\nTo start the given panorama, click *Play!*"],
     "developers" : [
-    "Создатели бота:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nКанал с обновлениями: @GeoguessrBotChannel\n\nЕсли понравилась наша игра, можете нас поддержать 🙂\nТ-банк: `2200701089775990`",
-    "Creators:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nChannel with info about updates: @GeoguessrBotChannel\n\nIf you enjoy playing our game, you can support us 🙂\nT-bank: `2200701089775990`"],
+    "Создатели бота:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nКанал с обновлениями: @HelloWorldGameChannel\n\nЕсли понравилась наша игра, можете нас поддержать 🙂\nТ-банк: `2200701089775990`",
+    "Creators:\n@govzman\n@oleja\\_shpep\n@adelyagaraeva\n\nChannel with info about updates: @HelloWorldGameChannel\n\nIf you enjoy playing our game, you can support us 🙂\nT-bank: `2200701089775990`"],
     "not a seed": ["Неверный seed или команда\nЕсли что-то не работает пришлите /start", "Incorrect seed or command\nIf something doesn't work send /start"],
     "greeting": ["Рад увидеть тебя снова в игре!", "Glad to see you back in the game!"],
     "registration": ["Вы были успешно зарегистрированы", "You have been successfully registered"],
