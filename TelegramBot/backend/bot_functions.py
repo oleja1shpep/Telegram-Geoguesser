@@ -294,5 +294,11 @@ async def form_statistics_graph(tele_id, mode, lang = 'en'):
     plt.clf()
     return length, mean_scores[-1]
 
+def form_table():
+    columns = ['username']
+    rows = ['1', '2', '3', '4', '5']
+    plt.table(cellText=[["ilya", "oleg", "bebra", "GGG", "AAA"]], rowLabels=rows, colLabels=columns,)
+    plt.show
+
 if __name__ == "__main__":
-    form_statistics_graph(679428900, "msk")
+    form_table()
