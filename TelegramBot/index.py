@@ -95,6 +95,8 @@ async def command_start(message: Message) -> None:
             if (message.from_user.language_code):
                 logger.info(f"INSTANCE_ID = {INSTANCE_ID}, In function: command_start: got lang code")
                 lang = message.from_user.language_code
+            if lang not in lang_code.keys():
+                lang = "en"
             msg = await message.answer(
                 (messages.GREETING[lang_code[lang]]).format(username),
                 reply_markup=await markups.create_start_markup(lang)
