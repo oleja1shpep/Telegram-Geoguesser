@@ -58,11 +58,31 @@ function get_panorama() {
             fullscreenControl: false,
             showRoadLabels: false,
             zoomControl: false,
-            // motionTrackingControl: false
+            motionTracking: false,
+            motionTrackingControl: false
         }
     );
     sv.getPanorama({ location: { lat: x, lng: y }, preference: "nearest", radius: radiuses[radius_index], source: "outdoor" }, processSVData);
+
+    panorama.addListener("pano_changed", () => {
+        removeLogoLink(0);
+    });
 };
+
+function removeLogoLink(tries) {
+    if (tries < 20) {
+        setTimeout(() => {
+            console.log('logo not found')
+            var GoogleLogo = document.querySelector('[alt="Google"]');
+            if (GoogleLogo) {
+                GoogleLogo.parentElement.parentElement.removeAttribute('href');
+                console.log('logo found!!!')
+            } else {
+                removeLogoLink(tries + 1);
+            }
+        }, 200);
+    }
+}
 
 function processSVData(data, status) {
     initMap()

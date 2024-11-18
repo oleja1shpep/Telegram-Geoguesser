@@ -166,15 +166,41 @@
     
     <script>
         let tg = window.Telegram.WebApp;
+
+        function isMethodSupported(minVersion) {
+            // Получаем текущую версию
+            const currentVersion = tg.version; // например, '7.2'
+            
+            // Разделяем версии на части
+            const [currentMajor, currentMinor] = currentVersion.split('.').map(Number);
+            const [minMajor, minMinor] = minVersion.split('.').map(Number);
+
+            // Сравниваем основные версии
+            if (currentMajor > minMajor) {
+                return true; // Текущая версия больше минимум
+            } else if (currentMajor === minMajor) {
+                return currentMinor >= minMinor; // Сравниваем минорные версии
+            } else {
+                return false; // Текущая версия меньше минимума
+            }
+        }
+
         let submit = document.getElementById("submit");
         let map_open = document.getElementById("map_toggler");
         let home_pano = document.getElementById("home_pano");
         let map_for_answer = document.getElementById("map");
         map_for_answer.hidden = true;
         submit.hidden = true;
+        if (isMethodSupported('6.2')) {
+            tg.enableClosingConfirmation()
+        }
+        if (isMethodSupported('7.7')) {
+            tg.disableVerticalSwipes()
+        }
+        if (isMethodSupported('8.0')) {
+            tg.requestFullscreen()
+        }
         tg.expand();
-        tg.enableClosingConfirmation()
-        tg.disableVerticalSwipes()
 
         submit.addEventListener("click", () => {
             EndGame()
