@@ -16,3 +16,4 @@ backend.py
 .pytest*
 scheme*
 tmp
+tests
