@@ -1,12 +1,30 @@
 import random
 import time
+import linecache
+
+
 MODES = ['msk', 'spb', 'rus', 'usa', 'wrld', 'easy']
-MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 3, 'usa': 3, 'wrld': 3, 'easy': 0}
+MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 2, 'usa': 2, 'wrld': 3, 'easy': 0}
+
+def get_random_coordinate_csv(file_path, seed):
+    random.seed(seed)
+    # Получаем общее количество строк
+    with open(file_path, "r", encoding="utf-8") as file:
+        total_lines = sum(1 for _ in file)
+    
+    # Выбираем случайную строку (игнорируем заголовок, если есть)
+    random_line_num = random.randint(1, total_lines)
+    line = linecache.getline(file_path, random_line_num)
+    
+    # Парсим CSV (если нужно)
+    if line:
+        return line.strip().split(",")
+    return 55.756929, 37.615161
 
 def generate_seed():
     random.seed(time.time())
     seed = ''
-    for i in range(6):
+    for _ in range(6):
         symb = random.randint(0, 25)
         if symb == 8:
             seed += 'i'
@@ -25,7 +43,6 @@ def check_seed(string, right_mode):
     mode, seed = unpacked
     if mode != right_mode:
         pass
-        # return False
     if len(seed) == 6 and all(map(lambda x: 'a' <= x <= 'z', list(seed.lower()))) and mode in MODES:
         return True
     return False
@@ -136,135 +153,42 @@ def coordinates_from_seed(seed, mode):
         x, y = 55.571, 37.364
         x2, y2 = 55.912, 37.844
         x_center, y_center = 55.753235, 37.622512
-        zoom = 10 
+        zoom = 10
+
+        filename = 'TelegramBot//backend//coords_by_mode//coordinates_msk.csv'
+        lat, lng = get_random_coordinate_csv(filename, seed)
+        return lat, lng, x_center, y_center, zoom
+
     elif mode == 'spb':
-        x, y = 59.81,  30.2
+        x, y = 59.81, 30.2
         x2, y2 = 60.06, 30.47
         x_center, y_center = 59.939043, 30.315826
         zoom = 10
+
+        filename = 'TelegramBot//backend//coords_by_mode//coordinates_spb.csv'
+        lat, lng = get_random_coordinate_csv(filename, seed)
+        return lat, lng, x_center, y_center, zoom
+
     elif mode == 'rus':
         x, y =  54.943761, 31.875376
         x2, y2 = 69.321693, 135.542207
         x_center, y_center = 61.680306, 90.125792
         zoom = 1.5
-        rand_case = random.randint(1, 198398182)
-        if rand_case <= 140200:
-            x, y = 54.395809, 19.96315
-            x2, y2 = 54.931611, 22.579783
-        elif rand_case <= 1528486:
-                x, y = 56.042289, 28.869637
-                x2, y2 = 61.054803, 31.639278
-        elif rand_case <= 150579951:
-                x, y = 54.943761, 31.875376
-                x2, y2 = 69.321693, 135.542207
-        elif rand_case <= 159613599:
-                x, y = 54.922812, 31.870243
-                x2, y2 = 55.79331, 135.645871
-        elif rand_case <= 171277853:
-                x, y = 51.929353, 79.8853
-                x2, y2 = 54.859996, 119.686307
-        elif rand_case <= 174348692:
-                x, y = 50.458641, 103.30256
-                x2, y2 = 52.367061, 119.393563
-        elif rand_case <= 182529778:
-                x, y = 49.728084, 127.742623
-                x2, y2 = 55.100807, 142.969699
-        elif rand_case <= 183392547:
-                x, y = 44.834123, 134.834166
-                x2, y2 = 49.749743, 136.589325
-        elif rand_case <= 184363231:
-                x, y = 42.653027, 131.406969
-                x2, y2 = 44.955345, 135.623084
-        elif rand_case <= 192596990:
-                x, y = 51.906737, 34.449059
-                x2, y2 = 55.154587, 59.800473
-        elif rand_case <= 194559350:
-                x, y = 50.490628, 36.025059
-                x2, y2 = 52.042008, 48.674186
-        elif rand_case <= 198398182:
-                x, y = 43.601399, 40.401071
-                x2, y2 = 50.058438, 46.346261
+
+        filename = 'TelegramBot//backend//coords_by_mode//coordinates_rus.csv'
+        lat, lng = get_random_coordinate_csv(filename, seed)
+        return lat, lng, x_center, y_center, zoom
+
     elif mode == 'usa':
         x, y = 34.949688, -113.990370
         x2, y2 = 42.801610, -85.994596
         x_center, y_center = 38.2149907, -95.4041103
         zoom = 3.2
-        rand_case = random.randint(1, 95201645)
-        if rand_case <= 1718382:
-            x, y = 38.023709, -124.508643
-            x2, y2 = 48.259446, -122.829837
-        elif rand_case <= 31819956:
-                x, y = 38.058365, -122.805347
-                x2, y2 = 48.93616, -95.132851
-        elif rand_case <= 36819825:
-                x, y = 36.265432, -122.713546
-                x2, y2 = 38.076391, -95.104588
-        elif rand_case <= 41819694:
-                x, y = 36.265432, -122.713546
-                x2, y2 = 38.076391, -95.104588
-        elif rand_case <= 46565748:
-                x, y = 34.459288, -121.294712
-                x2, y2 = 36.272217, -95.115785
-        elif rand_case <= 51168624:
-                x, y = 32.660267, -120.499896
-                x2, y2 = 34.473495, -95.114916
-        elif rand_case <= 52451470:
-                x, y = 31.940442, -112.912404
-                x2, y2 = 32.660942, -95.107462
-        elif rand_case <= 52776274:
-                x, y = 29.539102, -104.298925
-                x2, y2 = 31.933306, -102.9423
-        elif rand_case <= 54372740:
-                x, y = 29.874066, -102.940009
-                x2, y2 = 31.912309, -95.107447
-        elif rand_case <= 55241530:
-                x, y = 28.22672, -100.222951
-                x2, y2 = 29.875951, -94.955104
-        elif rand_case <= 59014267:
-                x, y = 29.568903, -95.10382
-                x2, y2 = 48.465761, -93.107331
-        elif rand_case <= 62708697:
-                x, y = 29.564781, -93.074473
-                x2, y2 = 48.096707, -91.080924
-        elif rand_case <= 66497344:
-                x, y = 29.067681, -91.04562
-                x2, y2 = 47.917422, -89.0357
-        elif rand_case <= 69906538:
-                x, y = 30.186678, -88.987678
-                x2, y2 = 47.460429, -87.014051
-        elif rand_case <= 73117157:
-                x, y = 30.388431, -86.983783
-                x2, y2 = 46.691742, -85.014478
-        elif rand_case <= 75941957:
-                x, y = 29.630667, -84.978182
-                x2, y2 = 45.199525, -83.163791
-        elif rand_case <= 78207377:
-                x, y = 29.198211, -83.15206
-                x2, y2 = 41.687286, -81.338139
-        elif rand_case <= 79240206:
-                x, y = 25.224336, -82.746151
-                x2, y2 = 29.186356, -80.139326
-        elif rand_case <= 81285742:
-                x, y = 31.96406, -81.331289
-                x2, y2 = 42.013672, -79.295851
-        elif rand_case <= 83134220:
-                x, y = 33.57273, -79.264305
-                x2, y2 = 42.621677, -77.22155
-        elif rand_case <= 84996016:
-                x, y = 34.617459, -77.17274
-                x2, y2 = 43.585003, -75.096591
-        elif rand_case <= 86126354:
-                x, y = 39.002902, -75.116361
-                x2, y2 = 44.901484, -73.200074
-        elif rand_case <= 86446459:
-                x, y = 39.002902, -75.116361
-                x2, y2 = 40.631862, -73.151272
-        elif rand_case <= 93099282:
-                x, y = 60.45801, -149.901176
-                x2, y2 = 70.017836, -142.942029
-        elif rand_case <= 95201645:
-                x, y = 18.645801, -160.28621
-                x2, y2 = 22.341667, -154.597792
+
+        filename = 'TelegramBot//backend//coords_by_mode//coordinates_usa.csv'
+        lat, lng = get_random_coordinate_csv(filename, seed)
+        return lat, lng, x_center, y_center, zoom
+
     else: # World mode
         x, y = -90, -180
         x2, y2 = 90, 180
