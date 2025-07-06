@@ -113,30 +113,41 @@
             background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
             background-size: 50%;
             background-position: center;
-            right: 10px;
+            right: 1%;
         }
 
         #submit_page2 {
             background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
             background-size: 50%;
             background-position: center;
-            right: 10px;
+            right: 1%;
         }
 
         #map_toggler {
             background: var(--tg-theme-button-color) url("icons/map-icon.svg") no-repeat;
             background-position: center;
             background-size: 50%;
-            left: 2%;
-            bottom: 2%;
+            left: 1%;
+            bottom: 5%;
         }
 
         #home_pano {
             background: var(--tg-theme-button-color) url("icons/home.svg") no-repeat;
             background-position: center;
             background-size: 50%;
-            left: 2%;
-            bottom: 14%;
+            left: 1%;
+            bottom: 17%;
+        }
+
+        #logo-overlay {
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+            width: 66px;
+            height: 26px;
+            z-index: 1000001;
+            pointer-events: auto;
+            background: transparent;
         }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -152,6 +163,7 @@
         <div id="cont"> 
             <div id="pano" class="player"></div>
             <div id="map" class="player"></div>
+            <div id="logo-overlay"></div>
         </div>
         <button id="submit"></button>
         <button id="map_toggler"></button>
