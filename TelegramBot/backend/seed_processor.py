@@ -8,17 +8,20 @@ MODE_TO_RADIUS = {'msk': 0, 'spb': 0, 'rus': 2, 'usa': 2, 'wrld': 3, 'easy': 0}
 
 def get_random_coordinate_csv(file_path, seed):
     random.seed(seed)
-    # Получаем общее количество строк
-    with open(file_path, "r", encoding="utf-8") as file:
-        total_lines = sum(1 for _ in file)
-    
-    # Выбираем случайную строку (игнорируем заголовок, если есть)
-    random_line_num = random.randint(1, total_lines)
-    line = linecache.getline(file_path, random_line_num)
-    
-    # Парсим CSV (если нужно)
-    if line:
-        return line.strip().split(",")
+    try:
+        # Получаем общее количество строк
+        with open(file_path, "r", encoding="utf-8") as file:
+            total_lines = sum(1 for _ in file)
+        
+        # Выбираем случайную строку (игнорируем заголовок, если есть)
+        random_line_num = random.randint(1, total_lines)
+        line = linecache.getline(file_path, random_line_num)
+        
+        # Парсим CSV (если нужно)
+        if line:
+            return list(map(float, line.strip().split(",")))
+    except Exception as e:
+        print('Exception!', e)
     return 55.756929, 37.615161
 
 def generate_seed():
@@ -155,7 +158,7 @@ def coordinates_from_seed(seed, mode):
         x_center, y_center = 55.753235, 37.622512
         zoom = 10
 
-        filename = 'TelegramBot//backend//coords_by_mode//coordinates_msk.csv'
+        filename = './/backend//coords_by_mode//coordinates_msk.csv'
         lat, lng = get_random_coordinate_csv(filename, seed)
         return lat, lng, x_center, y_center, zoom
 
@@ -165,7 +168,7 @@ def coordinates_from_seed(seed, mode):
         x_center, y_center = 59.939043, 30.315826
         zoom = 10
 
-        filename = 'TelegramBot//backend//coords_by_mode//coordinates_spb.csv'
+        filename = './/backend//coords_by_mode//coordinates_spb.csv'
         lat, lng = get_random_coordinate_csv(filename, seed)
         return lat, lng, x_center, y_center, zoom
 
@@ -175,7 +178,7 @@ def coordinates_from_seed(seed, mode):
         x_center, y_center = 61.680306, 90.125792
         zoom = 1.5
 
-        filename = 'TelegramBot//backend//coords_by_mode//coordinates_rus.csv'
+        filename = './/backend//coords_by_mode//coordinates_rus.csv'
         lat, lng = get_random_coordinate_csv(filename, seed)
         return lat, lng, x_center, y_center, zoom
 
@@ -185,7 +188,7 @@ def coordinates_from_seed(seed, mode):
         x_center, y_center = 38.2149907, -95.4041103
         zoom = 3.2
 
-        filename = 'TelegramBot//backend//coords_by_mode//coordinates_usa.csv'
+        filename = './/backend//coords_by_mode//coordinates_usa.csv'
         lat, lng = get_random_coordinate_csv(filename, seed)
         return lat, lng, x_center, y_center, zoom
 
@@ -593,3 +596,7 @@ def coordinates_from_seed(seed, mode):
                 x2, y2 = -23.01238, 32.01988
     lat, lng = x + random.random() * (x2 - x), y + random.random() * (y2 - y)
     return lat, lng, x_center, y_center, zoom
+
+
+if __name__ == '__main__':
+    print(coordinates_from_seed('xdxdxd', 'usa'))
