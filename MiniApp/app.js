@@ -107,6 +107,26 @@ function processSVData(data, status) {
         pitch: 0,
     });
     panorama.setVisible(true);
+
+    // Получаем элементы DOM
+    const compassElement = document.getElementById('custom-compass');
+
+    // Текущее направление взгляда (0 = север)
+    let currentHeading = 0;
+
+    // 1. Функция обновления компаса при движении в панораме
+    function updateCompass() {
+        if (!panorama || !compassArrows) return;
+        const pov = panorama.getPov();
+        currentHeading = pov.heading;
+        
+        // Вращаем контейнер со стрелками
+        compassArrows.style.transform = `rotate(${-currentHeading}deg)`;
+    }
+    compassArrows = compassElement.querySelector('.compass-arrows'); // Изменили здесь
+    panorama.addListener('pov_changed', updateCompass);
+    compassElement.addEventListener('click', smoothRotateToNorth);
+    updateCompass();
 }
 
 async function initMap() {
@@ -258,4 +278,41 @@ async function initAnswerMap() {
         strokeWeight: 5,
     });
     answerPath.setMap(answer_map);
+}
+
+// 2. Функция плавного поворота на север
+function smoothRotateToNorth() {
+    const targetHeading = 0; // Север
+    const startHeading = panorama.getPov().heading;
+    const duration = 600; // 0.6 секунды
+    const startTime = performance.now();
+
+    // Нормализуем разницу для кратчайшего пути поворота
+    let diff = targetHeading - startHeading;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+
+    function animateRotation(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Эффект плавности (ease-out)
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        // Вычисляем промежуточное направление
+        const newHeading = startHeading + diff * easeProgress;
+
+        // Применяем к панораме
+        panorama.setPov({
+            heading: newHeading,
+            pitch: panorama.getPov().pitch
+        });
+
+        // Продолжаем анимацию, если не закончили
+        if (progress < 1) {
+            requestAnimationFrame(animateRotation);
+        }
+    }
+
+    requestAnimationFrame(animateRotation);
 }

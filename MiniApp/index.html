@@ -82,52 +82,119 @@
             background: var(--tg-theme-secondary-bg-color);
         }
 
+        /* Базовый стиль для всех кнопок */
         button {
             position: absolute;
-            border: 10px;
-            border-radius: 100%;
+            border: none; /* Заменяем border: 10px */
+            border-radius: 20px; /* Меньше радиуса для более острой формы */
             bottom: 2%;
-            /* margin-bottom: 5%; */
-            height: 10%;
+            height: 8%; /* Фиксированная высота вместо 10% */
             aspect-ratio: 1;
-
-            font-size: large;
-            /* font-weight: 500; */
+            font-size: 0; /* Скрываем текст, если используем иконки */
             cursor: pointer;
-            opacity: 0.5;
-            transition: all 150ms ease;
+            
+            /* Современный фон с градиентом */
+            background: linear-gradient(
+                135deg, 
+                var(--tg-theme-button-color), 
+                color-mix(in srgb, var(--tg-theme-button-color) 80%, white)
+            );
+            
+            /* Стекломорфизм (эффект матового стекла) */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            
+            /* Тонкая рамка для контраста */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Современные тени */
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.15), /* Базовая тень */
+                inset 0 1px 0 rgba(255, 255, 255, 0.2); /* Внутренний свет */
+            
+            /* Анимация */
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            
             color: var(--tg-theme-button-text-color);
-            background: var(--tg-theme-button-color);
             z-index: 101;
+            
+            /* Центрирование содержимого */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0.82; /* Оставляем только здесь */
         }
 
+        /* Состояние наведения */
         button:hover {
-            opacity: 1;
+            opacity: 0.95;
+            
+            /* Увеличение и подъем при наведении */
+            transform: translateY(-2px) scale(1.05);
+            
+            /* Более яркие тени при наведении */
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
+        /* Активное состояние (при нажатии) */
         button:active {
-            opacity: 1;
+            transform: translateY(0) scale(0.98); /* Эффект нажатия */
+            
+            /* Более плотные тени при нажатии */
+            box-shadow: 
+                0 2px 10px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            
+            transition-duration: 100ms; /* Более быстрая анимация нажатия */
+        }
+
+        /* Эффект пульсации для важных кнопок */
+        button.important {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(var(--tg-theme-button-color-rgb), 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(var(--tg-theme-button-color-rgb), 0); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--tg-theme-button-color-rgb), 0); }
         }
 
         #submit {
             background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
             background-size: 50%;
             background-position: center;
-            right: 1%;
+            right: 3%;
+            bottom: 5%;
+            z-index: 1000002;
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        /* Показывать только когда не скрыта через hidden */
+        #submit:not([hidden]) {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 0.82 !important;
         }
 
         #submit_page2 {
             background: var(--tg-theme-button-color) url("icons/send.svg") no-repeat;
             background-size: 50%;
             background-position: center;
-            right: 1%;
+            right: 3%;
+            bottom: 5%;
+            z-index: 1000002;
         }
 
         #map_toggler {
             background: var(--tg-theme-button-color) url("icons/map-icon.svg") no-repeat;
             background-position: center;
             background-size: 50%;
-            left: 1%;
+            left: 3%;
             bottom: 5%;
         }
 
@@ -135,8 +202,8 @@
             background: var(--tg-theme-button-color) url("icons/home.svg") no-repeat;
             background-position: center;
             background-size: 50%;
-            left: 1%;
-            bottom: 17%;
+            left: 3%;
+            bottom: 14%;
         }
 
         #logo-overlay {
@@ -149,10 +216,229 @@
             pointer-events: auto;
             background: transparent;
         }
+        #compass-overlay {
+            position: fixed;
+            bottom: 24px;
+            right: 9px;
+            width: 50px;
+            height: 50px;
+            z-index: 1000001;
+            pointer-events: auto;
+            background: transparent;
+        }
+        
+        .compass-bar {
+            /* Расположение сверху */
+            position: absolute;
+            top: 78px;
+            right: 24px;
+            z-index: 1000;
+
+            /* Стиль в единой системе */
+            height: 56px;
+            width: 56px;
+            border-radius: 50% !important; /* Меньше радиуса для современного вида */
+            cursor: pointer;
+            opacity: 0.9;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Современный фон с градиентом и стекломорфизмом */
+            background: linear-gradient(
+                135deg, 
+                rgba(0, 0, 0, 0.85), 
+                rgba(30, 30, 30, 0.9)
+            );
+            
+            /* Эффект матового стекла */
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            
+            /* Тонкая светлая рамка для контраста */
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            
+            /* Современные многослойные тени */
+            box-shadow: 
+                0 4px 24px rgba(0, 0, 0, 0.25),
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            
+            /* Центрирование содержимого */
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+
+            /* Для темной темы Telegram WebApp */
+            color: #ffffff;
+            opacity: 0.9; 
+        }
+        /* Сброс состояний на мобильных (touch devices) */
+        @media (hover: none) and (pointer: coarse) {
+            .compass-bar:hover,
+            .compass-bar:active:hover {
+                opacity: 0.5;
+                transform: none;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            }
+            
+            .compass-bar:active {
+                opacity: 1;
+            }
+            button:active {
+                opacity: 0.82; /* Возвращаем базовую прозрачность */
+                transform: none; /* Убираем сжатие */
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Возвращаем обычные тени */
+                transition-duration: 0ms; /* Мгновенный сброс */
+            }
+        }
+
+        /* Стрелки компаса */
+        .compass-arrows {
+            position: relative;
+            width: 60%;
+            height: 60%;
+            transition: transform 0.1s linear;
+        }
+
+        /* Красный треугольник (указывает на север) */
+        .compass-arrows::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            
+            /* Создаем треугольник */
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 16px solid #d32f2f; /* Красный цвет */
+            
+            /* Обводка */
+            filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+            
+            filter: 
+                drop-shadow(0 1px 1px rgba(0,0,0,0.5))
+                drop-shadow(0 0 4px rgba(211, 47, 47, 0.3));
+        }
+
+        /* Белый треугольник (основное направление) */
+        .compass-arrows::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            
+            /* Создаем треугольник */
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 15px solid #ffffff; /* Белый цвет */
+            
+            /* Обводка для контраста */
+            filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+
+            filter: 
+                drop-shadow(0 1px 1px rgba(0,0,0,0.3))
+                drop-shadow(0 0 3px rgba(255,255,255,0.2));
+        }
+
+        /* Эффект наведения */
+        .compass-bar:hover {
+            opacity: 1;
+            transform: translateY(-2px) scale(1.08);
+            
+            /* Усиление теней при наведении */
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.35),
+                0 4px 16px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            
+            /* Легкое свечение */
+            outline: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Активное состояние (нажатие) */
+        .compass-bar:active {
+            transform: translateY(0) scale(0.96);
+            transition-duration: 150ms;
+            
+            /* Изменение теней при нажатии */
+            box-shadow: 
+                0 2px 12px rgba(0, 0, 0, 0.3),
+                0 1px 4px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes compassSpin {
+            0% { transform: rotate(0deg); }
+            70% { transform: rotate(365deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .compass-bar {
+                top: 12%;
+                right: 20px;
+                height: 52px;
+                width: 52px;
+                border-radius: 16px;
+            }
+            
+            .compass-icon {
+                width: 22px;
+                height: 22px;
+            }
+        }
+        /* Горизонтальная ориентация (альбомный режим) */
+        @media (orientation: landscape) and (pointer: coarse) {
+            button {
+                height: 9vh; /* Высота относительно высоты экрана */
+                min-height: 44px; /* Минимальный размер */
+                max-height: 60px; /* Максимальный размер */
+            }
+            
+            /* Позиционирование кнопок в ландшафте */
+            #submit, #submit_page2 {
+                right: 1vh; /* Отступы относительно высоты */
+                bottom: 7vh;
+            }
+            
+            #map_toggler {
+                left: 1vh;
+                bottom: 7vh;
+            }
+            
+            #home_pano {
+                left: 1vh;
+                bottom: 20vh; /* Отступ по высоте */
+            }
+        }
+        .gm-compass {
+            opacity: 0;
+        }
+        div > button[aria-label="Keyboard shortcuts"],
+        div > button[aria-label="Keyboard shortcuts"] + *,
+        div:has(> button[aria-label="Keyboard shortcuts"]) {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            display: none !important; /* Полное удаление из потока */
+        }
+        .gm-compass-turn {
+            opacity: 0;
+        }
+        .gm-compass-needle {
+            opacity: 0;
+        }
+
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=[API_KEY]&callback=get_panorama&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=&callback=get_panorama&v=weekly"
         defer></script>
     <script src="app.js"></script>
 </head>
@@ -164,6 +450,10 @@
             <div id="pano" class="player"></div>
             <div id="map" class="player"></div>
             <div id="logo-overlay"></div>
+            <div id="compass-overlay"></div>
+        </div>
+        <div id="custom-compass" class="compass-bar">
+            <div class="compass-arrows"></div>
         </div>
         <button id="submit"></button>
         <button id="map_toggler"></button>
